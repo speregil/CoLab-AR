@@ -24,7 +24,7 @@ MonoBehaviour:
   _fileLogLevel: 5
   _stdoutLogLevel: 5
   _lightshipSimulationParams:
-    _useZBufferDepth: 1
+    _useZBufferDepth: 0
     _useSimulationPersistentAnchor: 1
     _simulationPersistentAnchorParams:
       m_minimumAnchorDiscoveryTimeSeconds: 1
