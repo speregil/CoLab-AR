@@ -10,27 +10,52 @@ using UnityEngine.XR.ARFoundation;
 public class WorkspaceConfig : NetworkBehaviour
 {
     //------------------------------------------------------------------------------------------------------
+    // Constants
+    //------------------------------------------------------------------------------------------------------
+
+    public const int X_AXIS = 0;
+    public const int Y_AXIS = 1;
+    public const int Z_AXIS = 2;
+    public const int POSITIVE_ROTATION = 1;
+    public const int NEGATIVE_ROTATION = -1;
+    public const float POSITION_CHANGE = 0.1f;
+    public const float ROTATION_CHANGE = 10.0f;
+
+    //------------------------------------------------------------------------------------------------------
     // Fields
     //------------------------------------------------------------------------------------------------------
 
     [SerializeField] private GameObject workspacePrefab;                      // Prefab for the workspace plane      
+    [SerializeField] private GameObject workspaceConfigUI;                    // Reference to the Room Configuration UI elements
 
     private ARRaycastManager raycastManager;                                  // Reference to the ARRaycastManager component in the parent object
     private ARPlaneManager planeManager;                                      // Reference to the ARPlaneManager component in the parent object
     private TrackingManager trackingManager;                                  // Reference to the TrackingManager component in the parent object
+    private UIManager uiManager;                                              // Reference to the UIManager component loaded in the scene
 
     private GameObject currentWorkspaceInstance;                              // Current instance of the workspace plane
+    private Vector3 originalPosition;                                         // Saves the original position of the workspace prior to user configuration
+    private Quaternion originalRotation;                                      // Saves the original rotation of the workspace prior to the user configuration
+    private Vector3 originalScale;                                            // Saves the original scale of the workspace prior to the user configuration
+
     private bool isDetectingPlanes = true;                                    // Flag that determines if the script is currently tracking planes or not
+    private bool isConfiguringWorkspace = false;                              // Flag that determines if the user is currently configuring pos/rot of the workspace
 
     //------------------------------------------------------------------------------------------------------
-    // Functions
+    // Monobehaviour Functions
     //------------------------------------------------------------------------------------------------------
 
     void Start()
     {
+        // Setup references with components in the parent object
         raycastManager = transform.parent.gameObject.GetComponent<ARRaycastManager>();
         planeManager = transform.parent.gameObject.GetComponent<ARPlaneManager>();
         trackingManager = transform.parent.gameObject.GetComponent<TrackingManager>();
+
+        // Setup references to the UIManager and trasfer of control of the RoomConfigMenu
+        uiManager = GameObject.Find("UI").GetComponent<UIManager>();
+        workspaceConfigUI.transform.SetParent(uiManager.transform,false);
+        uiManager.SetupWorkspaceConfigMenu();
     }
 
     void Update()
@@ -50,6 +75,10 @@ public class WorkspaceConfig : NetworkBehaviour
             ARRaycasting(mousePositionMap);
         }
     }
+
+    //------------------------------------------------------------------------------------------------------
+    // Functions
+    //------------------------------------------------------------------------------------------------------
 
     /**
      * Controls the raycasting process and the creation of the workspace plane when selecting a detected plane
@@ -74,6 +103,47 @@ public class WorkspaceConfig : NetworkBehaviour
         }
     }
 
+    public void MoveWorkspace(int axis)
+    {
+        Vector3 currentPos = currentWorkspaceInstance.transform.position;
+        Vector3 newPos = new Vector3(currentPos.x, currentPos.y, currentPos.z);
+
+        if (axis == X_AXIS)
+            newPos.x = currentPos.x + POSITION_CHANGE;
+        else if (axis == Y_AXIS)
+            newPos.y = currentPos.y + POSITION_CHANGE;
+        else if (axis == Z_AXIS)
+            newPos.z = currentPos.z + POSITION_CHANGE;
+
+        currentWorkspaceInstance.transform.position = newPos;
+    }
+
+    public void RotateWorkspace(int direction)
+    {
+
+    }
+
+    public void ScaleWorkspace(int axis)
+    {
+
+    }
+
+    /**
+     * Signals the end of the workspace configurations and asks the UIManager to hide the menu
+     */
+    public void FinishConfiguration()
+    {
+        isConfiguringWorkspace = false;
+        uiManager.AcceptWorkspaceConfiguration();
+    }
+
+    public void ResetConfiguration()
+    {
+        currentWorkspaceInstance.transform.position = originalPosition;
+        currentWorkspaceInstance.transform.rotation = originalRotation;
+        currentWorkspaceInstance.transform.localScale = originalScale;
+    }
+
     //------------------------------------------------------------------------------------------------------
     // Network Functions
     //------------------------------------------------------------------------------------------------------
@@ -95,5 +165,12 @@ public class WorkspaceConfig : NetworkBehaviour
         // Spawns the workspace in the room
         NetworkObject worspaceNetworkObject = currentWorkspaceInstance.GetComponent<NetworkObject>();
         worspaceNetworkObject.SpawnWithOwnership(clientId);
+
+        // Setups the configuration menu
+        originalPosition = currentWorkspaceInstance.transform.localPosition;
+        originalRotation = currentWorkspaceInstance.transform.localRotation;
+        originalScale = currentWorkspaceInstance.transform.localScale;
+        isConfiguringWorkspace = true;
+        uiManager.WorkspaceConfiguration();
     }
 }

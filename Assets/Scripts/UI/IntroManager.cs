@@ -1,41 +1,69 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using TMPro;
-using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
 
+/**
+ * Behaviour that controls the configuration actions for creating or joining a room
+ */
 public class IntroManager : MonoBehaviour
 {
-    [SerializeField] TMP_InputField createNameInputField;
-    [SerializeField] TMP_InputField joinNameInputField;
+    //------------------------------------------------------------------------------------------------------
+    // Fields
+    //------------------------------------------------------------------------------------------------------
 
-    UIManager uiManager;
+    [SerializeField] TMP_InputField createNameInputField;           // Reference to the input field for the name of a room to create
+    [SerializeField] TMP_InputField joinNameInputField;             // Reference to the input field for the name of a room to join to
 
-    private string roomName;
-    private bool isHost;
+    UIManager uiManager;                                            // Reference to the UIManager component
+
+    private string roomName;                                        // Name of the room to create or join to
+    private bool isHost;                                            // Flag that determines if the user is creating or joining a room
+
+    //------------------------------------------------------------------------------------------------------
+    // Monobehaviour Functions
+    //------------------------------------------------------------------------------------------------------
 
     private void Start()
     {
         uiManager = GetComponent<UIManager>();
     }
 
+    //------------------------------------------------------------------------------------------------------
+    // Functions
+    //------------------------------------------------------------------------------------------------------
+
+    /**
+     * Determines if the user is a host or not
+     * @return True if the user is a host, False otherwise
+     * */
     public bool IsHost()
     {
         return isHost;
     }
 
+    /**
+     * Returns the current name that is going to be used to create or join a room
+     * @returns string The name of the current room
+     */
     public string GetRoomName() 
     { 
         return roomName; 
     }
 
+    /**
+     * Changes the current name that us going to be used to create or join a room
+     * @param roomName New current name of the room
+     */
     public void RoomNameEdit(string roomName)
     {
         this.roomName = roomName;
     }
 
+    /**
+     * Cleans the UI for room creation, stablishes the user as a host and asks the UIManager to proceed with the
+     * creation of a room
+     */
     public void AcceptCreateRoom()
     {
         createNameInputField.text = "";
@@ -43,6 +71,10 @@ public class IntroManager : MonoBehaviour
         uiManager.AcceptCreateRoom();
     }
 
+    /**
+     * Cleans the UI for joining a room, stablishes the user as a client and ask the UIManager to proceed with the
+     * room join
+     */
     public void AcceptJoinRoom()
     {
         joinNameInputField.text = "";
@@ -50,6 +82,9 @@ public class IntroManager : MonoBehaviour
         uiManager.AcceptJoinRoom();
     }
 
+    /**
+     * Cleans the UI for room creation and asks the UIManager to move back to the intro menu
+     */
     public void CancelCreateRoom()
     {
         roomName = "";
@@ -57,6 +92,9 @@ public class IntroManager : MonoBehaviour
         uiManager.CancelCreateRoom();
     }
 
+    /**
+     * Cleans the UI for joining a room and asks the UIManager to move back to the intro menu
+     */
     public void CancelJoinRoom()
     {
         roomName = "";
