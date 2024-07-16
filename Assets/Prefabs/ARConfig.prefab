@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 7014275345851617191}
   - component: {fileID: 72544243684368534}
   - component: {fileID: 8953674431593820754}
+  - component: {fileID: 6571118657556273739}
+  - component: {fileID: 1979885453523789487}
   m_Layer: 0
   m_Name: XR Origin
   m_TagString: Untagged
@@ -91,6 +93,33 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 254fbae352fc381459d3ee35f9b12de5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6571118657556273739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5155636765358050423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5e00303423314ba88f0be8d259dfe62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _colocalizationType: 999
+  _sharedArRootPrefab: {fileID: 4781414300907772666, guid: addffc4d55be14f14b776b2b504b86d6, type: 3}
+  _arLocationManager: {fileID: 0}
+--- !u!114 &1979885453523789487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5155636765358050423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51aecd3e7b4314445a956ffb3e39e822, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &5772451597327902586
@@ -366,7 +395,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1552101042
+  GlobalObjectIdHash: 1404867129
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -388,6 +417,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   workspacePrefab: {fileID: 1769942225619592587, guid: b26b29e9ab1607e43b1d6e2f43f62cda, type: 3}
+  workspaceConfigUI: {fileID: 0}
+  workspacePositionChange: 0.1
+  workspaceRotationChange: 10
 --- !u!1 &6904221053906178280
 GameObject:
   m_ObjectHideFlags: 0

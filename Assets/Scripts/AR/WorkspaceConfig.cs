@@ -13,13 +13,10 @@ public class WorkspaceConfig : NetworkBehaviour
     // Constants
     //------------------------------------------------------------------------------------------------------
 
-    public const int X_AXIS = 0;
-    public const int Y_AXIS = 1;
-    public const int Z_AXIS = 2;
-    public const int POSITIVE_ROTATION = 1;
-    public const int NEGATIVE_ROTATION = -1;
-    public const float POSITION_CHANGE = 0.1f;
-    public const float ROTATION_CHANGE = 10.0f;
+    public const int POSITIONXZ_STATE = 0;
+    public const int POSITIONY_STATE = 1;
+    public const int ROTATION_STATE = 2;
+    public const int SCALE_STATE = 3;
 
     //------------------------------------------------------------------------------------------------------
     // Fields
@@ -27,6 +24,8 @@ public class WorkspaceConfig : NetworkBehaviour
 
     [SerializeField] private GameObject workspacePrefab;                      // Prefab for the workspace plane      
     [SerializeField] private GameObject workspaceConfigUI;                    // Reference to the Room Configuration UI elements
+    [SerializeField] private float workspacePositionChange;
+    [SerializeField] private float workspaceRotationChange;
 
     private ARRaycastManager raycastManager;                                  // Reference to the ARRaycastManager component in the parent object
     private ARPlaneManager planeManager;                                      // Reference to the ARPlaneManager component in the parent object
@@ -37,6 +36,7 @@ public class WorkspaceConfig : NetworkBehaviour
     private Vector3 originalPosition;                                         // Saves the original position of the workspace prior to user configuration
     private Quaternion originalRotation;                                      // Saves the original rotation of the workspace prior to the user configuration
     private Vector3 originalScale;                                            // Saves the original scale of the workspace prior to the user configuration
+    private int currentConfigState;
 
     private bool isDetectingPlanes = true;                                    // Flag that determines if the script is currently tracking planes or not
     private bool isConfiguringWorkspace = false;                              // Flag that determines if the user is currently configuring pos/rot of the workspace
@@ -103,29 +103,29 @@ public class WorkspaceConfig : NetworkBehaviour
         }
     }
 
-    public void MoveWorkspace(int axis)
+    public bool IsConfiguringWorkspace()
     {
-        Vector3 currentPos = currentWorkspaceInstance.transform.position;
-        Vector3 newPos = new Vector3(currentPos.x, currentPos.y, currentPos.z);
-
-        if (axis == X_AXIS)
-            newPos.x = currentPos.x + POSITION_CHANGE;
-        else if (axis == Y_AXIS)
-            newPos.y = currentPos.y + POSITION_CHANGE;
-        else if (axis == Z_AXIS)
-            newPos.z = currentPos.z + POSITION_CHANGE;
-
-        currentWorkspaceInstance.transform.position = newPos;
+        return isDetectingPlanes;
     }
 
-    public void RotateWorkspace(int direction)
+    public int GetCurrentConfigState()
     {
-
+        return currentConfigState;
     }
 
-    public void ScaleWorkspace(int axis)
+    public void SetConfigState(int state)
     {
+        currentConfigState = state;
+    }
 
+    public float GetWorkspacePositionChangeValue()
+    {
+        return workspacePositionChange;
+    }
+
+    public float GetCurrentWorkspaceRotationChangeValue()
+    {
+        return workspaceRotationChange;
     }
 
     /**
