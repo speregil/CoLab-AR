@@ -24,8 +24,6 @@ public class WorkspaceConfig : NetworkBehaviour
 
     [SerializeField] private GameObject workspacePrefab;                      // Prefab for the workspace plane      
     [SerializeField] private GameObject workspaceConfigUI;                    // Reference to the Room Configuration UI elements
-    [SerializeField] private float workspacePositionChange;
-    [SerializeField] private float workspaceRotationChange;
 
     private ARRaycastManager raycastManager;                                  // Reference to the ARRaycastManager component in the parent object
     private ARPlaneManager planeManager;                                      // Reference to the ARPlaneManager component in the parent object
@@ -116,16 +114,6 @@ public class WorkspaceConfig : NetworkBehaviour
     public void SetConfigState(int state)
     {
         currentConfigState = state;
-    }
-
-    public float GetWorkspacePositionChangeValue()
-    {
-        return workspacePositionChange;
-    }
-
-    public float GetCurrentWorkspaceRotationChangeValue()
-    {
-        return workspaceRotationChange;
     }
 
     /**

@@ -172,3 +172,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eeb65b815a910014db57423e45fbe7e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movementTresshold: 50
+  workspacePositionChange: 0.1
+  workspaceRotationChange: 10
+  sensibility: 100

@@ -305,6 +305,10 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 1404867129
       objectReference: {fileID: 0}
+    - target: {fileID: 6734656901758177000, guid: 1d73e18c69480014d97c9e0614066769, type: 3}
+      propertyPath: m_RequestedTrackingOriginMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7250760053420133020, guid: 1d73e18c69480014d97c9e0614066769, type: 3}
       propertyPath: workspaceConfigUI
       value: 
@@ -356,10 +360,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5772451597327902586, guid: 1d73e18c69480014d97c9e0614066769, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1d73e18c69480014d97c9e0614066769, type: 3}
 --- !u!114 &1188432351228526893 stripped
 MonoBehaviour:
