@@ -31,9 +31,7 @@ public class WorkspaceConfig : NetworkBehaviour
     private UIManager uiManager;                                              // Reference to the UIManager component loaded in the scene
 
     private GameObject currentWorkspaceInstance;                              // Current instance of the workspace plane
-    private Vector3 originalPosition;                                         // Saves the original position of the workspace prior to user configuration
-    private Quaternion originalRotation;                                      // Saves the original rotation of the workspace prior to the user configuration
-    private Vector3 originalScale;                                            // Saves the original scale of the workspace prior to the user configuration
+    private DragWorkspace drag;
     private int currentConfigState;
 
     private bool isDetectingPlanes = true;                                    // Flag that determines if the script is currently tracking planes or not
@@ -127,9 +125,7 @@ public class WorkspaceConfig : NetworkBehaviour
 
     public void ResetConfiguration()
     {
-        currentWorkspaceInstance.transform.position = originalPosition;
-        currentWorkspaceInstance.transform.rotation = originalRotation;
-        currentWorkspaceInstance.transform.localScale = originalScale;
+        drag.Reset();
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -155,10 +151,8 @@ public class WorkspaceConfig : NetworkBehaviour
         worspaceNetworkObject.SpawnWithOwnership(clientId);
 
         // Setups the configuration menu
-        originalPosition = currentWorkspaceInstance.transform.localPosition;
-        originalRotation = currentWorkspaceInstance.transform.localRotation;
-        originalScale = currentWorkspaceInstance.transform.localScale;
         isConfiguringWorkspace = true;
+        drag = currentWorkspaceInstance.GetComponent<DragWorkspace>();
         uiManager.WorkspaceConfiguration();
     }
 }
