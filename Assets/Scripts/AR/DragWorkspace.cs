@@ -21,8 +21,11 @@ public class DragWorkspace : MonoBehaviour
     private int offCounter;
 
     private bool hasClicked = true;
+    private bool movingX = false;
+    private bool movingY = false;
 
     private UIDebuger uidebug;
+    private int x = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -40,6 +43,8 @@ public class DragWorkspace : MonoBehaviour
         if (Input.touchCount != 1)
         {
             hasClicked = true;
+            movingX = false;
+            movingY = false;
             return;
         }
 
@@ -47,18 +52,25 @@ public class DragWorkspace : MonoBehaviour
         if(touchData.phase == TouchPhase.Began)
         {
             hasClicked = false;
-            initialDragPosition = touchData.position;
-            cameraForward = Camera.main.transform.forward;
+
+            if (!hasClicked)
+            {
+                initialDragPosition = touchData.position;
+                cameraForward = Camera.main.transform.forward;
+            }
         }
 
         if (!hasClicked && touchData.phase == TouchPhase.Moved)
         {
             ManageInputDrag(touchData.position, TOUCH_MODE);
+            x++;
         }
 
         if (!hasClicked && (touchData.phase == TouchPhase.Ended || touchData.phase == TouchPhase.Canceled))
         {
             hasClicked = true;
+            movingX = false;
+            movingY = false;
         }
     }
 
@@ -76,6 +88,8 @@ public class DragWorkspace : MonoBehaviour
     void OnMouseUp()
     {
         hasClicked = true;
+        movingX = false;
+        movingY = false;
     }
 
     void OnMouseDrag()
@@ -88,17 +102,30 @@ public class DragWorkspace : MonoBehaviour
         if (offCounter <= 0)
         {
             float deltaX = initialDragPosition.x - currentDragPosition.x;
-            float direction = deltaX / Mathf.Abs(deltaX);
+            float deltaY = initialDragPosition.y - currentDragPosition.y;
 
-            if (Mathf.Abs(deltaX) > movementTresshold)
+            float directionX = 0.0f;
+            float directionY = 0.0f;
+
+            if(Mathf.Abs(deltaX) > movementTresshold && !movingY)
             {
-                if (inputMode == MOUSE_MODE)
-                    MouseMove(Camera.main.transform.forward, transform.forward, direction);
-                else
-                    TouchMove(Camera.main.transform.forward, transform.forward, direction);
-                
-                offCounter = sensibility;
+                directionX = deltaX / Mathf.Abs(deltaX);
+                movingX = true;
             }
+                
+
+            if (Mathf.Abs(deltaY) > movementTresshold && !movingX)
+            {
+                directionY = deltaY / Mathf.Abs(deltaY);
+                movingY = true;
+            }
+
+            if (inputMode == MOUSE_MODE)
+                MouseMove(Camera.main.transform.forward, transform.forward, directionX, directionY);
+            else
+                TouchMove(Camera.main.transform.forward, transform.forward, directionX, directionY);
+
+            offCounter = sensibility;
         }
         else
         {
@@ -106,55 +133,59 @@ public class DragWorkspace : MonoBehaviour
         }
     }
 
-    private void MouseMove(Vector3 cameraForward, Vector3 workspaceForward, float direction)
+    private void MouseMove(Vector3 cameraForward, Vector3 workspaceForward, float directionX, float directionY)
     {
         float cameraWorkspaceAngle = Vector3.SignedAngle(cameraForward, workspaceForward, Vector3.up);
-        if (cameraWorkspaceAngle > -45.0 && cameraWorkspaceAngle <= 45.0 ) 
-        {
-            Vector3 newPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z - (workspacePositionChange * direction));
-            transform.position = newPosition;
-        }
-        else if (cameraWorkspaceAngle <= -45.0 && cameraWorkspaceAngle >= -135.0)
-        {
-            Vector3 newPosition = new Vector3(transform.position.x - (workspacePositionChange * direction), transform.position.y, transform.position.z);
-            transform.position = newPosition;
-        }
-        else if (cameraWorkspaceAngle > 45.0 && cameraWorkspaceAngle <= 135.0)
-        {
-            Vector3 newPosition = new Vector3(transform.position.x + (workspacePositionChange * direction), transform.position.y, transform.position.z);
-            transform.position = newPosition;
-        }
-        else if(cameraWorkspaceAngle > 135.0)
-        {
-            Vector3 newPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z + (workspacePositionChange * direction));
-            transform.position = newPosition;
-        }
-    }
-
-    private void TouchMove(Vector3 cameraForward, Vector3 workspaceForward, float direction)
-    {
-        float cameraWorkspaceAngle = Vector3.SignedAngle(cameraForward, workspaceForward, Vector3.up);
+        float speedX = workspacePositionChange * directionX * Time.deltaTime;
+        float speedY = workspacePositionChange * directionY * Time.deltaTime;
         if (cameraWorkspaceAngle > -45.0 && cameraWorkspaceAngle <= 45.0)
         {
-            Vector3 newPosition = new Vector3(transform.position.x - (workspacePositionChange * direction), originalPosition.y, originalPosition.z);
+            Vector3 newPosition = new Vector3(transform.position.x + speedY, transform.position.y, transform.position.z - speedX);
             transform.position = newPosition;
         }
         else if (cameraWorkspaceAngle <= -45.0 && cameraWorkspaceAngle >= -135.0)
         {
-            Vector3 newPosition = new Vector3(originalPosition.x, originalPosition.y, transform.position.z + (workspacePositionChange * direction));
+            Vector3 newPosition = new Vector3(transform.position.x - speedX, transform.position.y, transform.position.z - speedY);
             transform.position = newPosition;
         }
         else if (cameraWorkspaceAngle > 45.0 && cameraWorkspaceAngle <= 135.0)
         {
-            Vector3 newPosition = new Vector3(originalPosition.x, originalPosition.y, transform.position.z - (workspacePositionChange * direction));
+            Vector3 newPosition = new Vector3(transform.position.x + speedX, transform.position.y, transform.position.z + speedY);
             transform.position = newPosition;
         }
         else if (cameraWorkspaceAngle > 135.0)
         {
-            Vector3 newPosition = new Vector3(transform.position.x + (workspacePositionChange * direction), originalPosition.y, originalPosition.z);
+            Vector3 newPosition = new Vector3(transform.position.x - speedY, transform.position.y, transform.position.z + speedX);
             transform.position = newPosition;
         }
-        uidebug.Log(transform.position.x + ", " + transform.position.y + ", " + transform.position.z);
+    }
+
+    private void TouchMove(Vector3 cameraForward, Vector3 workspaceForward, float directionX, float directionY)
+    {
+        float cameraWorkspaceAngle = Vector3.SignedAngle(cameraForward, workspaceForward, Vector3.up);
+        float speedX = workspacePositionChange * directionX * Time.deltaTime;
+        float speedY = workspacePositionChange * directionY * Time.deltaTime;
+        if (cameraWorkspaceAngle > -45.0 && cameraWorkspaceAngle <= 45.0)
+        {
+            Vector3 newPosition = new Vector3(transform.position.x - speedX, originalPosition.y, originalPosition.z + speedY);
+            transform.position = newPosition;
+        }
+        else if (cameraWorkspaceAngle <= -45.0 && cameraWorkspaceAngle >= -135.0)
+        {
+            Vector3 newPosition = new Vector3(originalPosition.x - speedY, originalPosition.y, transform.position.z + speedX);
+            transform.position = newPosition;
+        }
+        else if (cameraWorkspaceAngle > 45.0 && cameraWorkspaceAngle <= 135.0)
+        {
+            Vector3 newPosition = new Vector3(originalPosition.x + speedY, originalPosition.y, transform.position.z - speedX);
+            transform.position = newPosition;
+        }
+        else if (cameraWorkspaceAngle > 135.0)
+        {
+            Vector3 newPosition = new Vector3(transform.position.x + speedX, originalPosition.y, originalPosition.z + speedY);
+            transform.position = newPosition;
+        }
+        uidebug.Log("X: " + transform.position.x + " Y: " + transform.position.y + " Z: " + transform.position.z);
     }
 
     public void Reset()
