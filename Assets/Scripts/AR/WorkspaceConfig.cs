@@ -13,10 +13,10 @@ public class WorkspaceConfig : NetworkBehaviour
     // Constants
     //------------------------------------------------------------------------------------------------------
 
-    public const int POSITIONXZ_STATE = 0;
-    public const int POSITIONY_STATE = 1;
-    public const int ROTATION_STATE = 2;
-    public const int SCALE_STATE = 3;
+    public const int POSITIONXZ_STATE = 0;                                    // Defines the Config State to moving the workspace in the XZ plane
+    public const int POSITIONY_STATE = 1;                                     // Defines the Config State to moving the workspace in the Y plane
+    public const int ROTATION_STATE = 2;                                      // Defines the Config State to rotating the workspace around the Y axis
+    public const int SCALE_STATE = 3;                                         // Defines the Config State to scaling the workspace along the X and Z axis
 
     //------------------------------------------------------------------------------------------------------
     // Fields
@@ -31,8 +31,8 @@ public class WorkspaceConfig : NetworkBehaviour
     private UIManager uiManager;                                              // Reference to the UIManager component loaded in the scene
 
     private GameObject currentWorkspaceInstance;                              // Current instance of the workspace plane
-    private DragWorkspace drag;
-    private int currentConfigState;
+    private DragWorkspace drag;                                               // Reference to the Drag Behaviour of the current workspace
+    private int currentConfigState;                                           // Defines the current Config State of the app
 
     private bool isDetectingPlanes = true;                                    // Flag that determines if the script is currently tracking planes or not
     private bool isConfiguringWorkspace = false;                              // Flag that determines if the user is currently configuring pos/rot of the workspace
@@ -99,16 +99,36 @@ public class WorkspaceConfig : NetworkBehaviour
         }
     }
 
+    /**
+     * Getter to determine if the beheviour already creted a workspace and is in configuration mode or not
+     * @return bool If the behaviour is in the configuration state or not
+     */
     public bool IsConfiguringWorkspace()
     {
-        return isDetectingPlanes;
+        return isConfiguringWorkspace;
     }
 
+    /**
+     * Getter to determine the current configuration state
+     * @return int Current configuration state
+     * POSITIONXZ_STATE Moving the workspace in the XZ plane
+     * POSITIONY_STATE  Moving the workspace in the Y plane
+     * ROTATION_STATE Rotating the workspace around the Y axis
+     * SCALE_STATE Scaling the workspace along the X and Z axis
+     */
     public int GetCurrentConfigState()
     {
         return currentConfigState;
     }
 
+    /**
+     * Setter for the current configuration state
+     * @param state Constant determining the state
+     * POSITIONXZ_STATE Moving the workspace in the XZ plane
+     * POSITIONY_STATE  Moving the workspace in the Y plane
+     * ROTATION_STATE Rotating the workspace around the Y axis
+     * SCALE_STATE Scaling the workspace along the X and Z axis
+     */
     public void SetConfigState(int state)
     {
         currentConfigState = state;
@@ -120,9 +140,13 @@ public class WorkspaceConfig : NetworkBehaviour
     public void FinishConfiguration()
     {
         isConfiguringWorkspace = false;
+        drag.SetOnConfig(false);
         uiManager.AcceptWorkspaceConfiguration();
     }
 
+    /**
+     * Asks the current workspace to reset its transform to the original position, scale and rotation detected
+     */
     public void ResetConfiguration()
     {
         drag.Reset();
@@ -153,6 +177,7 @@ public class WorkspaceConfig : NetworkBehaviour
         // Setups the configuration menu
         isConfiguringWorkspace = true;
         drag = currentWorkspaceInstance.GetComponent<DragWorkspace>();
+        drag.SetOnConfig(true);
         uiManager.WorkspaceConfiguration();
     }
 }

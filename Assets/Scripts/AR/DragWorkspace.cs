@@ -12,7 +12,7 @@ public class DragWorkspace : MonoBehaviour
     [SerializeField] private float workspaceRotationChange;
     [SerializeField] private int sensibility;
 
-    //private WorkspaceConfig config;
+    private WorkspaceConfig config;
     private Vector3 originalPosition;                                         // Saves the original position of the workspace prior to user configuration
     private Quaternion originalRotation;                                      // Saves the original rotation of the workspace prior to the user configuration
     private Vector3 originalScale;                                            // Saves the original scale of the workspace prior to the user configuration
@@ -20,6 +20,7 @@ public class DragWorkspace : MonoBehaviour
     private Vector3 cameraForward;
     private int offCounter;
 
+    private bool onConfig = false;
     private bool hasClicked = true;
     private bool movingX = false;
     private bool movingY = false;
@@ -40,61 +41,66 @@ public class DragWorkspace : MonoBehaviour
 
     void Update()
     {
-        if (Input.touchCount != 1)
+        if (onConfig && Input.touchCount > 0)
         {
-            hasClicked = true;
-            movingX = false;
-            movingY = false;
-            return;
-        }
-
-        Touch touchData = Input.GetTouch(0);
-        if(touchData.phase == TouchPhase.Began)
-        {
-            hasClicked = false;
-
-            if (!hasClicked)
+            Touch touchData = Input.GetTouch(0);
+            if (touchData.phase == TouchPhase.Began)
             {
-                initialDragPosition = touchData.position;
-                cameraForward = Camera.main.transform.forward;
+                hasClicked = false;
+
+                if (!hasClicked)
+                {
+                    initialDragPosition = touchData.position;
+                    cameraForward = Camera.main.transform.forward;
+                }
             }
-        }
 
-        if (!hasClicked && touchData.phase == TouchPhase.Moved)
-        {
-            ManageInputDrag(touchData.position, TOUCH_MODE);
-            x++;
-        }
+            if (!hasClicked && touchData.phase == TouchPhase.Moved)
+            {
+                ManageInputDrag(touchData.position, TOUCH_MODE);
+                x++;
+            }
 
-        if (!hasClicked && (touchData.phase == TouchPhase.Ended || touchData.phase == TouchPhase.Canceled))
-        {
-            hasClicked = true;
-            movingX = false;
-            movingY = false;
+            if (!hasClicked && (touchData.phase == TouchPhase.Ended || touchData.phase == TouchPhase.Canceled))
+            {
+                hasClicked = true;
+                movingX = false;
+                movingY = false;
+            }
         }
     }
 
     void OnMouseDown()
     {
-        hasClicked = false;
+        if (onConfig)
+        {
+            hasClicked = false;
 
-        if(!hasClicked)
-        { 
-            initialDragPosition = Input.mousePosition;
-            cameraForward = Camera.main.transform.forward;
+            if (!hasClicked)
+            {
+                initialDragPosition = Input.mousePosition;
+                cameraForward = Camera.main.transform.forward;
+            }
         }
     }
+        
 
     void OnMouseUp()
     {
-        hasClicked = true;
-        movingX = false;
-        movingY = false;
+        if (onConfig)
+        {
+            hasClicked = true;
+            movingX = false;
+            movingY = false;
+        }
     }
 
     void OnMouseDrag()
     {
-        ManageInputDrag(Input.mousePosition, MOUSE_MODE);
+        if (onConfig)
+        {
+            ManageInputDrag(Input.mousePosition, MOUSE_MODE);
+        }
     }
 
     private void ManageInputDrag(Vector3 currentDragPosition, int inputMode)
@@ -112,8 +118,7 @@ public class DragWorkspace : MonoBehaviour
                 directionX = deltaX / Mathf.Abs(deltaX);
                 movingX = true;
             }
-                
-
+            
             if (Mathf.Abs(deltaY) > movementTresshold && !movingX)
             {
                 directionY = deltaY / Mathf.Abs(deltaY);
@@ -193,5 +198,10 @@ public class DragWorkspace : MonoBehaviour
         transform.position = originalPosition;
         transform.rotation = originalRotation;
         transform.localScale = originalScale;
+    }
+
+    public void SetOnConfig(bool onConfig)
+    {
+        this.onConfig = onConfig;
     }
 }

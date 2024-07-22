@@ -19,6 +19,7 @@ public class UIManager : MonoBehaviour
     
     GameObject workspaceConfigMenu;    // Referene to the worspace config tools canvas
 
+
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
     //------------------------------------------------------------------------------------------------------
@@ -97,7 +98,11 @@ public class UIManager : MonoBehaviour
      */
     public void WorkspaceConfiguration()
     {
-        workspaceConfigMenu?.SetActive(true);
+        workspaceConfigMenu.SetActive(true);
+        GameObject configPanel = workspaceConfigMenu.transform.GetChild(0).gameObject;
+        GameObject configButtons = configPanel.transform.GetChild(0).gameObject;
+        Button positionXZ = configButtons.transform.Find("PositionXZBtn").gameObject.GetComponent<Button>();
+        positionXZ.Select();
     }
 
     /**
