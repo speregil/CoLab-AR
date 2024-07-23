@@ -174,5 +174,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementTresshold: 50
   workspacePositionChange: 2
-  workspaceRotationChange: 1
+  workspaceRotationChange: 50
+  workspaceScaleChange: 2
   sensibility: 10

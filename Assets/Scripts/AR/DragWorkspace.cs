@@ -10,6 +10,7 @@ public class DragWorkspace : MonoBehaviour
     [SerializeField] private float movementTresshold;
     [SerializeField] private float workspacePositionChange;
     [SerializeField] private float workspaceRotationChange;
+    [SerializeField] private float workspaceScaleChange;
     [SerializeField] private int sensibility;
 
     private Vector3 originalPosition;                                         // Saves the original position of the workspace prior to user configuration
@@ -134,20 +135,14 @@ public class DragWorkspace : MonoBehaviour
                         TouchMoveXZ(Camera.main.transform.forward, transform.forward, directionX, directionY);
                     break;
                 case WorkspaceConfig.POSITIONY_STATE:
-                    if (inputMode == MOUSE_MODE)
-                        MouseMoveY(directionY);
-                    else
-                        TouchMoveY(directionY);
+                    MoveY(directionY);
                     break;
                 case WorkspaceConfig.ROTATION_STATE:
-                    if (inputMode == MOUSE_MODE)
-                        MouseRotate(directionX);
-                    else
-                        TouchRotate(directionX);
+                    Rotate(directionX);
                     break;
                 case WorkspaceConfig.SCALE_STATE:
                     if (inputMode == MOUSE_MODE)
-                        MouseScale(directionX, directionY);
+                        MouseScale(Camera.main.transform.forward, transform.forward, directionX, directionY);
                     else
                         TouchScale(directionX, directionY);
                     break;
@@ -166,6 +161,7 @@ public class DragWorkspace : MonoBehaviour
         float cameraWorkspaceAngle = Vector3.SignedAngle(cameraForward, workspaceForward, Vector3.up);
         float speedX = workspacePositionChange * directionX * Time.deltaTime;
         float speedY = workspacePositionChange * directionY * Time.deltaTime;
+
         if (cameraWorkspaceAngle > -45.0 && cameraWorkspaceAngle <= 45.0)
         {
             Vector3 newPosition = new Vector3(transform.position.x + speedY, transform.position.y, transform.position.z - speedX);
@@ -181,7 +177,7 @@ public class DragWorkspace : MonoBehaviour
             Vector3 newPosition = new Vector3(transform.position.x + speedX, transform.position.y, transform.position.z + speedY);
             transform.position = newPosition;
         }
-        else if (cameraWorkspaceAngle > 135.0)
+        else if (cameraWorkspaceAngle < -135.0 || cameraWorkspaceAngle > 135.0)
         {
             Vector3 newPosition = new Vector3(transform.position.x - speedY, transform.position.y, transform.position.z + speedX);
             transform.position = newPosition;
@@ -195,40 +191,39 @@ public class DragWorkspace : MonoBehaviour
         float speedY = workspacePositionChange * directionY * Time.deltaTime;
         if (cameraWorkspaceAngle > -45.0 && cameraWorkspaceAngle <= 45.0)
         {
-            Vector3 newPosition = new Vector3(transform.position.x - speedX, originalPosition.y, originalPosition.z + speedY);
+            Vector3 newPosition = new Vector3(transform.position.x - speedX, transform.position.y, transform.position.z + speedY);
             transform.position = newPosition;
         }
         else if (cameraWorkspaceAngle <= -45.0 && cameraWorkspaceAngle >= -135.0)
         {
-            Vector3 newPosition = new Vector3(originalPosition.x - speedY, originalPosition.y, transform.position.z + speedX);
+            Vector3 newPosition = new Vector3(transform.position.x - speedY, transform.position.y, transform.position.z + speedX);
             transform.position = newPosition;
         }
         else if (cameraWorkspaceAngle > 45.0 && cameraWorkspaceAngle <= 135.0)
         {
-            Vector3 newPosition = new Vector3(originalPosition.x + speedY, originalPosition.y, transform.position.z - speedX);
+            Vector3 newPosition = new Vector3(transform.position.x + speedY, transform.position.y, transform.position.z - speedX);
             transform.position = newPosition;
         }
-        else if (cameraWorkspaceAngle > 135.0)
+        else if (cameraWorkspaceAngle < -135.0 || cameraWorkspaceAngle > 135.0)
         {
-            Vector3 newPosition = new Vector3(transform.position.x + speedX, originalPosition.y, originalPosition.z + speedY);
+            Vector3 newPosition = new Vector3(transform.position.x + speedX, transform.position.y, transform.position.z + speedY);
             transform.position = newPosition;
         }
         uidebug.Log("X: " + transform.position.x + " Y: " + transform.position.y + " Z: " + transform.position.z);
     }
 
-    private void MouseMoveY(float directionY)
+    private void MoveY(float directionY)
     {
-        Debug.Log("MoveY");
+        float speedY = workspacePositionChange * directionY * Time.deltaTime;
+        Vector3 newPosition = new Vector3(transform.position.x, transform.position.y - speedY, transform.position.z);
+        transform.position = newPosition;
     }
 
-    private void TouchMoveY(float directionY)
+    private void Rotate(float directionX)
     {
-        Debug.Log("MoveY");
-    }
-
-    private void MouseRotate(float directionX)
-    {
-        Debug.Log("Rotate");
+        float rotationSpeed = workspaceRotationChange * directionX * Time.deltaTime;
+        Vector3 newRotation = new Vector3(transform.eulerAngles.x,transform.eulerAngles.y - rotationSpeed, transform.eulerAngles.z);
+        transform.eulerAngles = newRotation;
     }
 
     private void TouchRotate(float directionX)
@@ -236,9 +231,32 @@ public class DragWorkspace : MonoBehaviour
         Debug.Log("Rotate");
     }
 
-    private void MouseScale(float directionX, float directionY)
+    private void MouseScale(Vector3 cameraForward, Vector3 workspaceForward, float directionX, float directionY)
     {
-        Debug.Log("Scale");
+        float cameraWorkspaceAngle = Vector3.SignedAngle(cameraForward, workspaceForward, Vector3.up);
+        float speedX = workspacePositionChange * directionX * Time.deltaTime;
+        float speedY = workspacePositionChange * directionY * Time.deltaTime;
+
+        if (cameraWorkspaceAngle > -45.0 && cameraWorkspaceAngle <= 45.0)
+        {
+            Vector3 newScale = new Vector3(transform.localScale.x - speedX, transform.localScale.y, transform.localScale.z - speedY);
+            transform.localScale = newScale;
+        }
+        else if (cameraWorkspaceAngle <= -45.0 && cameraWorkspaceAngle >= -135.0)
+        {
+            Vector3 newScale = new Vector3(transform.localScale.x - speedY, transform.localScale.y, transform.localScale.z - speedX);
+            transform.localScale = newScale;
+        }
+        else if (cameraWorkspaceAngle > 45.0 && cameraWorkspaceAngle <= 135.0)
+        {
+            Vector3 newScale = new Vector3(transform.localScale.x - speedY, transform.localScale.y, transform.localScale.z - speedX);
+            transform.localScale = newScale;
+        }
+        else if (cameraWorkspaceAngle < -135.0 || cameraWorkspaceAngle > 135.0)
+        {
+            Vector3 newScale = new Vector3(transform.localScale.x - speedX, transform.localScale.y, transform.localScale.z - speedY);
+            transform.localScale = newScale;
+        }
     }
 
     private void TouchScale(float directionX, float directionY)
