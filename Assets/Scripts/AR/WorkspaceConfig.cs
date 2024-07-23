@@ -132,6 +132,7 @@ public class WorkspaceConfig : NetworkBehaviour
     public void SetConfigState(int state)
     {
         currentConfigState = state;
+        drag.SetConfigState(currentConfigState);
     }
 
     /**
@@ -178,6 +179,7 @@ public class WorkspaceConfig : NetworkBehaviour
         isConfiguringWorkspace = true;
         drag = currentWorkspaceInstance.GetComponent<DragWorkspace>();
         drag.SetOnConfig(true);
+        SetConfigState(POSITIONXZ_STATE);
         uiManager.WorkspaceConfiguration();
     }
 }

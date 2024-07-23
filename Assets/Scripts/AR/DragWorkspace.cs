@@ -12,7 +12,6 @@ public class DragWorkspace : MonoBehaviour
     [SerializeField] private float workspaceRotationChange;
     [SerializeField] private int sensibility;
 
-    private WorkspaceConfig config;
     private Vector3 originalPosition;                                         // Saves the original position of the workspace prior to user configuration
     private Quaternion originalRotation;                                      // Saves the original rotation of the workspace prior to the user configuration
     private Vector3 originalScale;                                            // Saves the original scale of the workspace prior to the user configuration
@@ -20,6 +19,7 @@ public class DragWorkspace : MonoBehaviour
     private Vector3 cameraForward;
     private int offCounter;
 
+    private int configState;
     private bool onConfig = false;
     private bool hasClicked = true;
     private bool movingX = false;
@@ -125,10 +125,33 @@ public class DragWorkspace : MonoBehaviour
                 movingY = true;
             }
 
-            if (inputMode == MOUSE_MODE)
-                MouseMove(Camera.main.transform.forward, transform.forward, directionX, directionY);
-            else
-                TouchMove(Camera.main.transform.forward, transform.forward, directionX, directionY);
+            switch (configState)
+            {
+                case WorkspaceConfig.POSITIONXZ_STATE:
+                    if (inputMode == MOUSE_MODE)
+                        MouseMoveXZ(Camera.main.transform.forward, transform.forward, directionX, directionY);
+                    else
+                        TouchMoveXZ(Camera.main.transform.forward, transform.forward, directionX, directionY);
+                    break;
+                case WorkspaceConfig.POSITIONY_STATE:
+                    if (inputMode == MOUSE_MODE)
+                        MouseMoveY(directionY);
+                    else
+                        TouchMoveY(directionY);
+                    break;
+                case WorkspaceConfig.ROTATION_STATE:
+                    if (inputMode == MOUSE_MODE)
+                        MouseRotate(directionX);
+                    else
+                        TouchRotate(directionX);
+                    break;
+                case WorkspaceConfig.SCALE_STATE:
+                    if (inputMode == MOUSE_MODE)
+                        MouseScale(directionX, directionY);
+                    else
+                        TouchScale(directionX, directionY);
+                    break;
+            }
 
             offCounter = sensibility;
         }
@@ -138,7 +161,7 @@ public class DragWorkspace : MonoBehaviour
         }
     }
 
-    private void MouseMove(Vector3 cameraForward, Vector3 workspaceForward, float directionX, float directionY)
+    private void MouseMoveXZ(Vector3 cameraForward, Vector3 workspaceForward, float directionX, float directionY)
     {
         float cameraWorkspaceAngle = Vector3.SignedAngle(cameraForward, workspaceForward, Vector3.up);
         float speedX = workspacePositionChange * directionX * Time.deltaTime;
@@ -165,7 +188,7 @@ public class DragWorkspace : MonoBehaviour
         }
     }
 
-    private void TouchMove(Vector3 cameraForward, Vector3 workspaceForward, float directionX, float directionY)
+    private void TouchMoveXZ(Vector3 cameraForward, Vector3 workspaceForward, float directionX, float directionY)
     {
         float cameraWorkspaceAngle = Vector3.SignedAngle(cameraForward, workspaceForward, Vector3.up);
         float speedX = workspacePositionChange * directionX * Time.deltaTime;
@@ -193,6 +216,36 @@ public class DragWorkspace : MonoBehaviour
         uidebug.Log("X: " + transform.position.x + " Y: " + transform.position.y + " Z: " + transform.position.z);
     }
 
+    private void MouseMoveY(float directionY)
+    {
+        Debug.Log("MoveY");
+    }
+
+    private void TouchMoveY(float directionY)
+    {
+        Debug.Log("MoveY");
+    }
+
+    private void MouseRotate(float directionX)
+    {
+        Debug.Log("Rotate");
+    }
+
+    private void TouchRotate(float directionX)
+    {
+        Debug.Log("Rotate");
+    }
+
+    private void MouseScale(float directionX, float directionY)
+    {
+        Debug.Log("Scale");
+    }
+
+    private void TouchScale(float directionX, float directionY)
+    {
+        Debug.Log("Scale");
+    }
+
     public void Reset()
     {
         transform.position = originalPosition;
@@ -203,5 +256,10 @@ public class DragWorkspace : MonoBehaviour
     public void SetOnConfig(bool onConfig)
     {
         this.onConfig = onConfig;
+    }
+
+    public void SetConfigState(int state)
+    {
+        this.configState = state;
     }
 }
