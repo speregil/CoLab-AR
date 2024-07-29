@@ -16,8 +16,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject introMenu;              // Reference to the Main Intro menu canvas
     [SerializeField] GameObject createRoomMenu;         // Reference to the Room Creation menu canvas
     [SerializeField] GameObject joinRoomMenu;           // Reference to the Join to Room menu canvas
-    
-    GameObject workspaceConfigMenu;    // Referene to the worspace config tools canvas
+    [SerializeField] Color SelectedConfigStateColor;    // Color for the selected configuration option in the Workspace config menu
+
+    GameObject workspaceConfigMenu;                     // Referene to the worspace config tools canvas
 
 
     //------------------------------------------------------------------------------------------------------
@@ -102,7 +103,7 @@ public class UIManager : MonoBehaviour
         GameObject configPanel = workspaceConfigMenu.transform.GetChild(0).gameObject;
         GameObject configButtons = configPanel.transform.GetChild(0).gameObject;
         Button positionXZ = configButtons.transform.Find("PositionXZBtn").gameObject.GetComponent<Button>();
-        positionXZ.Select();
+        positionXZ.onClick.Invoke();
     }
 
     /**

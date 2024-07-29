@@ -123,10 +123,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementTresshold: 50
   workspacePositionChange: 50
-  workspaceRotationChange: 500
-  workspaceScaleChange: 0.3
+  workspaceRotationChange: 1800
+  workspaceScaleChange: 1.5
   minimumScale: 0.01
-  sensibility: 100
+  sensibility: 75
 --- !u!114 &7306876300636224521
 MonoBehaviour:
   m_ObjectHideFlags: 0

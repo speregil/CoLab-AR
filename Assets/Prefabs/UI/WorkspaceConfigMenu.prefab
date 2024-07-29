@@ -502,7 +502,7 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_PressedColor: {r: 0.09019608, g: 0.54901963, b: 0.7490196, a: 1}
     m_SelectedColor: {r: 0.31933072, g: 0.7785437, b: 0.9811321, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -531,6 +531,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 3
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 5630044564408045047}
+        m_TargetAssemblyTypeName: WorkspaceConfigUIManager, Assembly-CSharp
+        m_MethodName: SelectScale
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -739,7 +751,7 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_PressedColor: {r: 0.08788714, g: 0.54689705, b: 0.745283, a: 1}
     m_SelectedColor: {r: 0.31764707, g: 0.78039217, b: 0.98039216, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -764,6 +776,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: WorkspaceConfig, Assembly-CSharp
         m_MethodName: SetConfigState
         m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 5630044564408045047}
+        m_TargetAssemblyTypeName: WorkspaceConfigUIManager, Assembly-CSharp
+        m_MethodName: SelectPositionXZ
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1251,6 +1275,7 @@ GameObject:
   - component: {fileID: 3167082417380560422}
   - component: {fileID: 107328095660159817}
   - component: {fileID: 3323342304191668844}
+  - component: {fileID: 5630044564408045047}
   m_Layer: 0
   m_Name: WorkspaceConfigMenu
   m_TagString: Untagged
@@ -1341,6 +1366,24 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &5630044564408045047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5826067732665723758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eee3ab27fdded6946bd68f45dbed0017, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  positionXZBtt: {fileID: 4138435712483089205}
+  positionYBtt: {fileID: 3328877217117847092}
+  rotationBtt: {fileID: 7726602591650145140}
+  scaleBtt: {fileID: 2850024020631394933}
+  selectedOptionColor: {r: 0.31764707, g: 0.78039217, b: 0.98039216, a: 1}
+  normalOptionColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &6203777758352829901
 GameObject:
   m_ObjectHideFlags: 0
@@ -1639,7 +1682,7 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_PressedColor: {r: 0.09019608, g: 0.54901963, b: 0.7490196, a: 1}
     m_SelectedColor: {r: 0.31764707, g: 0.78039217, b: 0.98039216, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -1668,6 +1711,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 5630044564408045047}
+        m_TargetAssemblyTypeName: WorkspaceConfigUIManager, Assembly-CSharp
+        m_MethodName: SelectPositionY
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -1905,7 +1960,7 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_PressedColor: {r: 0.09019608, g: 0.54901963, b: 0.7490196, a: 1}
     m_SelectedColor: {r: 0.31764707, g: 0.78039217, b: 0.98039216, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -1934,6 +1989,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 5630044564408045047}
+        m_TargetAssemblyTypeName: WorkspaceConfigUIManager, Assembly-CSharp
+        m_MethodName: SelectRotation
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0

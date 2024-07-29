@@ -207,15 +207,13 @@ public class MouseDragBehaviour : MonoBehaviour, IDragBehaviour
     public void Scale()
     {
         float cameraWorkspaceAngle = Vector3.SignedAngle(cameraForward, workspaceForward, Vector3.up);
-        float speedX = workspacePositionChange * directionX * Time.deltaTime;
-        float speedY = workspacePositionChange * directionY * Time.deltaTime;
+        float speedX = workspaceScaleChange * directionX * Time.deltaTime;
+        float speedY = workspaceScaleChange * directionY * Time.deltaTime;
         float scaleX = transform.localScale.x - speedX;
-        float scaleY = transform.localScale.y - speedY;
+        float scaleY = transform.localScale.z - speedY;
 
-        if(scaleX < minimumScale)
-            scaleX = minimumScale;
-        if(scaleY < minimumScale)
-            scaleY = minimumScale;
+        scaleX = scaleX < minimumScale? minimumScale: scaleX;
+        scaleY = scaleY < minimumScale? minimumScale: scaleY;
 
         if (cameraWorkspaceAngle > -45.0 && cameraWorkspaceAngle <= 45.0)
         {
