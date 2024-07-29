@@ -31,7 +31,7 @@ public class WorkspaceConfig : NetworkBehaviour
     private UIManager uiManager;                                              // Reference to the UIManager component loaded in the scene
 
     private GameObject currentWorkspaceInstance;                              // Current instance of the workspace plane
-    private DragWorkspace drag;                                               // Reference to the Drag Behaviour of the current workspace
+    private IDragBehaviour drag;                                              // Reference to the Drag Behaviour of the current workspace
     private int currentConfigState;                                           // Defines the current Config State of the app
 
     private bool isDetectingPlanes = true;                                    // Flag that determines if the script is currently tracking planes or not
@@ -150,7 +150,7 @@ public class WorkspaceConfig : NetworkBehaviour
      */
     public void ResetConfiguration()
     {
-        drag.Reset();
+        drag.ResetToInitial();
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -177,7 +177,7 @@ public class WorkspaceConfig : NetworkBehaviour
 
         // Setups the configuration menu
         isConfiguringWorkspace = true;
-        drag = currentWorkspaceInstance.GetComponent<DragWorkspace>();
+        drag = currentWorkspaceInstance.GetComponent<IDragBehaviour>();
         drag.SetOnConfig(true);
         SetConfigState(POSITIONXZ_STATE);
         uiManager.WorkspaceConfiguration();
