@@ -15,7 +15,7 @@ public class MouseDragBehaviour : MonoBehaviour, IDragBehaviour
     [SerializeField] private float workspacePositionChange;                   // Determines how much the workspace position changes when draged
     [SerializeField] private float workspaceRotationChange;                   // Determines how much the workspace rotation changes when draged 
     [SerializeField] private float workspaceScaleChange;                      // Determines how much the workspace scale changes when draged
-    [SerializeField] private float minimumScale;
+    [SerializeField] private float minimumScale;                              // Minimum value the scale transformation decreses to
     [SerializeField] private int sensibility;                                 // Stablished how much sensible the movement is to the position change of the mouse while dragging
 
     private Vector3 originalPosition;                                         // Saves the original position of the workspace prior to user configuration
@@ -209,29 +209,40 @@ public class MouseDragBehaviour : MonoBehaviour, IDragBehaviour
         float cameraWorkspaceAngle = Vector3.SignedAngle(cameraForward, workspaceForward, Vector3.up);
         float speedX = workspaceScaleChange * directionX * Time.deltaTime;
         float speedY = workspaceScaleChange * directionY * Time.deltaTime;
-        float scaleX = transform.localScale.x - speedX;
-        float scaleY = transform.localScale.z - speedY;
 
-        scaleX = scaleX < minimumScale? minimumScale: scaleX;
-        scaleY = scaleY < minimumScale? minimumScale: scaleY;
-
-        if (cameraWorkspaceAngle > -45.0 && cameraWorkspaceAngle <= 45.0)
+        if (cameraWorkspaceAngle > -45.0 && cameraWorkspaceAngle <= 45.0)//3
         {
+            float scaleX = transform.localScale.x - speedX;
+            float scaleY = transform.localScale.z - speedY;
+            scaleX = scaleX < minimumScale ? minimumScale : scaleX;
+            scaleY = scaleY < minimumScale ? minimumScale : scaleY;
             Vector3 newScale = new Vector3(scaleX, transform.localScale.y, scaleY);
             transform.localScale = newScale;
         }
-        else if (cameraWorkspaceAngle <= -45.0 && cameraWorkspaceAngle >= -135.0)
+        else if (cameraWorkspaceAngle <= -45.0 && cameraWorkspaceAngle >= -135.0)//2
         {
-            Vector3 newScale = new Vector3(scaleY, transform.localScale.y, scaleX);
+            float scaleX = transform.localScale.x - speedY;
+            float scaleY = transform.localScale.z - speedX;
+            scaleX = scaleX < minimumScale ? minimumScale : scaleX;
+            scaleY = scaleY < minimumScale ? minimumScale : scaleY;
+            Vector3 newScale = new Vector3(scaleX, transform.position.y, scaleY);
             transform.localScale = newScale;
         }
-        else if (cameraWorkspaceAngle > 45.0 && cameraWorkspaceAngle <= 135.0)
+        else if (cameraWorkspaceAngle > 45.0 && cameraWorkspaceAngle <= 135.0)//4
         {
-            Vector3 newScale = new Vector3(scaleY, transform.localScale.y, scaleX);
+            float scaleX = transform.localScale.x - speedY;
+            float scaleY = transform.localScale.z - speedX;
+            scaleX = scaleX < minimumScale ? minimumScale : scaleX;
+            scaleY = scaleY < minimumScale ? minimumScale : scaleY;
+            Vector3 newScale = new Vector3(scaleX, transform.position.y, scaleY);
             transform.localScale = newScale;
         }
-        else if (cameraWorkspaceAngle < -135.0 || cameraWorkspaceAngle > 135.0)
+        else if (cameraWorkspaceAngle < -135.0 || cameraWorkspaceAngle > 135.0) //1
         {
+            float scaleX = transform.localScale.x - speedX;
+            float scaleY = transform.localScale.z - speedY;
+            scaleX = scaleX < minimumScale ? minimumScale : scaleX;
+            scaleY = scaleY < minimumScale ? minimumScale : scaleY;
             Vector3 newScale = new Vector3(scaleX, transform.localScale.y, scaleY);
             transform.localScale = newScale;
         }
