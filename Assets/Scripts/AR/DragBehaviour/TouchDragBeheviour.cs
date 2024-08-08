@@ -122,20 +122,20 @@ public class TouchDragBeheviour : MonoBehaviour, IDragBehaviour
         float speedY = workspacePositionChange * directionY * Time.deltaTime;
         if (cameraWorkspaceAngle > -45.0 && cameraWorkspaceAngle <= 45.0) //1
         {
-            Vector3 newPosition = new Vector3(transform.position.x + speedX, transform.position.y, transform.position.z - speedY);
+            Vector3 newPosition = new Vector3(transform.position.x - speedX, transform.position.y, transform.position.z - speedY);
             transform.position = newPosition;
         }
-        else if (cameraWorkspaceAngle <= -45.0 && cameraWorkspaceAngle >= -135.0)
+        else if (cameraWorkspaceAngle <= -45.0 && cameraWorkspaceAngle >= -135.0)//4
         {
-            Vector3 newPosition = new Vector3(transform.position.x - speedX, transform.position.y, transform.position.z + speedY);
+            Vector3 newPosition = new Vector3(transform.position.x - speedY, transform.position.y, transform.position.z + speedX);
             transform.position = newPosition;
         }
-        else if (cameraWorkspaceAngle > 45.0 && cameraWorkspaceAngle <= 135.0)// 1
+        else if (cameraWorkspaceAngle > 45.0 && cameraWorkspaceAngle <= 135.0)//2
         {
-            Vector3 newPosition = new Vector3(transform.position.x - speedX, transform.position.y, transform.position.z + speedY);
+            Vector3 newPosition = new Vector3(transform.position.x + speedY, transform.position.y, transform.position.z - speedX);
             transform.position = newPosition;
         }
-        else if (cameraWorkspaceAngle < -135.0 || cameraWorkspaceAngle > 135.0)
+        else if (cameraWorkspaceAngle < -135.0 || cameraWorkspaceAngle > 135.0)//3
         {
             Vector3 newPosition = new Vector3(transform.position.x - speedX, transform.position.y, transform.position.z - speedY);
             transform.position = newPosition;
