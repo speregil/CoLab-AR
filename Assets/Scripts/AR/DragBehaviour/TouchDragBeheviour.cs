@@ -137,7 +137,7 @@ public class TouchDragBeheviour : MonoBehaviour, IDragBehaviour
         }
         else if (cameraWorkspaceAngle < -135.0 || cameraWorkspaceAngle > 135.0)//3
         {
-            Vector3 newPosition = new Vector3(transform.position.x - speedX, transform.position.y, transform.position.z - speedY);
+            Vector3 newPosition = new Vector3(transform.position.x + speedX, transform.position.y, transform.position.z + speedY);
             transform.position = newPosition;
         }
     }
@@ -161,7 +161,7 @@ public class TouchDragBeheviour : MonoBehaviour, IDragBehaviour
         float speedX = workspaceScaleChange * directionX * Time.deltaTime;
         float speedY = workspaceScaleChange * directionY * Time.deltaTime;
 
-        if (cameraWorkspaceAngle > -45.0 && cameraWorkspaceAngle <= 45.0)//3
+        if (cameraWorkspaceAngle > -45.0 && cameraWorkspaceAngle <= 45.0)//1
         {
             float scaleX = transform.localScale.x - speedX;
             float scaleY = transform.localScale.z - speedY;
@@ -170,25 +170,25 @@ public class TouchDragBeheviour : MonoBehaviour, IDragBehaviour
             Vector3 newScale = new Vector3(scaleX, transform.localScale.y, scaleY);
             transform.localScale = newScale;
         }
-        else if (cameraWorkspaceAngle <= -45.0 && cameraWorkspaceAngle >= -135.0)//2
+        else if (cameraWorkspaceAngle <= -45.0 && cameraWorkspaceAngle >= -135.0)//4
         {
             float scaleX = transform.localScale.x - speedY;
             float scaleY = transform.localScale.z - speedX;
             scaleX = scaleX < minimumScale ? minimumScale : scaleX;
             scaleY = scaleY < minimumScale ? minimumScale : scaleY;
-            Vector3 newScale = new Vector3(scaleX, transform.position.y, scaleY);
+            Vector3 newScale = new Vector3(scaleX, transform.localScale.y, scaleY);
             transform.localScale = newScale;
         }
-        else if (cameraWorkspaceAngle > 45.0 && cameraWorkspaceAngle <= 135.0)//4
+        else if (cameraWorkspaceAngle > 45.0 && cameraWorkspaceAngle <= 135.0)//2
         {
             float scaleX = transform.localScale.x - speedY;
             float scaleY = transform.localScale.z - speedX;
             scaleX = scaleX < minimumScale ? minimumScale : scaleX;
             scaleY = scaleY < minimumScale ? minimumScale : scaleY;
-            Vector3 newScale = new Vector3(scaleX, transform.position.y, scaleY);
+            Vector3 newScale = new Vector3(scaleX, transform.localScale.y, scaleY);
             transform.localScale = newScale;
         }
-        else if (cameraWorkspaceAngle < -135.0 || cameraWorkspaceAngle > 135.0) //1
+        else if (cameraWorkspaceAngle < -135.0 || cameraWorkspaceAngle > 135.0) //3
         {
             float scaleX = transform.localScale.x - speedX;
             float scaleY = transform.localScale.z - speedY;

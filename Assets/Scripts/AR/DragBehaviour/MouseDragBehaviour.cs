@@ -225,7 +225,7 @@ public class MouseDragBehaviour : MonoBehaviour, IDragBehaviour
             float scaleY = transform.localScale.z - speedX;
             scaleX = scaleX < minimumScale ? minimumScale : scaleX;
             scaleY = scaleY < minimumScale ? minimumScale : scaleY;
-            Vector3 newScale = new Vector3(scaleX, transform.position.y, scaleY);
+            Vector3 newScale = new Vector3(scaleX, transform.localScale.y, scaleY);
             transform.localScale = newScale;
         }
         else if (cameraWorkspaceAngle > 45.0 && cameraWorkspaceAngle <= 135.0)//4
@@ -234,7 +234,7 @@ public class MouseDragBehaviour : MonoBehaviour, IDragBehaviour
             float scaleY = transform.localScale.z - speedX;
             scaleX = scaleX < minimumScale ? minimumScale : scaleX;
             scaleY = scaleY < minimumScale ? minimumScale : scaleY;
-            Vector3 newScale = new Vector3(scaleX, transform.position.y, scaleY);
+            Vector3 newScale = new Vector3(scaleX, transform.localScale.y, scaleY);
             transform.localScale = newScale;
         }
         else if (cameraWorkspaceAngle < -135.0 || cameraWorkspaceAngle > 135.0) //1
