@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 
-public class TrackingManager : NetworkBehaviour
+public class TrackingManager : MonoBehaviour
 {
     private GameObject trackables;
     private ARPlaneManager planeManager;
@@ -15,8 +15,8 @@ public class TrackingManager : NetworkBehaviour
         trackables = transform.Find("Trackables").gameObject;
         planeManager = gameObject.GetComponent<ARPlaneManager>();
 
-        if(IsClient)
-            planeManager.enabled = false;
+        if(NetworkManager.Singleton.IsHost)
+            planeManager.enabled = true;
     }
 
     public void CleanTrackables()
