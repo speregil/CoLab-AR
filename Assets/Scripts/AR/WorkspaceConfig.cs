@@ -47,11 +47,6 @@ public class WorkspaceConfig : NetworkBehaviour
         raycastManager = transform.parent.gameObject.GetComponent<ARRaycastManager>();
         planeManager = transform.parent.gameObject.GetComponent<ARPlaneManager>();
         trackingManager = transform.parent.gameObject.GetComponent<TrackingManager>();
-
-        // Setup references to the UIManager and trasfer of control of the RoomConfigMenu
-        uiManager = GameObject.Find("UI").GetComponent<UIManager>();
-        workspaceConfigUI.transform.SetParent(uiManager.transform,false);
-        uiManager.SetupWorkspaceConfigMenu();
     }
 
     void Update()

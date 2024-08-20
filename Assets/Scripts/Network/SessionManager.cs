@@ -13,7 +13,6 @@ public class SessionManager : MonoBehaviour
     // Fields
     //------------------------------------------------------------------------------------------------------
 
-    private IntroManager introManager;                      // Reference to the Intro Scene actions manager
     private SharedSpaceManager sharedSpaceManager;          // References to Lightship AR Shared Space API
 
     //------------------------------------------------------------------------------------------------------
@@ -22,10 +21,8 @@ public class SessionManager : MonoBehaviour
 
     void Start()
     {
-        introManager = GameObject.Find("UI").GetComponent<IntroManager>();
         sharedSpaceManager = GetComponent<SharedSpaceManager>();
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
-        CreateRoom();
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -35,9 +32,8 @@ public class SessionManager : MonoBehaviour
     /**
      * Creates a references to a room given the room name configured in the intro scene
      */
-    private void CreateRoom()
+    public void CreateRoom(string roomName, bool isHost)
     {
-        string roomName = introManager.GetRoomName();
         var mockTrackingArgs = ISharedSpaceTrackingOptions.CreateMockTrackingOptions();
         var roomArgs = ISharedSpaceRoomOptions.CreateLightshipRoomOptions(
             roomName,
@@ -45,15 +41,15 @@ public class SessionManager : MonoBehaviour
             "Room created by user as: " + roomName
         );
         sharedSpaceManager.StartSharedSpace(mockTrackingArgs, roomArgs);
-        JoinRoom();
+        JoinRoom(isHost);
     }
 
     /**
      * Joins to a room as a host or a client given the status of the user identified in the intro scene
      */
-    private void JoinRoom()
+    private void JoinRoom(bool isHost)
     {
-        if (introManager.IsHost())
+        if (isHost)
             NetworkManager.Singleton.StartHost();
         else
             NetworkManager.Singleton.StartClient();

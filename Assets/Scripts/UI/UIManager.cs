@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /**
@@ -13,32 +12,18 @@ public class UIManager : MonoBehaviour
     // Fields
     //------------------------------------------------------------------------------------------------------
 
-    [SerializeField] GameObject introMenu;              // Reference to the Main Intro menu canvas
-    [SerializeField] GameObject createRoomMenu;         // Reference to the Room Creation menu canvas
-    [SerializeField] GameObject joinRoomMenu;           // Reference to the Join to Room menu canvas
-    [SerializeField] Color SelectedConfigStateColor;    // Color for the selected configuration option in the Workspace config menu
+    [SerializeField] GameObject introMenu;                  // Reference to the Main Intro menu canvas
+    [SerializeField] GameObject createRoomMenu;             // Reference to the Room Creation menu canvas
+    [SerializeField] GameObject joinRoomMenu;               // Reference to the Join to Room menu canvas
+    [SerializeField] GameObject workspaceConfigMenu;        // Referene to the worspace config tools canvas
+    [SerializeField] Color SelectedConfigStateColor;        // Color for the selected configuration option in the Workspace config menu
+    [SerializeField] SessionManager sessionManager;         // Reference to the SessionManager
 
-    GameObject workspaceConfigMenu;                     // Referene to the worspace config tools canvas
-
-
-    //------------------------------------------------------------------------------------------------------
-    // Monobehaviour Functions
-    //------------------------------------------------------------------------------------------------------
-
-    void Awake()
-    {
-        DontDestroyOnLoad(transform.gameObject);    // The UI is created once in the intro scene
-    }
+    [SerializeField] private IntroManager introManager;      // Reference to the Intro Scene actions manager
 
     //------------------------------------------------------------------------------------------------------
     // Functions
     //------------------------------------------------------------------------------------------------------
-
-    public void SetupWorkspaceConfigMenu()
-    {
-        workspaceConfigMenu = transform.Find("WorkspaceConfigMenu").gameObject;
-        workspaceConfigMenu.SetActive(false);
-    }
 
     /**
      * Shows the Room Creation menu in the intro scene
@@ -64,7 +49,7 @@ public class UIManager : MonoBehaviour
     public void AcceptCreateRoom()
     {
         createRoomMenu.SetActive(false);
-        SceneManager.LoadScene(sceneName: "Main");
+        sessionManager.CreateRoom(introManager.GetRoomName(),true);
     }
 
     /**
@@ -73,7 +58,7 @@ public class UIManager : MonoBehaviour
     public void AcceptJoinRoom()
     {
         joinRoomMenu.SetActive(false);
-        SceneManager.LoadScene(sceneName: "Main");
+        sessionManager.CreateRoom(introManager.GetRoomName(), false);
     }
 
     /**
