@@ -24,42 +24,32 @@ public class WorkspaceConfig : NetworkBehaviour
 
     [SerializeField] private GameObject workspacePrefab;                      // Prefab for the workspace plane      
     [SerializeField] private GameObject workspaceConfigUI;                    // Reference to the Room Configuration UI elements
-
-    private ARRaycastManager raycastManager;                                  // Reference to the ARRaycastManager component in the parent object
-    private ARPlaneManager planeManager;                                      // Reference to the ARPlaneManager component in the parent object
-    private TrackingManager trackingManager;                                  // Reference to the TrackingManager component in the parent object
-    private UIManager uiManager;                                              // Reference to the UIManager component loaded in the scene
+    [SerializeField] private ARRaycastManager raycastManager;                 // Reference to the ARRaycastManager component in the parent object
+    [SerializeField] private TrackingManager trackingManager;                 // Reference to the TrackingManager component in the parent object
+    [SerializeField] private UIManager uiManager;                             // Reference to the UIManager component loaded in the scene
 
     private GameObject currentWorkspaceInstance;                              // Current instance of the workspace plane
     private IDragBehaviour drag;                                              // Reference to the Drag Behaviour of the current workspace
     private int currentConfigState;                                           // Defines the current Config State of the app
 
-    private bool isDetectingPlanes = true;                                    // Flag that determines if the script is currently tracking planes or not
+    private bool isDetectingPlanes = false;                                   // Flag that determines if the script is currently tracking planes or not
     private bool isConfiguringWorkspace = false;                              // Flag that determines if the user is currently configuring pos/rot of the workspace
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
     //------------------------------------------------------------------------------------------------------
 
-    void Start()
-    {
-        // Setup references with components in the parent object
-        raycastManager = transform.parent.gameObject.GetComponent<ARRaycastManager>();
-        planeManager = transform.parent.gameObject.GetComponent<ARPlaneManager>();
-        trackingManager = transform.parent.gameObject.GetComponent<TrackingManager>();
-    }
-
     void Update()
     {
         // Input check for mobile builds
-        if (Input.touchCount > 0 && isDetectingPlanes)
+        if (isDetectingPlanes && Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(index: 0);
             Vector2 touchPosition = touch.position;
             ARRaycasting(touchPosition);
         }
         // Input check for PC builds
-        else if (Input.GetMouseButtonDown(0) && isDetectingPlanes)
+        else if (isDetectingPlanes && Input.GetMouseButtonDown(0))
         {
             Vector3 mousePosition = Input.mousePosition;
             Vector2 mousePositionMap = new Vector2(mousePosition.x, mousePosition.y);
@@ -87,10 +77,10 @@ public class WorkspaceConfig : NetworkBehaviour
             
             // Server call to create the workspace plane
             InstantiateWorkspaceServerRpc(pose.position,pose.rotation,planeSize, NetworkManager.Singleton.LocalClientId);
-            planeManager.enabled = false;       // Disables the ARPlane Manager
-            isDetectingPlanes = false;
 
-            trackingManager.CleanTrackables();  // Cleans all the other detected planes
+            // Deactivates plane detection and cleans the screen
+            DetectingPlanes(false);
+            trackingManager.CleanTrackables();
         }
     }
 
@@ -101,6 +91,25 @@ public class WorkspaceConfig : NetworkBehaviour
     public bool IsConfiguringWorkspace()
     {
         return isConfiguringWorkspace;
+    }
+
+    /**
+     * Getter to determine if the beheviouris detectig planes to configure
+     * @return bool If the behaviour is in the detection phase or not
+     */
+    public bool IsDetectingPlanes()
+    {
+        return isDetectingPlanes;
+    }
+
+    /**
+     * Setter that determines if the behaviours is currently detecting pplanes in the environment or not
+     * @param isDetecting If the behaviour should start or stop detecting planes
+     */
+    public void DetectingPlanes(bool isDetecting)
+    {
+        isDetectingPlanes = isDetecting;
+        trackingManager.EnableTracking(isDetecting);
     }
 
     /**

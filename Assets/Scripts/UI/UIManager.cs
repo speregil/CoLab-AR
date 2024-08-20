@@ -1,3 +1,4 @@
+using Niantic.Lightship.SharedAR.Rooms;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,14 +13,25 @@ public class UIManager : MonoBehaviour
     // Fields
     //------------------------------------------------------------------------------------------------------
 
-    [SerializeField] GameObject introMenu;                  // Reference to the Main Intro menu canvas
-    [SerializeField] GameObject createRoomMenu;             // Reference to the Room Creation menu canvas
-    [SerializeField] GameObject joinRoomMenu;               // Reference to the Join to Room menu canvas
-    [SerializeField] GameObject workspaceConfigMenu;        // Referene to the worspace config tools canvas
-    [SerializeField] Color SelectedConfigStateColor;        // Color for the selected configuration option in the Workspace config menu
-    [SerializeField] SessionManager sessionManager;         // Reference to the SessionManager
+    [SerializeField] private GameObject introMenu;                  // Reference to the Main Intro menu canvas
+    [SerializeField] private GameObject createRoomMenu;             // Reference to the Room Creation menu canvas
+    [SerializeField] private GameObject joinRoomMenu;               // Reference to the Join to Room menu canvas
+    [SerializeField] private GameObject workspaceConfigMenu;        // Referene to the worspace config tools canvas
+    [SerializeField] private Color SelectedConfigStateColor;        // Color for the selected configuration option in the Workspace config menu
+    
+    [SerializeField] private SessionManager sessionManager;         // Reference to the SessionManager
+    [SerializeField] private WorkspaceConfig workspaceConfig;       // Reference to the Worspace Config behaviour
 
-    [SerializeField] private IntroManager introManager;      // Reference to the Intro Scene actions manager
+    private IntroManager introManager;                              // Reference to the Intro Scene actions manager[SerializeField]
+
+    //------------------------------------------------------------------------------------------------------
+    // Monobehaviour Functions
+    //------------------------------------------------------------------------------------------------------
+
+    void Start()
+    {
+       introManager = GetComponent<IntroManager>(); 
+    }
 
     //------------------------------------------------------------------------------------------------------
     // Functions
@@ -41,6 +53,12 @@ public class UIManager : MonoBehaviour
     {
         introMenu.SetActive(false);
         joinRoomMenu.SetActive(true);
+        List<IRoom> roomList = new List<IRoom>();
+        RoomManagementService.GetAllRooms(out roomList);
+        foreach(IRoom room in roomList)
+        {
+            Debug.Log(room.RoomParams.Name);
+        }
     }
 
     /**
@@ -50,6 +68,7 @@ public class UIManager : MonoBehaviour
     {
         createRoomMenu.SetActive(false);
         sessionManager.CreateRoom(introManager.GetRoomName(),true);
+        workspaceConfig.DetectingPlanes(true);
     }
 
     /**

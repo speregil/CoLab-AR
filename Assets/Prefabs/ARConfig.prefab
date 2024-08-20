@@ -76,7 +76,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5155636765358050423}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e1760703bbd54c04488a8d10600262ab, type: 3}
   m_Name: 
@@ -418,6 +418,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   workspacePrefab: {fileID: 5514888900471754074, guid: aec815610b10d294f9ae7f1e0a736c6d, type: 3}
   workspaceConfigUI: {fileID: 0}
+  raycastManager: {fileID: 7014275345851617191}
+  trackingManager: {fileID: 8953674431593820754}
+  uiManager: {fileID: 0}
 --- !u!1 &6904221053906178280
 GameObject:
   m_ObjectHideFlags: 0
