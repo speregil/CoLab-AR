@@ -47,18 +47,13 @@ public class UIManager : MonoBehaviour
     }
 
     /**
-     * Shows the Join to Room menu in the intro scene
+     * Shows and initilizes the Join to Room menu in the intro scene
      */
     public void JoinRoom()
     {
         introMenu.SetActive(false);
+        introManager.InitializeJoinRoom();
         joinRoomMenu.SetActive(true);
-        List<IRoom> roomList = new List<IRoom>();
-        RoomManagementService.GetAllRooms(out roomList);
-        foreach(IRoom room in roomList)
-        {
-            Debug.Log(room.RoomParams.Name);
-        }
     }
 
     /**

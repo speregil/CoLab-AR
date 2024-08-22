@@ -1,3 +1,4 @@
+using Niantic.Lightship.SharedAR.Rooms;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -13,7 +14,7 @@ public class IntroManager : MonoBehaviour
     //------------------------------------------------------------------------------------------------------
 
     [SerializeField] TMP_InputField createNameInputField;           // Reference to the input field for the name of a room to create
-    [SerializeField] TMP_InputField joinNameInputField;             // Reference to the input field for the name of a room to join to
+    [SerializeField] TMP_Dropdown joinNameDropdown;                 // Reference to the input field for the name of a room to join to
 
     UIManager uiManager;                                            // Reference to the UIManager component
 
@@ -72,12 +73,28 @@ public class IntroManager : MonoBehaviour
     }
 
     /**
+     * Initialize the room list everytime the Join Room menu is opened
+     */
+    public void InitializeJoinRoom() 
+    {
+        joinNameDropdown.ClearOptions();
+        List<IRoom> roomList = new List<IRoom>();
+        List<string> roomNamesList = new List<string>();
+        RoomManagementService.GetAllRooms(out roomList);
+        foreach (IRoom room in roomList)
+        {
+            roomNamesList.Add(room.RoomParams.Name);
+        }
+        joinNameDropdown.AddOptions(roomNamesList);
+    }
+
+    /**
      * Cleans the UI for joining a room, stablishes the user as a client and ask the UIManager to proceed with the
      * room join
      */
     public void AcceptJoinRoom()
     {
-        joinNameInputField.text = "";
+        //joinNameInputField.text = "";
         isHost = false;
         uiManager.AcceptJoinRoom();
     }
@@ -98,7 +115,18 @@ public class IntroManager : MonoBehaviour
     public void CancelJoinRoom()
     {
         roomName = "";
-        joinNameInputField.text = "";
+        //joinNameInputField.text = "";
         uiManager.CancelJoinRoom();
+    }
+
+    public void PurgeRooms()
+    {
+        List<IRoom> roomList = new List<IRoom>();
+        RoomManagementService.GetAllRooms(out roomList);
+        foreach (IRoom room in roomList)
+        {
+            RoomManagementService.DeleteRoom(room.RoomParams.RoomID);
+        }
+        Debug.Log("Rooms Purged, my Lord.");
     }
 }
