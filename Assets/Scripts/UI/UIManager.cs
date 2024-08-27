@@ -17,12 +17,13 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject createRoomMenu;             // Reference to the Room Creation menu canvas
     [SerializeField] private GameObject joinRoomMenu;               // Reference to the Join to Room menu canvas
     [SerializeField] private GameObject workspaceConfigMenu;        // Referene to the worspace config tools canvas
+    [SerializeField] private GameObject mainMenu;                   // Referene to the main menu canvas
     [SerializeField] private Color SelectedConfigStateColor;        // Color for the selected configuration option in the Workspace config menu
     
     [SerializeField] private SessionManager sessionManager;         // Reference to the SessionManager
     [SerializeField] private WorkspaceConfig workspaceConfig;       // Reference to the Worspace Config behaviour
 
-    private IntroManager introManager;                              // Reference to the Intro Scene actions manager[SerializeField]
+    private IntroManager introManager;                              // Reference to the Intro Scene actions manager
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
@@ -106,10 +107,11 @@ public class UIManager : MonoBehaviour
     }
 
     /**
-     * Hides the workspace configuration menu
+     * Hides the workspace configuration menu and shows the main menu button
      */
     public void AcceptWorkspaceConfiguration()
     {
-        workspaceConfigMenu.SetActive(false); 
+        workspaceConfigMenu.SetActive(false);
+        mainMenu.SetActive(true);
     }
 }
