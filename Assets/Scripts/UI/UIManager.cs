@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject introMenu;                  // Reference to the Main Intro menu canvas
     [SerializeField] private GameObject createRoomMenu;             // Reference to the Room Creation menu canvas
     [SerializeField] private GameObject joinRoomMenu;               // Reference to the Join to Room menu canvas
+    [SerializeField] private GameObject profileMenu;                // Reference to the Profile Configuration menu canvas
     [SerializeField] private GameObject workspaceConfigMenu;        // Referene to the worspace config tools canvas
     [SerializeField] private GameObject mainMenu;                   // Referene to the main menu canvas
     [SerializeField] private Color SelectedConfigStateColor;        // Color for the selected configuration option in the Workspace config menu
@@ -31,7 +32,7 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-       introManager = GetComponent<IntroManager>(); 
+        introManager = GetComponent<IntroManager>();
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -57,6 +58,13 @@ public class UIManager : MonoBehaviour
         joinRoomMenu.SetActive(true);
     }
 
+    public void ProfileMenu()
+    {
+        introMenu.SetActive(false);
+        introManager.InitializeProfileMenu(sessionManager.GetUsername());
+        profileMenu.SetActive(true);
+    }
+
     /**
      * Moves to the Main scene after accepting the room creation configuration
      */
@@ -76,6 +84,16 @@ public class UIManager : MonoBehaviour
         sessionManager.CreateRoom(introManager.GetRoomName(), false);
     }
 
+    public bool SaveProfile(string username, Color userColor)
+    {
+        return sessionManager.SaveProfile(username, userColor);
+    }
+
+    public bool LoadProfile() 
+    { 
+        return sessionManager.LoadProfile();
+    }
+
     /**
      * Moves back to the main intro menu after canceling the room creation config
      */
@@ -89,6 +107,12 @@ public class UIManager : MonoBehaviour
      * Moves back to the main intro menu fter canceling the join to room config
      */
     public void CancelJoinRoom()
+    {
+        introMenu.SetActive(true);
+        joinRoomMenu.SetActive(false);
+    }
+
+    public void CancelProfileMenu()
     {
         introMenu.SetActive(true);
         joinRoomMenu.SetActive(false);

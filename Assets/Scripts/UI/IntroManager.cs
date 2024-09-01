@@ -14,11 +14,14 @@ public class IntroManager : MonoBehaviour
     //------------------------------------------------------------------------------------------------------
 
     [SerializeField] TMP_InputField createNameInputField;           // Reference to the input field for the name of a room to create
+    [SerializeField] TMP_InputField usernameInputField;             // Reference to the input field for the username of the current user's profile
     [SerializeField] TMP_Dropdown joinNameDropdown;                 // Reference to the input field for the name of a room to join to
 
     UIManager uiManager;                                            // Reference to the UIManager component
 
     private string roomName;                                        // Name of the room to create or join to
+    private string username;
+    private Color userColor;
     private bool isHost;                                            // Flag that determines if the user is creating or joining a room
 
     //------------------------------------------------------------------------------------------------------
@@ -53,12 +56,17 @@ public class IntroManager : MonoBehaviour
     }
 
     /**
-     * Changes the current name that us going to be used to create or join a room
+     * Changes the current name that is going to be used to create or join a room
      * @param roomName New current name of the room
      */
     public void RoomNameEdit(string roomName)
     {
         this.roomName = roomName;
+    }
+
+    public void usernameEdit(string username)
+    {
+        this.username = username;
     }
 
     /**
@@ -88,13 +96,17 @@ public class IntroManager : MonoBehaviour
         joinNameDropdown.AddOptions(roomNamesList);
     }
 
+    public void InitializeProfileMenu(string currentUsername)
+    {
+        usernameInputField.text = currentUsername;
+    }
+
     /**
      * Cleans the UI for joining a room, stablishes the user as a client and ask the UIManager to proceed with the
      * room join
      */
     public void AcceptJoinRoom()
     {
-        //joinNameInputField.text = "";
         isHost = false;
         uiManager.AcceptJoinRoom();
     }
@@ -114,9 +126,13 @@ public class IntroManager : MonoBehaviour
      */
     public void CancelJoinRoom()
     {
-        roomName = "";
-        //joinNameInputField.text = "";
         uiManager.CancelJoinRoom();
+    }
+
+    public void SaveProfile()
+    {
+        userColor = Color.grey;
+        uiManager.SaveProfile(username, userColor);
     }
 
     public void PurgeRooms()

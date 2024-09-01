@@ -14,6 +14,7 @@ public class SessionManager : MonoBehaviour
     //------------------------------------------------------------------------------------------------------
 
     private SharedSpaceManager sharedSpaceManager;          // References to Lightship AR Shared Space API
+    private UserProfile userProfile;                        // Profile info and functions of the current user
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
@@ -23,6 +24,9 @@ public class SessionManager : MonoBehaviour
     {
         sharedSpaceManager = GetComponent<SharedSpaceManager>();
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
+
+        userProfile = new UserProfile();
+        LoadProfile();
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -53,6 +57,28 @@ public class SessionManager : MonoBehaviour
             NetworkManager.Singleton.StartHost();
         else
             NetworkManager.Singleton.StartClient();
+    }
+
+    public bool SaveProfile(string username, Color userColor)
+    {
+        userProfile.SetUsername(username);
+        userProfile.SetUserColor(userColor);
+        return userProfile.SaveProfile();
+    }
+
+    public bool LoadProfile()
+    {
+        return userProfile.LoadProfile();
+    }
+
+    public string GetUsername()
+    {
+        return userProfile.GetUsername();
+    }
+
+    public Color GetUserColor()
+    {
+        return userProfile.GetUserColor();
     }
 
     /**
