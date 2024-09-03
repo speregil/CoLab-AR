@@ -76,7 +76,7 @@ public class WorkspaceConfig : NetworkBehaviour
             Vector2 planeSize = new Vector2(hits[0].trackable.gameObject.GetComponent<Renderer>().bounds.size.x, hits[0].trackable.gameObject.GetComponent<Renderer>().bounds.size.z);
             
             // Server call to create the workspace plane
-            InstantiateWorkspaceServerRpc(pose.position,pose.rotation,planeSize, NetworkManager.Singleton.LocalClientId);
+            InstantiateWorkspaceRpc(pose.position,pose.rotation,planeSize, NetworkManager.Singleton.LocalClientId);
 
             // Deactivates plane detection and cleans the screen
             DetectingPlanes(false);
@@ -166,8 +166,8 @@ public class WorkspaceConfig : NetworkBehaviour
      *  @param planePosition Vector3 representing the position of the detected plane selected
      *  @param planeRotation Quaternion representing the rotation of the detected plane selected
      */
-    [ServerRpc(RequireOwnership = false)]
-    void InstantiateWorkspaceServerRpc(Vector3 planePosition, Quaternion planeRotation, Vector2 planeSize, ulong clientId)
+    [Rpc(SendTo.ClientsAndHost)]
+    void InstantiateWorkspaceRpc(Vector3 planePosition, Quaternion planeRotation, Vector2 planeSize, ulong clientId)
     {
         // Instantiates the workspace and scales it
         currentWorkspaceInstance = Instantiate(workspacePrefab, planePosition, planeRotation);

@@ -2,44 +2,55 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainMenuManager : MonoBehaviour
 {
-    [SerializeField] private GameObject openButton;
+    [SerializeField] private GameObject mainButton;
     [SerializeField] private GameObject mainMenu;
     [SerializeField] private GameObject participantMenu;
 
-    private TMP_Text openButtonLbl;
+    private TMP_Text mainButtonLbl;
+    private Button mainButtonBtn;
 
     // Start is called before the first frame update
     void Start()
     {
-        openButtonLbl = openButton.transform.GetComponentInChildren<TMP_Text>();
+        mainButtonLbl = mainButton.transform.GetComponentInChildren<TMP_Text>();
+        mainButtonBtn = mainButton.GetComponentInChildren<Button>();
     }
 
     public void OpenMainMenu()
     {
         mainMenu.SetActive(true);
-        openButtonLbl.text = "Close";
+        mainButtonLbl.text = "Close";
+        mainButtonBtn.onClick.RemoveAllListeners();
+        mainButtonBtn.onClick.AddListener(CloseMainMenu);
     }
 
     public void OpenParticipantsMenu()
     {
         mainMenu.SetActive(false);
         participantMenu.SetActive(true);
-        openButtonLbl.text = "Back";
+        mainButtonLbl.text = "Back";
+        mainButtonBtn.onClick.RemoveAllListeners();
+        mainButtonBtn.onClick.AddListener(CloseParticipantsMenu);
     }
 
     public void CloseMainMenu()
     {
         mainMenu.SetActive(false);
-        openButtonLbl.text = "Open";
+        mainButtonLbl.text = "Open";
+        mainButtonBtn.onClick.RemoveAllListeners();
+        mainButtonBtn.onClick.AddListener(OpenMainMenu);
     }
 
     public void CloseParticipantsMenu()
     {
         mainMenu.SetActive(true);
         participantMenu.SetActive(false);
-        openButtonLbl.text = "Close";
+        mainButtonLbl.text = "Close";
+        mainButtonBtn.onClick.RemoveAllListeners();
+        mainButtonBtn.onClick.AddListener(CloseMainMenu);
     }
 }

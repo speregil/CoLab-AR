@@ -69,6 +69,11 @@ public class IntroManager : MonoBehaviour
         this.username = username;
     }
 
+    public void OnDropdownChange(int value)
+    {
+        roomName = joinNameDropdown.options[value].text;
+    }
+
     /**
      * Cleans the UI for room creation, stablishes the user as a host and asks the UIManager to proceed with the
      * creation of a room
@@ -94,6 +99,7 @@ public class IntroManager : MonoBehaviour
             roomNamesList.Add(room.RoomParams.Name);
         }
         joinNameDropdown.AddOptions(roomNamesList);
+        roomName = joinNameDropdown.options[joinNameDropdown.value].text;
     }
 
     public void InitializeProfileMenu(string currentUsername)

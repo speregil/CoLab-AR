@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using Unity.Netcode;
 using Niantic.Lightship.SharedAR.Colocalization;
@@ -7,14 +8,19 @@ using Niantic.Lightship.SharedAR.Colocalization;
 /**
  * Behaviour that controls the process of room creation and joining of participants
  */
-public class SessionManager : MonoBehaviour
+public class SessionManager : NetworkBehaviour
 {
     //------------------------------------------------------------------------------------------------------
     // Fields
     //------------------------------------------------------------------------------------------------------
 
-    private SharedSpaceManager sharedSpaceManager;          // References to Lightship AR Shared Space API
-    private UserProfile userProfile;                        // Profile info and functions of the current user
+    [SerializeField] GameObject cameraAnchorPrefab;
+    [SerializeField] private SharedSpaceManager sharedSpaceManager;          // References to Lightship AR Shared Space API
+
+    private UserProfile userProfile;                                        // Profile info and functions of the current user
+    private GameObject currentCameraAnchor;
+
+    private UIDebuger uidebuger;
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
@@ -22,9 +28,8 @@ public class SessionManager : MonoBehaviour
 
     void Start()
     {
-        sharedSpaceManager = GetComponent<SharedSpaceManager>();
+        uidebuger = GetComponent<UIDebuger>();
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
-
         userProfile = new UserProfile();
         LoadProfile();
     }
@@ -38,6 +43,7 @@ public class SessionManager : MonoBehaviour
      */
     public void CreateRoom(string roomName, bool isHost)
     {
+        Debug.Log(roomName + "" + isHost);
         var mockTrackingArgs = ISharedSpaceTrackingOptions.CreateMockTrackingOptions();
         var roomArgs = ISharedSpaceRoomOptions.CreateLightshipRoomOptions(
             roomName,
@@ -81,12 +87,21 @@ public class SessionManager : MonoBehaviour
         return userProfile.GetUserColor();
     }
 
+    [Rpc(SendTo.ClientsAndHost)]
+    public void InstantiateCameraAnchorRpc(ulong clientId)
+    { 
+        currentCameraAnchor = Instantiate(cameraAnchorPrefab,Vector3.zero,Quaternion.identity);
+        NetworkObject anchorNetworkObject = currentCameraAnchor.GetComponent<NetworkObject>();
+        anchorNetworkObject.SpawnWithOwnership(clientId);
+    }
+    
     /**
-     * Callback thrown when a new client joins the room
-     * @param clientId Unique ID create by the network manager of the client
-     */
+    * Callback thrown when a new client joins the room
+    * @param clientId Unique ID create by the network manager of the client
+    */
     private void OnClientConnectedCallback(ulong clientId)
     {
         Debug.Log($"Client connected: {clientId}");
+        //uidebuger.Log("Client connected: " + clientId);
     }
 }
