@@ -43,7 +43,6 @@ public class SessionManager : NetworkBehaviour
      */
     public void CreateRoom(string roomName, bool isHost)
     {
-        Debug.Log(roomName + "" + isHost);
         var mockTrackingArgs = ISharedSpaceTrackingOptions.CreateMockTrackingOptions();
         var roomArgs = ISharedSpaceRoomOptions.CreateLightshipRoomOptions(
             roomName,
@@ -89,7 +88,8 @@ public class SessionManager : NetworkBehaviour
 
     [Rpc(SendTo.ClientsAndHost)]
     public void InstantiateCameraAnchorRpc(ulong clientId)
-    { 
+    {
+        Debug.Log(clientId + ":" + IsHost);
         currentCameraAnchor = Instantiate(cameraAnchorPrefab,Vector3.zero,Quaternion.identity);
         NetworkObject anchorNetworkObject = currentCameraAnchor.GetComponent<NetworkObject>();
         anchorNetworkObject.SpawnWithOwnership(clientId);
