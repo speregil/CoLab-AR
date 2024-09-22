@@ -253,7 +253,7 @@
     },
     "com.unity.xr.arcore": {
       "version": "5.1.5",
-      "depth": 1,
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.xr.core-utils": "2.1.0",

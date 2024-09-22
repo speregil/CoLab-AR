@@ -117,7 +117,7 @@ public class UIManager : MonoBehaviour
     public void CancelProfileMenu()
     {
         introMenu.SetActive(true);
-        joinRoomMenu.SetActive(false);
+        profileMenu.SetActive(false);
     }
 
     /**
