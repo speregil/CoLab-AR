@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 8834025738556392628}
   - component: {fileID: 5916384290396712121}
   - component: {fileID: 2595287468865973966}
-  - component: {fileID: 6635709306030362795}
   - component: {fileID: 4610089079874048573}
   m_Layer: 0
   m_Name: cameraAnchor
@@ -99,7 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2650672532
+  GlobalObjectIdHash: 2920782939
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -139,19 +138,6 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!114 &6635709306030362795
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8724012436779451302}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57c28ed28c284b8bbb08e7d5bded1bd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _putInSharedOrigin: 0
 --- !u!114 &4610089079874048573
 MonoBehaviour:
   m_ObjectHideFlags: 0

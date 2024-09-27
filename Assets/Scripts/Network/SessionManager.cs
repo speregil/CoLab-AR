@@ -59,9 +59,15 @@ public class SessionManager : NetworkBehaviour
     private void JoinRoom(bool isHost)
     {
         if (isHost)
+        {
+            Debug.Log("Connecting host");
             NetworkManager.Singleton.StartHost();
+        }
         else
+        {
+            Debug.Log("Connecting client");
             NetworkManager.Singleton.StartClient();
+        }
     }
 
     public bool SaveProfile(string username, Color userColor)
@@ -86,13 +92,14 @@ public class SessionManager : NetworkBehaviour
         return userProfile.GetUserColor();
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    public void InstantiateCameraAnchorRpc(ulong clientId)
+    public void InstantiateCameraAnchor(ulong clientId)
     {
-        Debug.Log(clientId + ":" + IsHost);
-        currentCameraAnchor = Instantiate(cameraAnchorPrefab,Vector3.zero,Quaternion.identity);
-        NetworkObject anchorNetworkObject = currentCameraAnchor.GetComponent<NetworkObject>();
-        anchorNetworkObject.SpawnWithOwnership(clientId);
+        Debug.Log("instantiating camera for: " + clientId);
+        //currentCameraAnchor = Instantiate(cameraAnchorPrefab,Vector3.zero,Quaternion.identity);
+        NetworkObject anchornetworkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(cameraAnchorPrefab.GetComponent<NetworkObject>(), clientId,false, false, false,Vector3.zero,Quaternion.identity);
+        //NetworkObject anchorNetworkObject = currentCameraAnchor.GetComponent<NetworkObject>();
+        //anchorNetworkObject.SpawnWithOwnership(clientId);
+        currentCameraAnchor = anchornetworkObject.gameObject;
     }
     
     /**
@@ -101,7 +108,9 @@ public class SessionManager : NetworkBehaviour
     */
     private void OnClientConnectedCallback(ulong clientId)
     {
-        Debug.Log($"Client connected: {clientId}");
+        Debug.Log($"User connected: {clientId}");
+        if(NetworkManager.IsHost)
+            InstantiateCameraAnchor(clientId);
         //uidebuger.Log("Client connected: " + clientId);
     }
 }

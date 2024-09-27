@@ -72,7 +72,7 @@ public class UIManager : MonoBehaviour
     {
         createRoomMenu.SetActive(false);
         sessionManager.CreateRoom(introManager.GetRoomName(),true);
-        sessionManager.InstantiateCameraAnchorRpc(NetworkManager.Singleton.LocalClientId);
+        //sessionManager.InstantiateCameraAnchorRpc(NetworkManager.Singleton.LocalClientId);
         workspaceConfig.DetectingPlanes(true);
     }
 
@@ -83,7 +83,7 @@ public class UIManager : MonoBehaviour
     {
         joinRoomMenu.SetActive(false);
         sessionManager.CreateRoom(introManager.GetRoomName(), false);
-        sessionManager.InstantiateCameraAnchorRpc(NetworkManager.Singleton.LocalClientId);
+        //sessionManager.InstantiateCameraAnchorRpc(NetworkManager.Singleton.LocalClientId);
     }
 
     public bool SaveProfile(string username, Color userColor)
