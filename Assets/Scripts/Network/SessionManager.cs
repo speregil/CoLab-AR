@@ -19,6 +19,8 @@ public class SessionManager : NetworkBehaviour
 
     private UserProfile userProfile;                                        // Profile info and functions of the current user
     private GameObject currentCameraAnchor;
+    private bool onRoom = false;
+    private bool cameraAnchorCheck = true;
 
     private UIDebuger uidebuger;
 
@@ -32,6 +34,21 @@ public class SessionManager : NetworkBehaviour
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
         userProfile = new UserProfile();
         LoadProfile();
+    }
+
+    void Update()
+    {
+        Debug.Log(onRoom && !NetworkManager.IsHost);
+        if (onRoom && !NetworkManager.IsHost) 
+        {
+            Debug.Log("Client: Checking for anchor");
+            if (cameraAnchorCheck && currentCameraAnchor != null)
+            {
+                Debug.Log("Client: Anchor exists");
+                cameraAnchorCheck = false;
+            }
+            else Debug.Log("Client: Anchor does not exist");
+        }
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -95,10 +112,7 @@ public class SessionManager : NetworkBehaviour
     public void InstantiateCameraAnchor(ulong clientId)
     {
         Debug.Log("instantiating camera for: " + clientId);
-        //currentCameraAnchor = Instantiate(cameraAnchorPrefab,Vector3.zero,Quaternion.identity);
         NetworkObject anchornetworkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(cameraAnchorPrefab.GetComponent<NetworkObject>(), clientId,false, false, false,Vector3.zero,Quaternion.identity);
-        //NetworkObject anchorNetworkObject = currentCameraAnchor.GetComponent<NetworkObject>();
-        //anchorNetworkObject.SpawnWithOwnership(clientId);
         currentCameraAnchor = anchornetworkObject.gameObject;
     }
     
