@@ -4,6 +4,7 @@ using System;
 using UnityEngine;
 using Unity.Netcode;
 using Niantic.Lightship.SharedAR.Colocalization;
+using static UnityEngine.CullingGroup;
 
 /**
  * Behaviour that controls the process of room creation and joining of participants
@@ -18,9 +19,8 @@ public class SessionManager : NetworkBehaviour
     [SerializeField] private SharedSpaceManager sharedSpaceManager;          // References to Lightship AR Shared Space API
 
     private UserProfile userProfile;                                        // Profile info and functions of the current user
-    private GameObject currentCameraAnchor;
-    private bool onRoom = false;
-    private bool cameraAnchorCheck = true;
+    private GameObject currentCameraAnchor = null;
+    public NetworkVariable<string> lastParticipant = new NetworkVariable<string>();
 
     private UIDebuger uidebuger;
 
@@ -34,21 +34,6 @@ public class SessionManager : NetworkBehaviour
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
         userProfile = new UserProfile();
         LoadProfile();
-    }
-
-    void Update()
-    {
-        Debug.Log(onRoom && !NetworkManager.IsHost);
-        if (onRoom && !NetworkManager.IsHost) 
-        {
-            Debug.Log("Client: Checking for anchor");
-            if (cameraAnchorCheck && currentCameraAnchor != null)
-            {
-                Debug.Log("Client: Anchor exists");
-                cameraAnchorCheck = false;
-            }
-            else Debug.Log("Client: Anchor does not exist");
-        }
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -71,7 +56,7 @@ public class SessionManager : NetworkBehaviour
     }
 
     /**
-     * Joins to a room as a host or a client given the status of the user identified in the intro scene
+     * Joins a room as a host or a client given the status of the user identified in the intro scene
      */
     private void JoinRoom(bool isHost)
     {
@@ -85,6 +70,7 @@ public class SessionManager : NetworkBehaviour
             Debug.Log("Connecting client");
             NetworkManager.Singleton.StartClient();
         }
+        RegisterParticipantRpc(userProfile.GetUsername());
     }
 
     public bool SaveProfile(string username, Color userColor)
@@ -115,14 +101,31 @@ public class SessionManager : NetworkBehaviour
         NetworkObject anchornetworkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(cameraAnchorPrefab.GetComponent<NetworkObject>(), clientId,false, false, false,Vector3.zero,Quaternion.identity);
         currentCameraAnchor = anchornetworkObject.gameObject;
     }
-    
+
+    public override void OnNetworkSpawn()
+    {
+        lastParticipant.OnValueChanged += OnLastParticipantChanged;
+    }
+
+    public void OnLastParticipantChanged(string previous, string current)
+    {
+        Debug.Log(current);
+    }
+
+    [Rpc(SendTo.Server), GenerateSerializationForTypeAttribute(typeof(System.String))]
+
+    public void RegisterParticipantRpc(string username)
+    {
+        lastParticipant.Value = userProfile.GetUsername();
+    }
+
     /**
     * Callback thrown when a new client joins the room
     * @param clientId Unique ID create by the network manager of the client
     */
     private void OnClientConnectedCallback(ulong clientId)
     {
-        Debug.Log($"User connected: {clientId}");
+        Debug.Log($"User ID: {clientId}, username: {userProfile.GetUsername()}");
         if(NetworkManager.IsHost)
             InstantiateCameraAnchor(clientId);
         //uidebuger.Log("Client connected: " + clientId);

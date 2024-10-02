@@ -75,8 +75,8 @@ public class WorkspaceConfig : NetworkBehaviour
             Pose pose = hits[0].pose;
             Vector2 planeSize = new Vector2(hits[0].trackable.gameObject.GetComponent<Renderer>().bounds.size.x, hits[0].trackable.gameObject.GetComponent<Renderer>().bounds.size.z);
             
-            // Server call to create the workspace plane
-            InstantiateWorkspaceRpc(pose.position,pose.rotation,planeSize, NetworkManager.Singleton.LocalClientId);
+            // Host call to create the workspace plane
+            InstantiateWorkspace(pose.position,pose.rotation,planeSize, NetworkManager.Singleton.LocalClientId);
 
             // Deactivates plane detection and cleans the screen
             DetectingPlanes(false);
@@ -166,24 +166,25 @@ public class WorkspaceConfig : NetworkBehaviour
      *  @param planePosition Vector3 representing the position of the detected plane selected
      *  @param planeRotation Quaternion representing the rotation of the detected plane selected
      */
-    [Rpc(SendTo.ClientsAndHost)]
-    void InstantiateWorkspaceRpc(Vector3 planePosition, Quaternion planeRotation, Vector2 planeSize, ulong clientId)
+    void InstantiateWorkspace(Vector3 planePosition, Quaternion planeRotation, Vector2 planeSize, ulong clientId)
     {
         // Instantiates the workspace and scales it
-        currentWorkspaceInstance = Instantiate(workspacePrefab, planePosition, planeRotation);
-        Vector2 workspaceSize = new Vector2(currentWorkspaceInstance.GetComponent<Renderer>().bounds.size.x, currentWorkspaceInstance.GetComponent<Renderer>().bounds.size.z);
-        Vector3 ratioSize = new Vector3(planeSize.x / workspaceSize.x, 1.0f, planeSize.y / workspaceSize.y);
-        currentWorkspaceInstance.transform.localScale = ratioSize;
+        if (NetworkManager.IsHost) { 
+            currentWorkspaceInstance = Instantiate(workspacePrefab, planePosition, planeRotation);
+            Vector2 workspaceSize = new Vector2(currentWorkspaceInstance.GetComponent<Renderer>().bounds.size.x, currentWorkspaceInstance.GetComponent<Renderer>().bounds.size.z);
+            Vector3 ratioSize = new Vector3(planeSize.x / workspaceSize.x, 1.0f, planeSize.y / workspaceSize.y);
+            currentWorkspaceInstance.transform.localScale = ratioSize;
 
-        // Spawns the workspace in the room
-        NetworkObject worspaceNetworkObject = currentWorkspaceInstance.GetComponent<NetworkObject>();
-        worspaceNetworkObject.SpawnWithOwnership(clientId);
+            // Spawns the workspace in the room
+            NetworkObject worspaceNetworkObject = currentWorkspaceInstance.GetComponent<NetworkObject>();
+            worspaceNetworkObject.SpawnWithOwnership(clientId);
 
-        // Setups the configuration menu
-        isConfiguringWorkspace = true;
-        drag = currentWorkspaceInstance.GetComponent<IDragBehaviour>();
-        drag.SetOnConfig(true);
-        SetConfigState(POSITIONXZ_STATE);
-        uiManager.WorkspaceConfiguration();
+            // Setups the configuration menu
+            isConfiguringWorkspace = true;
+            drag = currentWorkspaceInstance.GetComponent<IDragBehaviour>();
+            drag.SetOnConfig(true);
+            SetConfigState(POSITIONXZ_STATE);
+            uiManager.WorkspaceConfiguration();
+        }
     }
 }

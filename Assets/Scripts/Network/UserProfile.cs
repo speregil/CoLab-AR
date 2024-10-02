@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class UserProfile
 {
-    private string username;
+    [SerializeField] private string username;
     private Color userColor;
 
     public UserProfile()
