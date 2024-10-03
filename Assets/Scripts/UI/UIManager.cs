@@ -17,6 +17,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject joinRoomMenu;               // Reference to the Join to Room menu canvas
     [SerializeField] private GameObject profileMenu;                // Reference to the Profile Configuration menu canvas
     [SerializeField] private GameObject workspaceConfigMenu;        // Referene to the worspace config tools canvas
+    [SerializeField] private Button workspaceAcceptConfigBtn;
     [SerializeField] private GameObject mainMenu;                   // Referene to the main menu canvas
     [SerializeField] private Color SelectedConfigStateColor;        // Color for the selected configuration option in the Workspace config menu
 
@@ -140,5 +141,10 @@ public class UIManager : MonoBehaviour
     {
         workspaceConfigMenu.SetActive(false);
         mainMenu.SetActive(true);
+    }
+
+    public Button GetWorkspaceConfigButton()
+    {
+        return workspaceAcceptConfigBtn;
     }
 }

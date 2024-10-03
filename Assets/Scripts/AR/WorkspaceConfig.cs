@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 
 /**
@@ -41,18 +42,23 @@ public class WorkspaceConfig : NetworkBehaviour
 
     void Start()
     {
+        if (!IsHost) return;
+
         GameObject arConfig = GameObject.Find("ARConfig");
-        GameObject ui = GameObject.Find("ARConfig");
+        GameObject ui = GameObject.Find("UI");
         raycastManager = arConfig.GetComponentInChildren<ARRaycastManager>();
         trackingManager = arConfig.GetComponentInChildren<TrackingManager>();
         uiManager = ui.GetComponent<UIManager>();
+        Button acceptConfigBtn = uiManager.GetWorkspaceConfigButton();
+        acceptConfigBtn.onClick.AddListener(() => FinishConfiguration());
 
-        if (IsHost)
-            DetectingPlanes(true);
+        DetectingPlanes(true);
     }
 
     void Update()
     {
+        if (!IsHost) return;
+
         // Input check for mobile builds
         if (isDetectingPlanes && Input.touchCount > 0)
         {
@@ -91,8 +97,8 @@ public class WorkspaceConfig : NetworkBehaviour
             InstantiateWorkspace(pose.position,pose.rotation,planeSize, NetworkManager.Singleton.LocalClientId);
 
             // Deactivates plane detection and cleans the screen
-            DetectingPlanes(false);
             trackingManager.CleanTrackables();
+            DetectingPlanes(false);
         }
     }
 
@@ -177,7 +183,7 @@ public class WorkspaceConfig : NetworkBehaviour
     void InstantiateWorkspace(Vector3 planePosition, Quaternion planeRotation, Vector2 planeSize, ulong clientId)
     {
         // Instantiates the workspace and scales it
-        if (NetworkManager.IsHost) { 
+        if (IsHost) { 
             currentWorkspaceInstance = Instantiate(workspacePrefab, planePosition, planeRotation);
             Vector2 workspaceSize = new Vector2(currentWorkspaceInstance.GetComponent<Renderer>().bounds.size.x, currentWorkspaceInstance.GetComponent<Renderer>().bounds.size.z);
             Vector3 ratioSize = new Vector3(planeSize.x / workspaceSize.x, 1.0f, planeSize.y / workspaceSize.y);

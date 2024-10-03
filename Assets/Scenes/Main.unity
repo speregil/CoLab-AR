@@ -6114,6 +6114,7 @@ MonoBehaviour:
   joinRoomMenu: {fileID: 1603627300318178870}
   profileMenu: {fileID: 1789607024}
   workspaceConfigMenu: {fileID: 4948780934776003329}
+  workspaceAcceptConfigBtn: {fileID: 8832667022452064117}
   mainMenu: {fileID: 384863535}
   SelectedConfigStateColor: {r: 0, g: 0, b: 0, a: 0}
   userConfiguration: {fileID: 2042532990}
