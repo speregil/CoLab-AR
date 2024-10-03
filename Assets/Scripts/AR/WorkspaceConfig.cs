@@ -22,22 +22,34 @@ public class WorkspaceConfig : NetworkBehaviour
     // Fields
     //------------------------------------------------------------------------------------------------------
 
-    [SerializeField] private GameObject workspacePrefab;                      // Prefab for the workspace plane      
-    [SerializeField] private GameObject workspaceConfigUI;                    // Reference to the Room Configuration UI elements
-    [SerializeField] private ARRaycastManager raycastManager;                 // Reference to the ARRaycastManager component in the parent object
-    [SerializeField] private TrackingManager trackingManager;                 // Reference to the TrackingManager component in the parent object
-    [SerializeField] private UIManager uiManager;                             // Reference to the UIManager component loaded in the scene
+    [SerializeField] private GameObject workspacePrefab;        // Prefab for the workspace plane      
+    
+    private ARRaycastManager raycastManager;                    // Reference to the ARRaycastManager component in the parent object
+    private TrackingManager trackingManager;                    // Reference to the TrackingManager component in the parent object
+    private UIManager uiManager;                                // Reference to the UIManager component loaded in the scene
 
-    private GameObject currentWorkspaceInstance;                              // Current instance of the workspace plane
-    private IDragBehaviour drag;                                              // Reference to the Drag Behaviour of the current workspace
-    private int currentConfigState;                                           // Defines the current Config State of the app
+    private GameObject currentWorkspaceInstance;                // Current instance of the workspace plane
+    private IDragBehaviour drag;                                // Reference to the Drag Behaviour of the current workspace
+    private int currentConfigState;                             // Defines the current Config State of the app
 
-    private bool isDetectingPlanes = false;                                   // Flag that determines if the script is currently tracking planes or not
-    private bool isConfiguringWorkspace = false;                              // Flag that determines if the user is currently configuring pos/rot of the workspace
+    private bool isDetectingPlanes = false;                     // Flag that determines if the script is currently tracking planes or not
+    private bool isConfiguringWorkspace = false;                // Flag that determines if the user is currently configuring pos/rot of the workspace
 
     //------------------------------------------------------------------------------------------------------
-    // Monobehaviour Functions
+    // Network Behaviour Functions
     //------------------------------------------------------------------------------------------------------
+
+    void Start()
+    {
+        GameObject arConfig = GameObject.Find("ARConfig");
+        GameObject ui = GameObject.Find("ARConfig");
+        raycastManager = arConfig.GetComponentInChildren<ARRaycastManager>();
+        trackingManager = arConfig.GetComponentInChildren<TrackingManager>();
+        uiManager = ui.GetComponent<UIManager>();
+
+        if (IsHost)
+            DetectingPlanes(true);
+    }
 
     void Update()
     {
@@ -156,10 +168,6 @@ public class WorkspaceConfig : NetworkBehaviour
     {
         drag.ResetToInitial();
     }
-
-    //------------------------------------------------------------------------------------------------------
-    // Network Functions
-    //------------------------------------------------------------------------------------------------------
 
     /**
      *  Creates a workspace plane based on the size of the selected detected plane

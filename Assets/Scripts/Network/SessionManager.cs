@@ -4,7 +4,6 @@ using System;
 using UnityEngine;
 using Unity.Netcode;
 using Niantic.Lightship.SharedAR.Colocalization;
-using static UnityEngine.CullingGroup;
 
 /**
  * Behaviour that controls the process of room creation and joining of participants
@@ -18,7 +17,6 @@ public class SessionManager : NetworkBehaviour
     [SerializeField] GameObject cameraAnchorPrefab;
     [SerializeField] private SharedSpaceManager sharedSpaceManager;          // References to Lightship AR Shared Space API
 
-    private UserProfile userProfile;                                        // Profile info and functions of the current user
     private GameObject currentCameraAnchor = null;
     public NetworkVariable<string> lastParticipant = new NetworkVariable<string>();
 
@@ -32,8 +30,6 @@ public class SessionManager : NetworkBehaviour
     {
         uidebuger = GetComponent<UIDebuger>();
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
-        userProfile = new UserProfile();
-        LoadProfile();
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -70,29 +66,7 @@ public class SessionManager : NetworkBehaviour
             Debug.Log("Connecting client");
             NetworkManager.Singleton.StartClient();
         }
-        RegisterParticipantRpc(userProfile.GetUsername());
-    }
-
-    public bool SaveProfile(string username, Color userColor)
-    {
-        userProfile.SetUsername(username);
-        userProfile.SetUserColor(userColor);
-        return userProfile.SaveProfile();
-    }
-
-    public bool LoadProfile()
-    {
-        return userProfile.LoadProfile();
-    }
-
-    public string GetUsername()
-    {
-        return userProfile.GetUsername();
-    }
-
-    public Color GetUserColor()
-    {
-        return userProfile.GetUserColor();
+        //RegisterParticipantRpc(userProfile.GetUsername());
     }
 
     public void InstantiateCameraAnchor(ulong clientId)
@@ -112,20 +86,13 @@ public class SessionManager : NetworkBehaviour
         Debug.Log(current);
     }
 
-    [Rpc(SendTo.Server), GenerateSerializationForTypeAttribute(typeof(System.String))]
-
-    public void RegisterParticipantRpc(string username)
-    {
-        lastParticipant.Value = userProfile.GetUsername();
-    }
-
     /**
     * Callback thrown when a new client joins the room
     * @param clientId Unique ID create by the network manager of the client
     */
     private void OnClientConnectedCallback(ulong clientId)
     {
-        Debug.Log($"User ID: {clientId}, username: {userProfile.GetUsername()}");
+        Debug.Log($"User ID: {clientId}");
         if(NetworkManager.IsHost)
             InstantiateCameraAnchor(clientId);
         //uidebuger.Log("Client connected: " + clientId);

@@ -1,7 +1,9 @@
+using Niantic.Lightship.SharedAR.Colocalization;
 using Niantic.Lightship.SharedAR.Rooms;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 
 /**
@@ -13,16 +15,18 @@ public class IntroManager : MonoBehaviour
     // Fields
     //------------------------------------------------------------------------------------------------------
 
-    [SerializeField] TMP_InputField createNameInputField;           // Reference to the input field for the name of a room to create
-    [SerializeField] TMP_InputField usernameInputField;             // Reference to the input field for the username of the current user's profile
-    [SerializeField] TMP_Dropdown joinNameDropdown;                 // Reference to the input field for the name of a room to join to
+    [SerializeField] TMP_InputField createNameInputField;               // Reference to the input field for the name of a room to create
+    [SerializeField] TMP_InputField usernameInputField;                 // Reference to the input field for the username of the current user's profile
+    [SerializeField] TMP_Text responseMessageTxt;                       // Reference to the response message text in the profile menu 
+    [SerializeField] TMP_Dropdown joinNameDropdown;                     // Reference to the input field for the name of a room to join to
 
-    UIManager uiManager;                                            // Reference to the UIManager component
+    [SerializeField] private SharedSpaceManager sharedSpaceManager;     // References to Lightship AR Shared Space API
+    UIManager uiManager;                                                // Reference to the UIManager component
 
-    private string roomName;                                        // Name of the room to create or join to
+    private string roomName;                                            // Name of the room to create or join to
     private string username;
     private Color userColor;
-    private bool isHost;                                            // Flag that determines if the user is creating or joining a room
+    private bool isHost;                                                // Flag that determines if the user is creating or joining a room
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
@@ -64,11 +68,19 @@ public class IntroManager : MonoBehaviour
         this.roomName = roomName;
     }
 
+    /**
+     * Changes the current username used by the user and that is going to be saved in the local profile
+     * @param username Current usernme provided by the user
+     */
     public void usernameEdit(string username)
     {
         this.username = username;
     }
 
+    /**
+     * Callback launched when the dropdown field of the Join Room menu changes value
+     * @param value index of the new value
+     */
     public void OnDropdownChange(int value)
     {
         roomName = joinNameDropdown.options[value].text;
@@ -82,6 +94,7 @@ public class IntroManager : MonoBehaviour
     {
         createNameInputField.text = "";
         isHost = true;
+        ConfigureSharedSpace();
         uiManager.AcceptCreateRoom();
     }
 
@@ -102,9 +115,14 @@ public class IntroManager : MonoBehaviour
         roomName = joinNameDropdown.options[joinNameDropdown.value].text;
     }
 
+    /**
+     * Initialize the profile menu with the username given by parameter as default option in the interface
+     * @param currentUsername Default username option to show in the interface
+     */
     public void InitializeProfileMenu(string currentUsername)
     {
         usernameInputField.text = currentUsername;
+        responseMessageTxt.text = "";
     }
 
     /**
@@ -114,6 +132,7 @@ public class IntroManager : MonoBehaviour
     public void AcceptJoinRoom()
     {
         isHost = false;
+        ConfigureSharedSpace();
         uiManager.AcceptJoinRoom();
     }
 
@@ -135,10 +154,48 @@ public class IntroManager : MonoBehaviour
         uiManager.CancelJoinRoom();
     }
 
+    /**
+     * Prompts the interface manager to save the user prfile in the local machine, and displays the
+     * result response of the operation
+     */
     public void SaveProfile()
     {
+        responseMessageTxt.text = "";
         userColor = Color.grey;
-        uiManager.SaveProfile(username, userColor);
+        string msg = uiManager.SaveProfile(username, userColor);
+        responseMessageTxt.text = msg;
+    }
+
+    /**
+     * Creates a references to a room given the room name configured in the intro scene
+     */
+    private void ConfigureSharedSpace()
+    {
+        var mockTrackingArgs = ISharedSpaceTrackingOptions.CreateMockTrackingOptions();
+        var roomArgs = ISharedSpaceRoomOptions.CreateLightshipRoomOptions(
+            roomName,
+            32,
+            "Room created by user as: " + roomName
+        );
+        sharedSpaceManager.StartSharedSpace(mockTrackingArgs, roomArgs);
+        StartSharedSpace();
+    }
+
+    /**
+     * Joins a room as a host or a client given the status of the user identified in the intro scene
+     */
+    private void StartSharedSpace()
+    {
+        if (isHost)
+        {
+            Debug.Log("Connecting host");
+            NetworkManager.Singleton.StartHost();
+        }
+        else
+        {
+            Debug.Log("Connecting client");
+            NetworkManager.Singleton.StartClient();
+        }
     }
 
     public void PurgeRooms()

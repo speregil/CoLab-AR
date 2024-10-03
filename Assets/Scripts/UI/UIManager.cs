@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.Netcode;
 
 /**
  * Behaviour that controls which UI elements of the app are shown in a given moment
@@ -20,10 +19,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject workspaceConfigMenu;        // Referene to the worspace config tools canvas
     [SerializeField] private GameObject mainMenu;                   // Referene to the main menu canvas
     [SerializeField] private Color SelectedConfigStateColor;        // Color for the selected configuration option in the Workspace config menu
-    
-    [SerializeField] private SessionManager sessionManager;         // Reference to the SessionManager
-    [SerializeField] private WorkspaceConfig workspaceConfig;       // Reference to the Worspace Config behaviour
 
+    [SerializeField] private UserConfiguration userConfiguration;   // Reference to the offline user configuration component
     private IntroManager introManager;                              // Reference to the Intro Scene actions manager
 
     //------------------------------------------------------------------------------------------------------
@@ -58,21 +55,22 @@ public class UIManager : MonoBehaviour
         joinRoomMenu.SetActive(true);
     }
 
+    /**
+     * Shows and initilizes the Profile configuration menu in the intro scene
+     */
     public void ProfileMenu()
     {
         introMenu.SetActive(false);
-        introManager.InitializeProfileMenu(sessionManager.GetUsername());
+        introManager.InitializeProfileMenu(userConfiguration.GetUsername());
         profileMenu.SetActive(true);
     }
 
     /**
-     * Moves to the Main scene after accepting the room creation configuration
+     * Moves to the Main view after accepting the room creation configuration
      */
     public void AcceptCreateRoom()
     {
         createRoomMenu.SetActive(false);
-        sessionManager.CreateRoom(introManager.GetRoomName(),true);
-        workspaceConfig.DetectingPlanes(true);
     }
 
     /**
@@ -81,17 +79,19 @@ public class UIManager : MonoBehaviour
     public void AcceptJoinRoom()
     {
         joinRoomMenu.SetActive(false);
-        sessionManager.CreateRoom(introManager.GetRoomName(), false);
     }
 
-    public bool SaveProfile(string username, Color userColor)
+    /**
+     * Reacts to the action of saving any changes in the Profile menu
+     */
+    public string SaveProfile(string username, Color userColor)
     {
-        return sessionManager.SaveProfile(username, userColor);
+        return userConfiguration.UpdateAndSaveProfile(username, userColor);
     }
 
-    public bool LoadProfile() 
+    public string LoadProfile() 
     { 
-        return sessionManager.LoadProfile();
+        return userConfiguration.LoadProfile();
     }
 
     /**
@@ -104,7 +104,7 @@ public class UIManager : MonoBehaviour
     }
 
     /**
-     * Moves back to the main intro menu fter canceling the join to room config
+     * Moves back to the main intro menu after canceling the join to room config
      */
     public void CancelJoinRoom()
     {
@@ -112,6 +112,9 @@ public class UIManager : MonoBehaviour
         joinRoomMenu.SetActive(false);
     }
 
+    /**
+     * Moves back to the main intro menu from the profile menu
+     */
     public void CancelProfileMenu()
     {
         introMenu.SetActive(true);
