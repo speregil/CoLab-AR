@@ -49,9 +49,8 @@ public class WorkspaceConfig : NetworkBehaviour
         raycastManager = arConfig.GetComponentInChildren<ARRaycastManager>();
         trackingManager = arConfig.GetComponentInChildren<TrackingManager>();
         uiManager = ui.GetComponent<UIManager>();
-        Button acceptConfigBtn = uiManager.GetWorkspaceConfigButton();
-        acceptConfigBtn.onClick.AddListener(() => FinishConfiguration());
 
+        ConfigureWorspaceMenu();
         DetectingPlanes(true);
     }
 
@@ -78,6 +77,30 @@ public class WorkspaceConfig : NetworkBehaviour
     //------------------------------------------------------------------------------------------------------
     // Functions
     //------------------------------------------------------------------------------------------------------
+
+    /**
+     * Searches and adds the proper listeners to the buttons in the workspace configuration menu
+     */
+    private void ConfigureWorspaceMenu()
+    {
+        Button configBtn = uiManager.GetWorkspaceConfigButton("AcceptBtn", false);
+        configBtn.onClick.AddListener(() => FinishConfiguration());
+
+        configBtn = uiManager.GetWorkspaceConfigButton("ResetBtn", false);
+        configBtn.onClick.AddListener(() => ResetConfiguration());
+
+        configBtn = uiManager.GetWorkspaceConfigButton("PositionXZBtn", true);
+        configBtn.onClick.AddListener(() => SetConfigState(POSITIONXZ_STATE));
+
+        configBtn = uiManager.GetWorkspaceConfigButton("PositionYBtn", true);
+        configBtn.onClick.AddListener(() => SetConfigState(POSITIONY_STATE));
+
+        configBtn = uiManager.GetWorkspaceConfigButton("RotationBtn", true);
+        configBtn.onClick.AddListener(() => SetConfigState(ROTATION_STATE));
+
+        configBtn = uiManager.GetWorkspaceConfigButton("ScaleBtn", true);
+        configBtn.onClick.AddListener(() => SetConfigState(SCALE_STATE));
+    }
 
     /**
      * Controls the raycasting process and the creation of the workspace plane when selecting a detected plane
@@ -183,15 +206,19 @@ public class WorkspaceConfig : NetworkBehaviour
     void InstantiateWorkspace(Vector3 planePosition, Quaternion planeRotation, Vector2 planeSize, ulong clientId)
     {
         // Instantiates the workspace and scales it
-        if (IsHost) { 
-            currentWorkspaceInstance = Instantiate(workspacePrefab, planePosition, planeRotation);
+        if (IsHost) 
+        {
+            NetworkObject worspaceNetworkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(workspacePrefab.GetComponent<NetworkObject>(), clientId, false, false, false, planePosition, planeRotation);
+            currentWorkspaceInstance = worspaceNetworkObject.gameObject;
+            //currentWorkspaceInstance = Instantiate(workspacePrefab, planePosition, planeRotation);
             Vector2 workspaceSize = new Vector2(currentWorkspaceInstance.GetComponent<Renderer>().bounds.size.x, currentWorkspaceInstance.GetComponent<Renderer>().bounds.size.z);
             Vector3 ratioSize = new Vector3(planeSize.x / workspaceSize.x, 1.0f, planeSize.y / workspaceSize.y);
             currentWorkspaceInstance.transform.localScale = ratioSize;
 
             // Spawns the workspace in the room
-            NetworkObject worspaceNetworkObject = currentWorkspaceInstance.GetComponent<NetworkObject>();
-            worspaceNetworkObject.SpawnWithOwnership(clientId);
+            //NetworkObject worspaceNetworkObject = currentWorkspaceInstance.GetComponent<NetworkObject>();
+            
+            //worspaceNetworkObject.SpawnWithOwnership(clientId);
 
             // Setups the configuration menu
             isConfiguringWorkspace = true;

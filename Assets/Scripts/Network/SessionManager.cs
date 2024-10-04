@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using Unity.Netcode;
-using Niantic.Lightship.SharedAR.Colocalization;
 
 /**
- * Behaviour that controls the process of room creation and joining of participants
+ * Behaviour that controls the network functions of a participant who joined a room
  */
 public class SessionManager : NetworkBehaviour
 {
@@ -15,12 +14,8 @@ public class SessionManager : NetworkBehaviour
     //------------------------------------------------------------------------------------------------------
 
     [SerializeField] GameObject cameraAnchorPrefab;
-    [SerializeField] private SharedSpaceManager sharedSpaceManager;          // References to Lightship AR Shared Space API
 
     private GameObject currentCameraAnchor = null;
-    public NetworkVariable<string> lastParticipant = new NetworkVariable<string>();
-
-    private UIDebuger uidebuger;
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
@@ -28,73 +23,21 @@ public class SessionManager : NetworkBehaviour
 
     void Start()
     {
-        uidebuger = GetComponent<UIDebuger>();
-        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
+        InstantiateCameraAnchorRPC(NetworkManager.Singleton.LocalClientId);   
     }
 
     //------------------------------------------------------------------------------------------------------
     // Functions
     //------------------------------------------------------------------------------------------------------
 
-    /**
-     * Creates a references to a room given the room name configured in the intro scene
-     */
-    public void CreateRoom(string roomName, bool isHost)
+    [Rpc(SendTo.Server)]
+    public void InstantiateCameraAnchorRPC(ulong clientId)
     {
-        var mockTrackingArgs = ISharedSpaceTrackingOptions.CreateMockTrackingOptions();
-        var roomArgs = ISharedSpaceRoomOptions.CreateLightshipRoomOptions(
-            roomName,
-            32,
-            "Room created by user as: " + roomName
-        );
-        sharedSpaceManager.StartSharedSpace(mockTrackingArgs, roomArgs);
-        JoinRoom(isHost);
-    }
-
-    /**
-     * Joins a room as a host or a client given the status of the user identified in the intro scene
-     */
-    private void JoinRoom(bool isHost)
-    {
-        if (isHost)
+        if (IsServer)
         {
-            Debug.Log("Connecting host");
-            NetworkManager.Singleton.StartHost();
+            Debug.Log("instantiating camera for: " + clientId);
+            NetworkObject anchornetworkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(cameraAnchorPrefab.GetComponent<NetworkObject>(), clientId, false, false, false, Vector3.zero, Quaternion.identity);
+            currentCameraAnchor = anchornetworkObject.gameObject;
         }
-        else
-        {
-            Debug.Log("Connecting client");
-            NetworkManager.Singleton.StartClient();
-        }
-        //RegisterParticipantRpc(userProfile.GetUsername());
-    }
-
-    public void InstantiateCameraAnchor(ulong clientId)
-    {
-        Debug.Log("instantiating camera for: " + clientId);
-        NetworkObject anchornetworkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(cameraAnchorPrefab.GetComponent<NetworkObject>(), clientId,false, false, false,Vector3.zero,Quaternion.identity);
-        currentCameraAnchor = anchornetworkObject.gameObject;
-    }
-
-    public override void OnNetworkSpawn()
-    {
-        lastParticipant.OnValueChanged += OnLastParticipantChanged;
-    }
-
-    public void OnLastParticipantChanged(string previous, string current)
-    {
-        Debug.Log(current);
-    }
-
-    /**
-    * Callback thrown when a new client joins the room
-    * @param clientId Unique ID create by the network manager of the client
-    */
-    private void OnClientConnectedCallback(ulong clientId)
-    {
-        Debug.Log($"User ID: {clientId}");
-        if(NetworkManager.IsHost)
-            InstantiateCameraAnchor(clientId);
-        //uidebuger.Log("Client connected: " + clientId);
     }
 }

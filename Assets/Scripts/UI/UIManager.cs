@@ -17,7 +17,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject joinRoomMenu;               // Reference to the Join to Room menu canvas
     [SerializeField] private GameObject profileMenu;                // Reference to the Profile Configuration menu canvas
     [SerializeField] private GameObject workspaceConfigMenu;        // Referene to the worspace config tools canvas
-    [SerializeField] private Button workspaceAcceptConfigBtn;
     [SerializeField] private GameObject mainMenu;                   // Referene to the main menu canvas
     [SerializeField] private Color SelectedConfigStateColor;        // Color for the selected configuration option in the Workspace config menu
 
@@ -143,8 +142,25 @@ public class UIManager : MonoBehaviour
         mainMenu.SetActive(true);
     }
 
-    public Button GetWorkspaceConfigButton()
+    /**
+     * Returns a reference to one of the buttons of the Workspace Configuration menu
+     * @param buttonName Name of the button beeing search
+     * @param isConfig True if the button is part of the configuration set , False if
+     *  it is from the Flow set
+     * @return Button The button component associated with the name given as parameter
+     */
+    public Button GetWorkspaceConfigButton(string buttonName, bool isConfig)
     {
-        return workspaceAcceptConfigBtn;
+        GameObject workspaceButton = null;
+        Transform panel = workspaceConfigMenu.transform.Find("Panel");
+        Transform configButtons = panel.Find("ConfigButtons");
+        Transform flowButtons = panel.Find("FlowButtons");
+
+        if (isConfig)
+            workspaceButton = configButtons.Find(buttonName).gameObject;
+        else
+            workspaceButton = flowButtons.Find(buttonName).gameObject;
+
+        return workspaceButton.GetComponent<Button>();
     }
 }

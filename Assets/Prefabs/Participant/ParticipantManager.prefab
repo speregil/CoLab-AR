@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3796610785218017217}
   - component: {fileID: 5171220643260157711}
   - component: {fileID: 8060788700919516432}
+  - component: {fileID: -3629699762860139784}
   m_Layer: 0
   m_Name: ParticipantManager
   m_TagString: Untagged
@@ -45,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2815689013
+  GlobalObjectIdHash: 1137683391
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 0
@@ -67,7 +68,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   workspacePrefab: {fileID: 5514888900471754074, guid: aec815610b10d294f9ae7f1e0a736c6d, type: 3}
-  workspaceConfigUI: {fileID: 0}
-  raycastManager: {fileID: 0}
-  trackingManager: {fileID: 0}
-  uiManager: {fileID: 0}
+--- !u!114 &-3629699762860139784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6343761103022612183}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51aecd3e7b4314445a956ffb3e39e822, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraAnchorPrefab: {fileID: 8724012436779451302, guid: 48db665f2e807af43ae2be20cad28692, type: 3}
