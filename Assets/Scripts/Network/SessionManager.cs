@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.XR.ARFoundation.VisualScripting;
 
 /**
  * Behaviour that controls the network functions of a participant who joined a room
@@ -13,17 +14,29 @@ public class SessionManager : NetworkBehaviour
     // Fields
     //------------------------------------------------------------------------------------------------------
 
-    [SerializeField] GameObject cameraAnchorPrefab;
+    /*private NetworkVariable<UserConfiguration.ProfileStruct> lastProfile = new NetworkVariable<UserConfiguration.ProfileStruct>(
+        new UserConfiguration.ProfileStruct
+        {
+            username = "New Profile",
+            r = 150,
+            g = 150,
+            b = 150
+        }, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);*/
+    private Dictionary<string,float> participants = new Dictionary<string, float>();
+    private UserConfiguration userConfig;
 
-    private GameObject currentCameraAnchor = null;
+    private int defaultParticipantCounter = 1;
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
     //------------------------------------------------------------------------------------------------------
 
-    void Start()
+    public override void OnNetworkSpawn()
     {
-        InstantiateCameraAnchorRPC(NetworkManager.Singleton.LocalClientId);   
+        userConfig = GameObject.Find("OfflineConfig").GetComponent<UserConfiguration>();
+        
+        if (IsOwner)
+            RegisterNewParticipantRpc(userConfig.GetProfileStruct());
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -31,13 +44,48 @@ public class SessionManager : NetworkBehaviour
     //------------------------------------------------------------------------------------------------------
 
     [Rpc(SendTo.Server)]
-    public void InstantiateCameraAnchorRPC(ulong clientId)
+    private void RegisterNewParticipantRpc(UserConfiguration.ProfileStruct newUserProfile)
     {
-        if (IsServer)
+        string newParticipantName = newUserProfile.username.ToString();
+
+        if(newParticipantName != null && newParticipantName != "")
+            participants[newParticipantName] = newUserProfile.r;
+        else
         {
-            Debug.Log("instantiating camera for: " + clientId);
-            NetworkObject anchornetworkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(cameraAnchorPrefab.GetComponent<NetworkObject>(), clientId, false, false, false, Vector3.zero, Quaternion.identity);
-            currentCameraAnchor = anchornetworkObject.gameObject;
+            string defaultName = "New Participant" + defaultParticipantCounter;
+            participants[defaultName] = 150.0f;
+            defaultParticipantCounter++;
+            newUserProfile.username = defaultName;
+            newUserProfile.r = 150.0f;
+            newUserProfile.g = 150.0f;
+            newUserProfile.b = 150.0f;
+        }
+
+        foreach(string p in participants.Keys)
+        {
+            Debug.Log(p + "\n");
+        }
+
+        UpdateParticipantsListRpc(newUserProfile);
+    }
+
+    [Rpc(SendTo.Server)]
+    public void PetitionCurrentParticipantsListRpc(ulong clientID)
+    {
+        return;
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void UpdateParticipantsListRpc(UserConfiguration.ProfileStruct newUserProfile)
+    {
+        if (IsHost) return;
+
+        string newParticipantName = newUserProfile.username.ToString();
+        participants[newParticipantName] = newUserProfile.r;
+        
+        foreach (string p in participants.Keys)
+        {
+            Debug.Log(p + "\n");
         }
     }
 }

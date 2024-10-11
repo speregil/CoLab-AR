@@ -9,6 +9,8 @@ public class CameraAnchor : NetworkBehaviour
 
     override public void OnNetworkSpawn()
     {
+        if (!IsOwner) return;
+
         mainCamera = Camera.main.gameObject;
         transform.position = mainCamera.transform.position;
         transform.rotation = mainCamera.transform.rotation;
@@ -17,6 +19,8 @@ public class CameraAnchor : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!IsOwner) return;
+
         transform.position = mainCamera.transform.position;
         transform.rotation = mainCamera.transform.rotation;
     }

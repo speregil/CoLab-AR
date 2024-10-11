@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
 /**
@@ -13,7 +15,27 @@ public class UserConfiguration : MonoBehaviour
     // Fields
     //-------------------------------------------------------------------------------------
 
-    private UserProfile profile;                // Profile data of the user storaged in the local machine
+    // Serializeable structut of the profile for network comunication
+    public struct ProfileStruct : INetworkSerializable
+    {
+        public FixedString128Bytes username;
+        public float r;
+        public float g;
+        public float b;
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref username);
+            serializer.SerializeValue(ref r);
+            serializer.SerializeValue(ref g);
+            serializer.SerializeValue(ref b);
+        }
+    }
+
+    private UserProfile profile;                                // Profile data of the user storaged in the local machine
+    
+    
+    
 
     //-------------------------------------------------------------------------------------
     // MonoBehaviour Functions
@@ -49,6 +71,21 @@ public class UserConfiguration : MonoBehaviour
         userColor.g = profile.userColor[1];
         userColor.b = profile.userColor[2];
         return userColor;
+    }
+
+    /**
+     * Obtains a serializeable version of the profile data for network communication
+     */
+    public ProfileStruct GetProfileStruct()
+    {
+        ProfileStruct profileStruct = new ProfileStruct()
+        {
+            username = profile.username,
+            r = profile.userColor[0],
+            g = profile.userColor[1],
+            b = profile.userColor[2]
+        };
+        return profileStruct;
     }
 
     /**
