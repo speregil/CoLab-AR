@@ -10,6 +10,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject mainMenu;
     [SerializeField] private GameObject participantMenu;
 
+    private SessionManager sessionManager;
+
     private TMP_Text mainButtonLbl;
     private Button mainButtonBtn;
 
@@ -35,6 +37,18 @@ public class MainMenuManager : MonoBehaviour
         mainButtonLbl.text = "Back";
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseParticipantsMenu);
+
+        List<string> participants = sessionManager.GetParticipantsList();
+        if (participants != null)
+        {
+            foreach (string participant in participants)
+            {
+                Debug.Log(participant);
+            }
+        }
+        else
+            Debug.Log("Invalid list");
+
     }
 
     public void CloseMainMenu()
@@ -52,5 +66,10 @@ public class MainMenuManager : MonoBehaviour
         mainButtonLbl.text = "Close";
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseMainMenu);
+    }
+
+    public void SetSessionManager(SessionManager sessionManager)
+    {
+        this.sessionManager = sessionManager;
     }
 }

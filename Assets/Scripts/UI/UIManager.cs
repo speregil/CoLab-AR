@@ -79,6 +79,7 @@ public class UIManager : MonoBehaviour
     public void AcceptJoinRoom()
     {
         joinRoomMenu.SetActive(false);
+        mainMenu.SetActive(true);
     }
 
     /**
