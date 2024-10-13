@@ -9,17 +9,20 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject mainButton;
     [SerializeField] private GameObject mainMenu;
     [SerializeField] private GameObject participantMenu;
+    [SerializeField] private GameObject participantLabelPrefab;
 
     private SessionManager sessionManager;
 
     private TMP_Text mainButtonLbl;
     private Button mainButtonBtn;
+    
 
     // Start is called before the first frame update
     void Start()
     {
         mainButtonLbl = mainButton.transform.GetComponentInChildren<TMP_Text>();
         mainButtonBtn = mainButton.GetComponentInChildren<Button>();
+
     }
 
     public void OpenMainMenu()
@@ -43,12 +46,20 @@ public class MainMenuManager : MonoBehaviour
         {
             foreach (string participant in participants)
             {
-                Debug.Log(participant);
+                AddParticipantToList(participant);
             }
         }
         else
             Debug.Log("Invalid list");
 
+    }
+
+    private void AddParticipantToList(string username)
+    {
+        GameObject labelInstance = GameObject.Instantiate(participantLabelPrefab);
+        TMP_Text usernameLbl = labelInstance.GetComponentInChildren<TMP_Text>();
+        usernameLbl.text = username;
+        labelInstance.transform.SetParent(participantMenu.transform, false);
     }
 
     public void CloseMainMenu()
@@ -61,6 +72,11 @@ public class MainMenuManager : MonoBehaviour
 
     public void CloseParticipantsMenu()
     {
+        foreach (Transform child in participantMenu.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
         mainMenu.SetActive(true);
         participantMenu.SetActive(false);
         mainButtonLbl.text = "Close";
