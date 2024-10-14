@@ -19,6 +19,7 @@ public class IntroManager : MonoBehaviour
     [SerializeField] TMP_InputField usernameInputField;                 // Reference to the input field for the username of the current user's profile
     [SerializeField] TMP_Text responseMessageTxt;                       // Reference to the response message text in the profile menu 
     [SerializeField] TMP_Dropdown joinNameDropdown;                     // Reference to the input field for the name of a room to join to
+    [SerializeField] TMP_Dropdown colorPickDropdown;
 
     [SerializeField] private SharedSpaceManager sharedSpaceManager;     // References to Lightship AR Shared Space API
     UIManager uiManager;                                                // Reference to the UIManager component
@@ -84,6 +85,39 @@ public class IntroManager : MonoBehaviour
     public void OnDropdownChange(int value)
     {
         roomName = joinNameDropdown.options[value].text;
+    }
+
+    public void OnColorPick(int value)
+    {
+        string colorName = colorPickDropdown.options[value].text;
+
+        switch (colorName)
+        {
+            case "Red":
+                break;
+            case "Blue":
+                break;
+            case "Lime":
+                break;
+            case "Yellow":
+                break;
+            case "Purple":
+                break;
+            case "Green":
+                break;
+            case "Brown":
+                break;
+            case "Dark Blue":
+                break;
+            case "Orange":
+                break;
+            case "Pink":
+                break;
+            case "Black":
+                break;
+            default:
+                break;
+        }
     }
 
     /**
