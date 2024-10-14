@@ -55,9 +55,9 @@ public class IntroManager : MonoBehaviour
      * Returns the current name that is going to be used to create or join a room
      * @returns string The name of the current room
      */
-    public string GetRoomName() 
-    { 
-        return roomName; 
+    public string GetRoomName()
+    {
+        return roomName;
     }
 
     /**
@@ -94,28 +94,40 @@ public class IntroManager : MonoBehaviour
         switch (colorName)
         {
             case "Red":
+                userColor = new Color(255, 0, 0);
                 break;
             case "Blue":
+                userColor = new Color(0, 0, 255);
                 break;
             case "Lime":
+                userColor = new Color(0, 255, 0);
                 break;
             case "Yellow":
+                userColor = new Color(255, 255, 0);
                 break;
             case "Purple":
+                userColor = new Color(128, 0, 128);
                 break;
             case "Green":
+                userColor = new Color(0, 128, 0);
                 break;
             case "Brown":
+                userColor = new Color(165, 42, 42);
                 break;
             case "Dark Blue":
+                userColor = new Color(0, 0, 160);
                 break;
             case "Orange":
+                userColor = new Color(255, 165, 0);
                 break;
             case "Pink":
+                userColor = new Color(255, 0, 255);
                 break;
             case "Black":
+                userColor = new Color(0, 0, 0);
                 break;
             default:
+                userColor = new Color(128, 128, 128);
                 break;
         }
     }
@@ -135,7 +147,7 @@ public class IntroManager : MonoBehaviour
     /**
      * Initialize the room list everytime the Join Room menu is opened
      */
-    public void InitializeJoinRoom() 
+    public void InitializeJoinRoom()
     {
         joinNameDropdown.ClearOptions();
         List<IRoom> roomList = new List<IRoom>();
@@ -153,9 +165,10 @@ public class IntroManager : MonoBehaviour
      * Initialize the profile menu with the username given by parameter as default option in the interface
      * @param currentUsername Default username option to show in the interface
      */
-    public void InitializeProfileMenu(string currentUsername)
+    public void InitializeProfileMenu(string currentUsername, Color currentUserColor)
     {
         usernameInputField.text = currentUsername;
+        colorPickDropdown.value = GetColorValue(currentUserColor);
         responseMessageTxt.text = "";
     }
 
@@ -195,7 +208,6 @@ public class IntroManager : MonoBehaviour
     public void SaveProfile()
     {
         responseMessageTxt.text = "";
-        userColor = Color.grey;
         string msg = uiManager.SaveProfile(username, userColor);
         responseMessageTxt.text = msg;
     }
@@ -230,6 +242,33 @@ public class IntroManager : MonoBehaviour
             Debug.Log("Connecting client");
             NetworkManager.Singleton.StartClient();
         }
+    }
+
+    public int GetColorValue(Color color)
+    {
+        int value = -1;
+
+        if (color.r == 165) value = 6; // Brown
+        else if (color.r == 128) value = color.g == 0 ? 4 : -1; // Purple
+        else if (color.r == 255)
+        {
+            if (color.g == 255) value = 3; // Yellow
+            else if (color.g == 165) value = 8; // Orange
+            else if(color.b == 255) value = 9; // Pink
+            else value = 0; // Red
+        }
+        else if(color.r == 0)
+        {
+            if(color.g == 0)
+            {
+                if (color.b == 255) value = 1; // Blue
+                else if (color.b == 160) value = 7; // Dark Blue
+                else value = 10; // Black
+            }
+        }
+        else value = color.g == 255 ? 2 : 5; // Lime - Green
+        
+        return value;
     }
 
     public void PurgeRooms()

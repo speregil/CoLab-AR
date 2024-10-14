@@ -61,7 +61,7 @@ public class UIManager : MonoBehaviour
     public void ProfileMenu()
     {
         introMenu.SetActive(false);
-        introManager.InitializeProfileMenu(userConfiguration.GetUsername());
+        introManager.InitializeProfileMenu(userConfiguration.GetUsername(), userConfiguration.GetUserColor());
         profileMenu.SetActive(true);
     }
 

@@ -12,10 +12,13 @@ public class SessionManager : NetworkBehaviour
     // Fields
     //------------------------------------------------------------------------------------------------------
 
-    //[SerializeField] private Dictionary<string,float> participants = new Dictionary<string, float>();
-    [SerializeField] private List<string> participants = new List<string>();
+    [SerializeField] private GameObject mainBody;
+    [SerializeField] private GameObject gaze;
+
+    private List<string> participants = new List<string>();
     private UserConfiguration userConfig;
     private MainMenuManager mainMenu;
+    private Material mainMaterial;
 
     private int defaultParticipantCounter = 1;
 
@@ -28,9 +31,15 @@ public class SessionManager : NetworkBehaviour
         userConfig = GameObject.Find("OfflineConfig").GetComponent<UserConfiguration>();
         GameObject mainMenuObject = GameObject.Find("UI").transform.Find("MainMenu").gameObject;
         mainMenu = mainMenuObject.GetComponent<MainMenuManager>();
+        mainMaterial = mainBody.GetComponent<Renderer>().material;
+        mainMaterial.SetColor("_Color", userConfig.GetUserColor());
+        //mainBody.GetComponent<Renderer>().material = mainMaterial;
         RegisterNewParticipantRpc(userConfig.GetProfileStruct());
 
-        if(IsOwner) mainMenu.SetSessionManager(this);
+        if(IsOwner) {
+            mainMenu.SetSessionManager(this);
+            gaze.SetActive(false);
+        }
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -48,22 +57,13 @@ public class SessionManager : NetworkBehaviour
         string newParticipantName = newUserProfile.username.ToString();
 
         if(newParticipantName != null && newParticipantName != "") { 
-            //participants[newParticipantName] = newUserProfile.r;
             participants.Add(newParticipantName);
         }
         else
         {
             newParticipantName = "New Participant" + defaultParticipantCounter;
             participants.Add(newParticipantName);
-            /*participants[defaultName] = 150.0f;
-            defaultParticipantCounter++;
-            newUserProfile.username = defaultName;
-            newUserProfile.r = 150.0f;
-            newUserProfile.g = 150.0f;
-            newUserProfile.b = 150.0f;*/
         }
-
-        //UpdateParticipantsListRpc(newParticipantName);
     }
 
     [Rpc(SendTo.Server)]
