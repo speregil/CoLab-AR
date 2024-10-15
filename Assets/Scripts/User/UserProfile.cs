@@ -12,7 +12,8 @@ public class UserProfile
     //------------------------------------------------------------------------------------
 
     public string username { get; set; }            // User's selected name to show to other participants
-    public float[] userColor { get; set; }            // User's selected color to show to other paticipants, represented as a 3 int RGB array
+    public float[] userColor { get; set; }          // User's selected color to show to other paticipants, represented as a 3 int RGB array
+    public int colorValue { get; set; }             // Value of the color selected in the profile interface UI
 
     //------------------------------------------------------------------------------------
     // Constructor
@@ -25,5 +26,6 @@ public class UserProfile
         userColor[0] = 150.0f;
         userColor[1] = 150.0f;
         userColor[2] = 150.0f;
+        colorValue = -1;
     }
 }

@@ -74,6 +74,15 @@ public class UserConfiguration : MonoBehaviour
     }
 
     /**
+     * Obtains the value of the user color used in the profile menu UI
+     * @return int Value of the color option in the profile menu UI
+     */
+    public int GetColorValue()
+    {
+        return profile.colorValue;
+    }
+
+    /**
      * Obtains a serializeable version of the profile data for network communication
      */
     public ProfileStruct GetProfileStruct()
@@ -100,6 +109,7 @@ public class UserConfiguration : MonoBehaviour
         float r = PlayerPrefs.GetFloat("r", -1.0f);
         float g = PlayerPrefs.GetFloat("g", -1.0f);
         float b = PlayerPrefs.GetFloat("b", -1.0f);
+        int value = PlayerPrefs.GetInt("value", -1);
 
         if (username != "")
             profile.username = username;
@@ -109,11 +119,12 @@ public class UserConfiguration : MonoBehaviour
         if(r >= 0 && g >= 0 && b >= 0)
         {
             profile.userColor[0] = r;
-            profile.userColor[1] = r;
-            profile.userColor[2] = r;
+            profile.userColor[1] = g;
+            profile.userColor[2] = b;
+            profile.colorValue = value;
         }
         else
-            err = "User profile not found";
+            err = "Not a valid user profile";
 
         return err;
     }
@@ -125,12 +136,13 @@ public class UserConfiguration : MonoBehaviour
      * @param userColor Updated color selected by the user
      * @return string A message detailing the result of the operation
      */
-    public string UpdateAndSaveProfile(string username, Color userColor)
+    public string UpdateAndSaveProfile(string username, Color userColor, int colorValue)
     {
         profile.username = username;
         profile.userColor[0] = userColor.r;
         profile.userColor[1] = userColor.g;
         profile.userColor[2] = userColor.b;
+        profile.colorValue = colorValue;
 
         return SaveToLocalMachine();
     }
@@ -147,6 +159,7 @@ public class UserConfiguration : MonoBehaviour
             PlayerPrefs.SetFloat("r", profile.userColor[0]);
             PlayerPrefs.SetFloat("g", profile.userColor[1]);
             PlayerPrefs.SetFloat("b", profile.userColor[2]);
+            PlayerPrefs.SetInt("value", profile.colorValue);
         }
         catch (Exception e)
         {

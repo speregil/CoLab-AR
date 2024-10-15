@@ -18,7 +18,6 @@ public class SessionManager : NetworkBehaviour
     private List<string> participants = new List<string>();
     private UserConfiguration userConfig;
     private MainMenuManager mainMenu;
-    private Material mainMaterial;
 
     private int defaultParticipantCounter = 1;
 
@@ -31,14 +30,12 @@ public class SessionManager : NetworkBehaviour
         userConfig = GameObject.Find("OfflineConfig").GetComponent<UserConfiguration>();
         GameObject mainMenuObject = GameObject.Find("UI").transform.Find("MainMenu").gameObject;
         mainMenu = mainMenuObject.GetComponent<MainMenuManager>();
-        mainMaterial = mainBody.GetComponent<Renderer>().material;
-        mainMaterial.SetColor("_Color", userConfig.GetUserColor());
-        //mainBody.GetComponent<Renderer>().material = mainMaterial;
         RegisterNewParticipantRpc(userConfig.GetProfileStruct());
 
         if(IsOwner) {
             mainMenu.SetSessionManager(this);
             gaze.SetActive(false);
+            ApplyAnchorColor();
         }
     }
 
@@ -49,6 +46,15 @@ public class SessionManager : NetworkBehaviour
     public List<string> GetParticipantsList()
     {
         return participants;
+    }
+
+    public void ApplyAnchorColor()
+    {
+        Material mainMaterial = mainBody.GetComponent<Renderer>().material;
+        Color participantColor = userConfig.GetUserColor();
+        Debug.Log("r: " + participantColor.r + " g: " + participantColor.g + " b: " + participantColor.b);
+        mainMaterial.SetColor("_Color", participantColor);
+        TrasmitAnchorColorChangeRpc(userConfig.GetProfileStruct(), OwnerClientId);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
@@ -64,6 +70,15 @@ public class SessionManager : NetworkBehaviour
             newParticipantName = "New Participant" + defaultParticipantCounter;
             participants.Add(newParticipantName);
         }
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void TrasmitAnchorColorChangeRpc(UserConfiguration.ProfileStruct profile, ulong ownerID)
+    {
+        Debug.Log("Rpc: " + profile.r +":" + profile.g + ":" + profile.b);
+        Material mainMaterial = mainBody.GetComponent<Renderer>().material;
+        Color participantColor = new Color(profile.r, profile.g, profile.b);
+        mainMaterial.SetColor("_Color", participantColor);
     }
 
     [Rpc(SendTo.Server)]

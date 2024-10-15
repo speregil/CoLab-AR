@@ -61,7 +61,7 @@ public class UIManager : MonoBehaviour
     public void ProfileMenu()
     {
         introMenu.SetActive(false);
-        introManager.InitializeProfileMenu(userConfiguration.GetUsername(), userConfiguration.GetUserColor());
+        introManager.InitializeProfileMenu(userConfiguration.GetUsername(), userConfiguration.GetColorValue());
         profileMenu.SetActive(true);
     }
 
@@ -85,9 +85,9 @@ public class UIManager : MonoBehaviour
     /**
      * Reacts to the action of saving any changes in the Profile menu
      */
-    public string SaveProfile(string username, Color userColor)
+    public string SaveProfile(string username, Color userColor, int colorValue)
     {
-        return userConfiguration.UpdateAndSaveProfile(username, userColor);
+        return userConfiguration.UpdateAndSaveProfile(username, userColor, colorValue);
     }
 
     public string LoadProfile() 
