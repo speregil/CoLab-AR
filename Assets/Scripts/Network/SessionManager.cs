@@ -15,7 +15,7 @@ public class SessionManager : NetworkBehaviour
     [SerializeField] private GameObject mainBody;
     [SerializeField] private GameObject gaze;
 
-    private List<string> participants = new List<string>();
+    private Dictionary<string, Color> participants = new Dictionary<string, Color>();
     private UserConfiguration userConfig;
     private MainMenuManager mainMenu;
 
@@ -30,12 +30,11 @@ public class SessionManager : NetworkBehaviour
         userConfig = GameObject.Find("OfflineConfig").GetComponent<UserConfiguration>();
         GameObject mainMenuObject = GameObject.Find("UI").transform.Find("MainMenu").gameObject;
         mainMenu = mainMenuObject.GetComponent<MainMenuManager>();
-        RegisterNewParticipantRpc(userConfig.GetProfileStruct());
+        RegisterNewParticipantRpc(userConfig.GetProfileStruct(), NetworkManager.Singleton.LocalClientId);
 
-        if(IsOwner) {
+        if (IsOwner) {
             mainMenu.SetSessionManager(this);
             gaze.SetActive(false);
-            ApplyAnchorColor();
         }
     }
 
@@ -43,66 +42,61 @@ public class SessionManager : NetworkBehaviour
     // Functions
     //------------------------------------------------------------------------------------------------------
 
-    public List<string> GetParticipantsList()
+    public Dictionary<string,Color> GetParticipantsList()
     {
         return participants;
     }
 
-    public void ApplyAnchorColor()
+    public void ApplyAnchorColor(Color participantColor)
     {
         Material mainMaterial = mainBody.GetComponent<Renderer>().material;
-        Color participantColor = userConfig.GetUserColor();
-        Debug.Log("r: " + participantColor.r + " g: " + participantColor.g + " b: " + participantColor.b);
         mainMaterial.SetColor("_Color", participantColor);
-        TrasmitAnchorColorChangeRpc(userConfig.GetProfileStruct(), OwnerClientId);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void RegisterNewParticipantRpc(UserConfiguration.ProfileStruct newUserProfile)
+    private void RegisterNewParticipantRpc(UserConfiguration.ProfileStruct newUserProfile, ulong clientID)
     {
-        string newParticipantName = newUserProfile.username.ToString();
+        string newParticipantName = newUserProfile.username.ToString() + ":" + clientID;
+        Color participantColor = new Color(newUserProfile.r, newUserProfile.g, newUserProfile.b);
 
-        if(newParticipantName != null && newParticipantName != "") { 
-            participants.Add(newParticipantName);
+        if(newParticipantName != null && newParticipantName != "") {
+            participants[newParticipantName] = participantColor;
         }
         else
         {
             newParticipantName = "New Participant" + defaultParticipantCounter;
-            participants.Add(newParticipantName);
-        }
-    }
-
-    [Rpc(SendTo.ClientsAndHost)]
-    private void TrasmitAnchorColorChangeRpc(UserConfiguration.ProfileStruct profile, ulong ownerID)
-    {
-        Debug.Log("Rpc: " + profile.r +":" + profile.g + ":" + profile.b);
-        Material mainMaterial = mainBody.GetComponent<Renderer>().material;
-        Color participantColor = new Color(profile.r, profile.g, profile.b);
-        mainMaterial.SetColor("_Color", participantColor);
-    }
-
-    [Rpc(SendTo.Server)]
-    public void PetitionCurrentParticipantsListRpc(ulong clientID)
-    {
-        string msg = "" + participants.Count + " ";
-        foreach(string participant in participants) {
-            msg += participant + " ";
+            participants[newParticipantName] = participantColor;
         }
 
-        UpdateParticipantsListRpc(msg.TrimEnd(), clientID);
+        if(IsOwner)
+            LocalUpdateAnchorColorRpc();
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    public void UpdateParticipantsListRpc(string currentList, ulong clientID)
+    private void LocalUpdateAnchorColorRpc()
     {
-        if (IsHost) return;
+        GameObject[] localParticipants = GameObject.FindGameObjectsWithTag("participant");
 
-        string[] listParams = currentList.Split(" ");
-        int count = int.Parse(listParams[0]);
-        int i = 1;
-        while (i < count) {
-            participants.Add(listParams[i]);
-            count++;
+        Debug.Log(localParticipants.Length);
+        foreach( GameObject local in localParticipants)
+        {
+            SessionManager localManager = local.GetComponent<SessionManager>();
+            ulong localOwnerId = localManager.OwnerClientId;
+
+            string username = "";
+            foreach(string participant in participants.Keys) 
+            {
+                string[] data = participant.Split(":");
+                ulong key = ulong.Parse(data[1]);
+                if(localOwnerId == key) username = participant;
+            }
+
+            //Debug.Log(username);
+            if (username != "")
+            { 
+                Color participantColor = participants[username];
+                localManager.ApplyAnchorColor(participantColor);
+            }
         }
+
     }
 }

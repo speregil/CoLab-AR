@@ -41,10 +41,10 @@ public class MainMenuManager : MonoBehaviour
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseParticipantsMenu);
 
-        List<string> participants = sessionManager.GetParticipantsList();
+        Dictionary<string, Color> participants = sessionManager.GetParticipantsList();
         if (participants != null)
         {
-            foreach (string participant in participants)
+            foreach (string participant in participants.Keys)
             {
                 AddParticipantToList(participant);
             }
