@@ -5,6 +5,8 @@ using Unity.Netcode;
 
 public class CameraAnchor : NetworkBehaviour
 {
+    [SerializeField] private SessionManager sessionManager;
+
     private GameObject mainCamera;
 
     override public void OnNetworkSpawn()

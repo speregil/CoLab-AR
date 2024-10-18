@@ -23,9 +23,9 @@ public class UserProfile
         // Initialize default parameters for the profile 
         username = "Default User";
         userColor = new float[3];
-        userColor[0] = 150.0f;
-        userColor[1] = 150.0f;
-        userColor[2] = 150.0f;
+        userColor[0] = 0.5f;
+        userColor[1] = 0.5f;
+        userColor[2] = 0.5f;
         colorValue = -1;
     }
 }

@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6916556238548422032}
   - component: {fileID: 3847954822061717232}
   - component: {fileID: 4872969753223355781}
-  - component: {fileID: 2741369757823579522}
   m_Layer: 0
   m_Name: GazeB
   m_TagString: Untagged
@@ -84,27 +83,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &2741369757823579522
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1367017431647010833}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2325355337017570908
 GameObject:
   m_ObjectHideFlags: 0
@@ -116,7 +94,6 @@ GameObject:
   - component: {fileID: 8314435576885064549}
   - component: {fileID: 8523046039634208501}
   - component: {fileID: 3012180712106587553}
-  - component: {fileID: 5324084700086055124}
   m_Layer: 0
   m_Name: GazeA
   m_TagString: Untagged
@@ -189,27 +166,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5324084700086055124
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2325355337017570908}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2737694164373843188
 GameObject:
   m_ObjectHideFlags: 0
@@ -226,7 +182,7 @@ GameObject:
   - component: {fileID: 5746683486355071360}
   m_Layer: 0
   m_Name: MainBody
-  m_TagString: Untagged
+  m_TagString: anchor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -330,6 +286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a6e59fa83228374dad09f9688a2a8ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sessionManager: {fileID: -3629699762860139784}
 --- !u!114 &5746683486355071360
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -454,7 +411,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7042591797343559392}
   m_Layer: 0
-  m_Name: Gaze
+  m_Name: StickEyes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

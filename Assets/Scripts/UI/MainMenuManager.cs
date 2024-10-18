@@ -8,13 +8,16 @@ public class MainMenuManager : MonoBehaviour
 {
     [SerializeField] private GameObject mainButton;
     [SerializeField] private GameObject mainMenu;
-    [SerializeField] private GameObject participantMenu;
+    [SerializeField] private GameObject participantsMenu;
     [SerializeField] private GameObject participantLabelPrefab;
+    [SerializeField] private GameObject participantOptions;
 
     private SessionManager sessionManager;
 
     private TMP_Text mainButtonLbl;
     private Button mainButtonBtn;
+
+    private bool onMainMenu = false;
     
 
     // Start is called before the first frame update
@@ -22,6 +25,7 @@ public class MainMenuManager : MonoBehaviour
     {
         mainButtonLbl = mainButton.transform.GetComponentInChildren<TMP_Text>();
         mainButtonBtn = mainButton.GetComponentInChildren<Button>();
+        mainButtonBtn.onClick.AddListener(OpenMainMenu);
 
     }
 
@@ -31,12 +35,13 @@ public class MainMenuManager : MonoBehaviour
         mainButtonLbl.text = "Close";
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseMainMenu);
+        onMainMenu = true;
     }
 
     public void OpenParticipantsMenu()
     {
         mainMenu.SetActive(false);
-        participantMenu.SetActive(true);
+        participantsMenu.SetActive(true);
         mainButtonLbl.text = "Back";
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseParticipantsMenu);
@@ -59,7 +64,18 @@ public class MainMenuManager : MonoBehaviour
         GameObject labelInstance = GameObject.Instantiate(participantLabelPrefab);
         TMP_Text usernameLbl = labelInstance.GetComponentInChildren<TMP_Text>();
         usernameLbl.text = username;
-        labelInstance.transform.SetParent(participantMenu.transform, false);
+        labelInstance.transform.SetParent(participantsMenu.transform, false);
+    }
+
+    public void OpenParticipantOptions()
+    {
+        if (!onMainMenu)
+        {
+            participantOptions.SetActive(true);
+            mainButtonLbl.text = "Close";
+            mainButtonBtn.onClick.RemoveAllListeners();
+            mainButtonBtn.onClick.AddListener(CloseParticipantOptions);
+        }
     }
 
     public void CloseMainMenu()
@@ -68,20 +84,29 @@ public class MainMenuManager : MonoBehaviour
         mainButtonLbl.text = "Open";
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(OpenMainMenu);
+        onMainMenu = false;
     }
 
     public void CloseParticipantsMenu()
     {
-        foreach (Transform child in participantMenu.transform)
+        foreach (Transform child in participantsMenu.transform)
         {
             Destroy(child.gameObject);
         }
 
         mainMenu.SetActive(true);
-        participantMenu.SetActive(false);
+        participantsMenu.SetActive(false);
         mainButtonLbl.text = "Close";
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseMainMenu);
+    }
+
+    public void CloseParticipantOptions()
+    {
+        participantOptions.SetActive(false);
+        mainButtonLbl.text = "Open";
+        mainButtonBtn.onClick.RemoveAllListeners();
+        mainButtonBtn.onClick.AddListener(OpenMainMenu);
     }
 
     public void SetSessionManager(SessionManager sessionManager)
