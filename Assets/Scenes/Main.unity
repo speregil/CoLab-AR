@@ -770,7 +770,19 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 384863536}
+        m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
+        m_MethodName: OnNameplateToggle
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 1
 --- !u!1 &215638238
 GameObject:
@@ -1592,6 +1604,7 @@ MonoBehaviour:
   participantsMenu: {fileID: 1445988276}
   participantLabelPrefab: {fileID: 5111697513826951667, guid: dabb6b86d213eec49a84aa6b1c08e713, type: 3}
   participantOptions: {fileID: 243272397}
+  participantOptionsUsernameLabel: {fileID: 1913440311}
 --- !u!114 &384863537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3844,7 +3857,19 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 384863536}
+        m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
+        m_MethodName: OnGazeToggle
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 1
 --- !u!1 &1178811497
 GameObject:
@@ -5090,7 +5115,7 @@ GameObject:
   - component: {fileID: 1664260682}
   - component: {fileID: 1664260681}
   m_Layer: 0
-  m_Name: Button
+  m_Name: PingBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5940,7 +5965,7 @@ GameObject:
   - component: {fileID: 1913440312}
   - component: {fileID: 1913440311}
   m_Layer: 0
-  m_Name: Text (TMP)
+  m_Name: UsernameLbl
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

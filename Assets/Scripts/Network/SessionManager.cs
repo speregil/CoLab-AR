@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using System.Linq;
+using TMPro;
 
 /**
  * Behaviour that controls the network functions of a participant who joined a room
@@ -14,8 +16,10 @@ public class SessionManager : NetworkBehaviour
 
     [SerializeField] private GameObject mainBody;
     [SerializeField] private GameObject gaze;
+    [SerializeField] private GameObject nameplate;
 
     private Dictionary<string, Color> participants = new Dictionary<string, Color>();
+    private GameObject selectedParticipant;
     private UserConfiguration userConfig;
     private MainMenuManager mainMenu;
 
@@ -35,6 +39,7 @@ public class SessionManager : NetworkBehaviour
         if (IsOwner) {
             mainMenu.SetSessionManager(this);
             gaze.SetActive(false);
+            nameplate.SetActive(false);
         }
     }
 
@@ -42,14 +47,17 @@ public class SessionManager : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        if (Input.GetMouseButtonDown(0) || Input.touchCount > 0)
+        bool mouseInput = Input.GetMouseButtonDown(0);
+        bool touchInput = Input.touchCount > 0;
+
+        if (mouseInput || touchInput)
         {
             Ray ray = new Ray();
 
-            if(Input.GetMouseButtonDown(0))
+            if(mouseInput)
                 ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            if (Input.touchCount > 0)
+            if (touchInput)
             {
                 Touch touch = Input.GetTouch(index: 0);
                 ray = Camera.main.ScreenPointToRay(touch.position);
@@ -60,7 +68,11 @@ public class SessionManager : NetworkBehaviour
             if (Physics.Raycast(ray, out hit, 100))
             {
                 if(hit.transform.tag == "anchor")
-                    mainMenu.OpenParticipantOptions();
+                {
+                    selectedParticipant = hit.transform.gameObject;
+                    SessionManager selectedParticipantManager = selectedParticipant.GetComponentInParent<SessionManager>();
+                    mainMenu.OpenParticipantOptions(GetUsernameById(selectedParticipantManager.OwnerClientId));
+                }
             }
         }
     }
@@ -85,11 +97,16 @@ public class SessionManager : NetworkBehaviour
         mainMaterial.SetColor("_Color", normalizeColor(participantColor));
     }
 
-    private void LocalUpdateAnchorColorRpc()
+    public void UpdateAnchorNameplate(string username)
+    {
+        TMP_Text label = nameplate.GetComponent<TMP_Text>();
+        label.text = username;
+    }
+
+    private void LocalUpdateAnchors()
     {
         GameObject[] localParticipants = GameObject.FindGameObjectsWithTag("participant");
 
-        Debug.Log(localParticipants.Length);
         foreach (GameObject local in localParticipants)
         {
             SessionManager localManager = local.GetComponent<SessionManager>();
@@ -103,17 +120,59 @@ public class SessionManager : NetworkBehaviour
                 if (localOwnerId == key) username = participant;
             }
 
-            //Debug.Log(username);
             if (username != "")
             {
                 Color participantColor = participants[username];
                 localManager.ApplyAnchorColor(participantColor);
+                localManager.UpdateAnchorNameplate(username);
             }
         }
-
     }
 
-    public Color normalizeColor(Color baseColor)
+    public void SetGazeActive(bool active)
+    {
+        if(!IsOwner) return;
+
+        if (selectedParticipant != null)
+        {
+            GameObject gaze = selectedParticipant.transform.Find("Gaze").gameObject;
+            gaze.SetActive(active);
+        }
+    }
+
+    public void SetNameplateActive(bool active)
+    {
+        if (!IsOwner) return;
+
+        if (selectedParticipant != null)
+        {
+            GameObject gaze = selectedParticipant.transform.Find("Nameplate").gameObject;
+            gaze.SetActive(active);
+        }
+    }
+
+    public void UnselectParticipant()
+    {
+        if (!IsOwner) return;
+
+        selectedParticipant = null;
+    }
+
+    public string GetUsernameById(ulong id)
+    {
+        string username = "";
+
+        foreach (string participant in participants.Keys)
+        {
+            string[] data = participant.Split(":");
+            ulong key = ulong.Parse(data[1]);
+            if (id == key) username = data[0];
+        }
+
+        return username;
+    }
+
+    private Color normalizeColor(Color baseColor)
     {
         Color normalizedColor = new Color();
         normalizedColor.r = baseColor.r / 255;
@@ -128,7 +187,7 @@ public class SessionManager : NetworkBehaviour
         string newParticipantName = newUserProfile.username.ToString() + ":" + clientID;
         Color participantColor = new Color(newUserProfile.r, newUserProfile.g, newUserProfile.b);
 
-        if(newParticipantName != null && newParticipantName != "") {
+        if (newParticipantName != null && newParticipantName != "") {
             participants[newParticipantName] = participantColor;
         }
         else
@@ -138,7 +197,7 @@ public class SessionManager : NetworkBehaviour
             defaultParticipantCounter++;
         }
 
-        if(IsOwner)
-            LocalUpdateAnchorColorRpc();
+        if (IsOwner)
+            LocalUpdateAnchors();
     }
 }

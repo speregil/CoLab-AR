@@ -11,6 +11,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject participantsMenu;
     [SerializeField] private GameObject participantLabelPrefab;
     [SerializeField] private GameObject participantOptions;
+    [SerializeField] private TMP_Text   participantOptionsUsernameLabel;
 
     private SessionManager sessionManager;
 
@@ -67,11 +68,12 @@ public class MainMenuManager : MonoBehaviour
         labelInstance.transform.SetParent(participantsMenu.transform, false);
     }
 
-    public void OpenParticipantOptions()
+    public void OpenParticipantOptions(string username)
     {
         if (!onMainMenu)
         {
             participantOptions.SetActive(true);
+            participantOptionsUsernameLabel.text = username;
             mainButtonLbl.text = "Close";
             mainButtonBtn.onClick.RemoveAllListeners();
             mainButtonBtn.onClick.AddListener(CloseParticipantOptions);
@@ -94,6 +96,7 @@ public class MainMenuManager : MonoBehaviour
             Destroy(child.gameObject);
         }
 
+        participantOptionsUsernameLabel.text = "username";
         mainMenu.SetActive(true);
         participantsMenu.SetActive(false);
         mainButtonLbl.text = "Close";
@@ -107,6 +110,17 @@ public class MainMenuManager : MonoBehaviour
         mainButtonLbl.text = "Open";
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(OpenMainMenu);
+        sessionManager.UnselectParticipant();
+    }
+
+    public void OnGazeToggle(bool toggle)
+    {
+        sessionManager.SetGazeActive(toggle);
+    }
+
+    public void OnNameplateToggle(bool toggle)
+    {
+        sessionManager.SetNameplateActive(toggle);
     }
 
     public void SetSessionManager(SessionManager sessionManager)
