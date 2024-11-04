@@ -17,6 +17,7 @@ public class SessionManager : NetworkBehaviour
     [SerializeField] private GameObject mainBody;
     [SerializeField] private GameObject gaze;
     [SerializeField] private GameObject nameplate;
+    [SerializeField] private GameObject pingEffect;
 
     private Dictionary<string, Color> participants = new Dictionary<string, Color>();
     private GameObject selectedParticipant;
@@ -39,7 +40,6 @@ public class SessionManager : NetworkBehaviour
         if (IsOwner) {
             mainMenu.SetSessionManager(this);
             gaze.SetActive(false);
-            nameplate.SetActive(false);
         }
     }
 
@@ -99,7 +99,7 @@ public class SessionManager : NetworkBehaviour
 
     public void UpdateAnchorNameplate(string username)
     {
-        TMP_Text label = nameplate.GetComponent<TMP_Text>();
+        TMP_Text label = nameplate.transform.Find("Panel").gameObject.GetComponentInChildren<TMP_Text>();
         label.text = username;
     }
 
@@ -148,6 +148,17 @@ public class SessionManager : NetworkBehaviour
         {
             GameObject gaze = selectedParticipant.transform.Find("Nameplate").gameObject;
             gaze.SetActive(active);
+        }
+    }
+
+    public void PingParticipant()
+    {
+        if (!IsOwner) return;
+
+        if (selectedParticipant != null)
+        {
+            GameObject ping = selectedParticipant.transform.Find("PingEffect").gameObject;
+            ping.SetActive(true);
         }
     }
 

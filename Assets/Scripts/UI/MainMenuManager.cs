@@ -123,6 +123,11 @@ public class MainMenuManager : MonoBehaviour
         sessionManager.SetNameplateActive(toggle);
     }
 
+    public void OnPingParticipant()
+    {
+        sessionManager.PingParticipant();
+    }
+
     public void SetSessionManager(SessionManager sessionManager)
     {
         this.sessionManager = sessionManager;
