@@ -23,6 +23,7 @@ public class SessionManager : NetworkBehaviour
     private GameObject selectedParticipant;
     private UserConfiguration userConfig;
     private MainMenuManager mainMenu;
+    private Animator pingAnimator;
 
     private int defaultParticipantCounter = 1;
 
@@ -35,6 +36,7 @@ public class SessionManager : NetworkBehaviour
         userConfig = GameObject.Find("OfflineConfig").GetComponent<UserConfiguration>();
         GameObject mainMenuObject = GameObject.Find("UI").transform.Find("MainMenu").gameObject;
         mainMenu = mainMenuObject.GetComponent<MainMenuManager>();
+        pingAnimator = mainBody.GetComponentInChildren<Animator>();
         RegisterNewParticipantRpc(userConfig.GetProfileStruct(), NetworkManager.Singleton.LocalClientId);
 
         if (IsOwner) {
@@ -89,6 +91,11 @@ public class SessionManager : NetworkBehaviour
     public Dictionary<string,Color> GetParticipantsList()
     {
         return participants;
+    }
+
+    public Animator GetAnimatorReference()
+    {
+        return pingAnimator;
     }
 
     public void ApplyAnchorColor(Color participantColor)
@@ -157,8 +164,8 @@ public class SessionManager : NetworkBehaviour
 
         if (selectedParticipant != null)
         {
-            GameObject ping = selectedParticipant.transform.Find("PingEffect").gameObject;
-            ping.SetActive(true);
+            SessionManager selectedParticipantManager = selectedParticipant.GetComponentInParent<SessionManager>();
+            PingTriggerRpc(selectedParticipantManager.OwnerClientId);
         }
     }
 
@@ -210,5 +217,24 @@ public class SessionManager : NetworkBehaviour
 
         if (IsOwner)
             LocalUpdateAnchors();
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void PingTriggerRpc(ulong pingID)
+    {
+        GameObject[] localParticipants = GameObject.FindGameObjectsWithTag("participant");
+
+        foreach (GameObject local in localParticipants)
+        {
+            SessionManager localManager = local.GetComponent<SessionManager>();
+            Animator localAnimator = localManager.GetAnimatorReference();
+
+            foreach (string participant in participants.Keys)
+            {
+                string[] data = participant.Split(":");
+                ulong key = ulong.Parse(data[1]);
+                if (pingID == key) localAnimator.SetBool("InPing", true);
+            }
+        }
     }
 }
