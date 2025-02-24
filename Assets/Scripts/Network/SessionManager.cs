@@ -17,13 +17,12 @@ public class SessionManager : NetworkBehaviour
     [SerializeField] private GameObject mainBody;
     [SerializeField] private GameObject gaze;
     [SerializeField] private GameObject nameplate;
-    [SerializeField] private GameObject pingEffect;
+    [SerializeField] private GameObject PointerPrefab;
 
     private Dictionary<string, Color> participants = new Dictionary<string, Color>();
     private GameObject selectedParticipant;
     private UserConfiguration userConfig;
     private MainMenuManager mainMenu;
-    private Animator pingAnimator;
 
     private int defaultParticipantCounter = 1;
 
@@ -36,7 +35,6 @@ public class SessionManager : NetworkBehaviour
         userConfig = GameObject.Find("OfflineConfig").GetComponent<UserConfiguration>();
         GameObject mainMenuObject = GameObject.Find("UI").transform.Find("MainMenu").gameObject;
         mainMenu = mainMenuObject.GetComponent<MainMenuManager>();
-        pingAnimator = mainBody.GetComponentInChildren<Animator>();
         RegisterNewParticipantRpc(userConfig.GetProfileStruct(), NetworkManager.Singleton.LocalClientId);
 
         if (IsOwner) {
@@ -91,11 +89,6 @@ public class SessionManager : NetworkBehaviour
     public Dictionary<string,Color> GetParticipantsList()
     {
         return participants;
-    }
-
-    public Animator GetAnimatorReference()
-    {
-        return pingAnimator;
     }
 
     public void ApplyAnchorColor(Color participantColor)
@@ -160,13 +153,10 @@ public class SessionManager : NetworkBehaviour
 
     public void PingParticipant()
     {
-        if (!IsOwner) return;
-
-        if (selectedParticipant != null)
-        {
-            SessionManager selectedParticipantManager = selectedParticipant.GetComponentInParent<SessionManager>();
-            PingTriggerRpc(selectedParticipantManager.OwnerClientId);
-        }
+        Vector3 position = selectedParticipant.transform.position;
+        position.y = position.y + 0.5f;
+        mainMenu.CloseParticipantOptions();
+        SpawnPingRpc(position, NetworkManager.Singleton.LocalClientId);
     }
 
     public void UnselectParticipant()
@@ -219,22 +209,13 @@ public class SessionManager : NetworkBehaviour
             LocalUpdateAnchors();
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    private void PingTriggerRpc(ulong pingID)
+    [Rpc(SendTo.Server)]
+    private void SpawnPingRpc(Vector3 position, ulong clientID)
     {
-        GameObject[] localParticipants = GameObject.FindGameObjectsWithTag("participant");
-
-        foreach (GameObject local in localParticipants)
-        {
-            SessionManager localManager = local.GetComponent<SessionManager>();
-            Animator localAnimator = localManager.GetAnimatorReference();
-
-            foreach (string participant in participants.Keys)
-            {
-                string[] data = participant.Split(":");
-                ulong key = ulong.Parse(data[1]);
-                if (pingID == key) localAnimator.SetBool("InPing", true);
-            }
+        if (IsHost) { 
+            GameObject pointerInstance = Instantiate(PointerPrefab, position, Quaternion.identity);
+            NetworkObject pointerNetworkObject = pointerInstance.GetComponent<NetworkObject>();
+            pointerNetworkObject.SpawnWithOwnership(clientID);
         }
     }
 }

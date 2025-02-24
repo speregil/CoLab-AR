@@ -13,23 +13,24 @@
         "com.unity.xr.core-utils": "2.1.0",
         "com.unity.xr.management": "4.0.1",
         "com.unity.nuget.newtonsoft-json": "3.2.1",
-        "com.unity.cloud.draco": "5.1.4"
+        "com.unity.cloud.draco": "5.1.4",
+        "com.unity.burst": "1.8.17"
       },
-      "hash": "e17d59a6a272c5e48774f3c0b671a55e94b5be3e"
+      "hash": "16f0520bbb055a9bb633b68b7a77ddc8bcb0c33e"
     },
     "com.nianticlabs.lightship.sharedar": {
       "version": "https://github.com/niantic-lightship/sharedar-upm.git",
       "depth": 0,
       "source": "git",
       "dependencies": {
-        "com.nianticlabs.lightship": "3.7.0-2408080827",
+        "com.nianticlabs.lightship": "3.10.0-2411021056",
         "com.unity.netcode.gameobjects": "1.2.0"
       },
-      "hash": "724b33c9d117feca2e79186ddadba7a89aead070"
+      "hash": "eba003557d57e4e38f5e0a550df99d93755d843f"
     },
     "com.unity.burst": {
-      "version": "1.8.16",
-      "depth": 2,
+      "version": "1.8.17",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.mathematics": "1.2.1",
@@ -234,11 +235,11 @@
       "depth": 2,
       "source": "registry",
       "dependencies": {
+        "com.unity.collections": "1.2.4",
         "com.unity.services.core": "1.12.4",
-        "com.unity.modules.unitywebrequest": "1.0.0",
         "com.unity.nuget.newtonsoft-json": "3.0.2",
-        "com.unity.services.authentication": "2.0.0",
-        "com.unity.collections": "1.2.4"
+        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.services.authentication": "2.0.0"
       },
       "url": "https://packages.unity.com"
     },
