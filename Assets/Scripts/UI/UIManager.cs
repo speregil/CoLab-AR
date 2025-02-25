@@ -22,6 +22,7 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private UserConfiguration userConfiguration;   // Reference to the offline user configuration component
     private IntroManager introManager;                              // Reference to the Intro Scene actions manager
+    private MainMenuManager menuManager;
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
@@ -30,6 +31,7 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         introManager = GetComponent<IntroManager>();
+        menuManager = mainMenu.GetComponent<MainMenuManager>();
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -71,6 +73,7 @@ public class UIManager : MonoBehaviour
     public void AcceptCreateRoom()
     {
         createRoomMenu.SetActive(false);
+        mainMenu.SetActive(true);
     }
 
     /**
@@ -122,6 +125,16 @@ public class UIManager : MonoBehaviour
         profileMenu.SetActive(false);
     }
 
+    public bool IsTrackingActive()
+    {
+        return introManager.IsTracking();
+    }
+
+    public void SetTrackingStatus(string status, int code)
+    {
+        menuManager.SetTrackingStatus(status, code);
+    }
+
     /**
      * Shows the workspace configuration menu
      */
@@ -135,12 +148,12 @@ public class UIManager : MonoBehaviour
     }
 
     /**
-     * Hides the workspace configuration menu and shows the main menu button
+     * Hides the workspace configuration menu and shows the tracking status panel
      */
     public void AcceptWorkspaceConfiguration()
     {
         workspaceConfigMenu.SetActive(false);
-        mainMenu.SetActive(true);
+        menuManager.ActivateMainMenu();
     }
 
     /**

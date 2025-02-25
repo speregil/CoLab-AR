@@ -6,11 +6,17 @@ using UnityEngine.UI;
 
 public class MainMenuManager : MonoBehaviour
 {
+    public const int TRACKING_OK_STATE = 0;                                    
+    public const int TRACKING_WARNING_STATE = 1;                                     
+    public const int TRACKING_NONE_STATE = 2;
+
     [SerializeField] private GameObject mainButton;
     [SerializeField] private GameObject mainMenu;
     [SerializeField] private GameObject participantsMenu;
     [SerializeField] private GameObject participantLabelPrefab;
     [SerializeField] private GameObject participantOptions;
+    [SerializeField] private GameObject trackingPanel;
+    [SerializeField] private TMP_Text   trackingStateLbl;
     [SerializeField] private TMP_Text   participantOptionsUsernameLabel;
 
     private SessionManager sessionManager;
@@ -27,7 +33,29 @@ public class MainMenuManager : MonoBehaviour
         mainButtonLbl = mainButton.transform.GetComponentInChildren<TMP_Text>();
         mainButtonBtn = mainButton.GetComponentInChildren<Button>();
         mainButtonBtn.onClick.AddListener(OpenMainMenu);
+    }
 
+    public void SetTrackingStatus(string status, int code)
+    {
+        trackingStateLbl.text = status;
+        switch (code)
+        {
+            case TRACKING_OK_STATE:
+                trackingStateLbl.color = Color.green;
+                break;
+            case TRACKING_WARNING_STATE:
+                trackingStateLbl.color = Color.yellow;
+                break;
+            case TRACKING_NONE_STATE:
+                trackingStateLbl.color = Color.red;
+                break;
+        }
+    }
+
+    public void ActivateMainMenu()
+    {
+        trackingPanel.SetActive(false);
+        mainButton.SetActive(true);
     }
 
     public void OpenMainMenu()

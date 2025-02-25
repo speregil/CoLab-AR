@@ -22,12 +22,16 @@ public class IntroManager : MonoBehaviour
     [SerializeField] TMP_Dropdown colorPickDropdown;
 
     [SerializeField] private SharedSpaceManager sharedSpaceManager;     // References to Lightship AR Shared Space API
+    [SerializeField] private Texture2D targetImage;
+    [SerializeField] private float targetImageSize;
+    
     UIManager uiManager;                                                // Reference to the UIManager component
 
     private string roomName;                                            // Name of the room to create or join to
     private string username;
     private Color userColor;
     private bool isHost;                                                // Flag that determines if the user is creating or joining a room
+    private bool isTracking = false;
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
@@ -36,6 +40,12 @@ public class IntroManager : MonoBehaviour
     private void Start()
     {
         uiManager = GetComponent<UIManager>();
+        sharedSpaceManager.sharedSpaceManagerStateChanged += OnColocalizationTrackingStateChanged;
+    }
+
+    private void Update()
+    {
+        //Debug.Log("Tracking: " + isTracking);
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -49,6 +59,11 @@ public class IntroManager : MonoBehaviour
     public bool IsHost()
     {
         return isHost;
+    }
+
+    public bool IsTracking()
+    {
+        return isTracking;
     }
 
     /**
@@ -138,8 +153,8 @@ public class IntroManager : MonoBehaviour
     {
         createNameInputField.text = "";
         isHost = true;
-        ConfigureSharedSpace();
         uiManager.AcceptCreateRoom();
+        ConfigureSharedSpace();
     }
 
     /**
@@ -177,8 +192,8 @@ public class IntroManager : MonoBehaviour
     public void AcceptJoinRoom()
     {
         isHost = false;
-        ConfigureSharedSpace();
         uiManager.AcceptJoinRoom();
+        ConfigureSharedSpace();
     }
 
     /**
@@ -215,30 +230,34 @@ public class IntroManager : MonoBehaviour
      */
     private void ConfigureSharedSpace()
     {
-        var mockTrackingArgs = ISharedSpaceTrackingOptions.CreateMockTrackingOptions();
+        var roomTrackingArgs = ISharedSpaceTrackingOptions.CreateImageTrackingOptions(targetImage, targetImageSize);
         var roomArgs = ISharedSpaceRoomOptions.CreateLightshipRoomOptions(
             roomName,
             32,
             "Room created by user as: " + roomName
         );
-        sharedSpaceManager.StartSharedSpace(mockTrackingArgs, roomArgs);
-        StartSharedSpace();
+        sharedSpaceManager.StartSharedSpace(roomTrackingArgs, roomArgs);
     }
 
     /**
      * Joins a room as a host or a client given the status of the user identified in the intro scene
      */
-    private void StartSharedSpace()
+    private void OnColocalizationTrackingStateChanged(SharedSpaceManager.SharedSpaceManagerStateChangeEventArgs args)
     {
-        if (isHost)
+        if (args.Tracking)
         {
-            Debug.Log("Connecting host");
-            NetworkManager.Singleton.StartHost();
-        }
-        else
-        {
-            Debug.Log("Connecting client");
-            NetworkManager.Singleton.StartClient();
+            if (isHost)
+            {
+                Debug.Log("Connecting host");
+                NetworkManager.Singleton.StartHost();
+            }
+            else
+            {
+                Debug.Log("Connecting client");
+                NetworkManager.Singleton.StartClient();
+            }
+            isTracking = true;
+            uiManager.SetTrackingStatus("OK", MainMenuManager.TRACKING_OK_STATE);
         }
     }
 
