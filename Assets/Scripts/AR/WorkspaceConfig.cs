@@ -1,6 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
@@ -185,6 +185,7 @@ public class WorkspaceConfig : NetworkBehaviour
      */
     public void FinishConfiguration()
     {
+        
         isConfiguringWorkspace = false;
         drag.SetOnConfig(false);
         uiManager.AcceptWorkspaceConfiguration();
@@ -203,7 +204,7 @@ public class WorkspaceConfig : NetworkBehaviour
      *  @param planePosition Vector3 representing the position of the detected plane selected
      *  @param planeRotation Quaternion representing the rotation of the detected plane selected
      */
-    void InstantiateWorkspace(Vector3 planePosition, Quaternion planeRotation, Vector2 planeSize, ulong clientId)
+    public void InstantiateWorkspace(Vector3 planePosition, Quaternion planeRotation, Vector2 planeSize, ulong clientId)
     {
         // Instantiates the workspace and scales it
         if (IsServer) 
@@ -219,6 +220,8 @@ public class WorkspaceConfig : NetworkBehaviour
             NetworkObject worspaceNetworkObject = currentWorkspaceInstance.GetComponent<NetworkObject>();
             
             worspaceNetworkObject.SpawnWithOwnership(clientId);
+
+            gameObject.transform.SetParent(worspaceNetworkObject.transform);
 
             // Setups the configuration menu
             isConfiguringWorkspace = true;
