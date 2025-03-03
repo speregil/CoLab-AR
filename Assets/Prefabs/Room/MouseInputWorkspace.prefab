@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -60674756748813279}
   m_Layer: 0
   m_Name: MouseInputWorkspace
-  m_TagString: Untagged
+  m_TagString: workspace
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

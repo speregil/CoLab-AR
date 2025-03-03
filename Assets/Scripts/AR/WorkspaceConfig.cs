@@ -49,7 +49,8 @@ public class WorkspaceConfig : NetworkBehaviour
         raycastManager = arConfig.GetComponentInChildren<ARRaycastManager>();
         trackingManager = arConfig.GetComponentInChildren<TrackingManager>();
         uiManager = ui.GetComponent<UIManager>();
-
+        if(CheckForWorkspace())
+            gameObject.transform.SetParent(currentWorkspaceInstance.transform);
         ConfigureWorspaceMenu();
         DetectingPlanes(IsServer);
     }
@@ -230,5 +231,16 @@ public class WorkspaceConfig : NetworkBehaviour
             SetConfigState(POSITIONXZ_STATE);
             uiManager.WorkspaceConfiguration();
         }
+    }
+
+    public bool CheckForWorkspace()
+    {
+        GameObject[] workspaceSearch = GameObject.FindGameObjectsWithTag("workspace");
+        if(workspaceSearch.Length > 0)
+        {
+            currentWorkspaceInstance = workspaceSearch[0];
+            return true;
+        }
+        return false;
     }
 }
