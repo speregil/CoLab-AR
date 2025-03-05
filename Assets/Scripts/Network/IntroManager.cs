@@ -1,6 +1,5 @@
 using Niantic.Lightship.SharedAR.Colocalization;
 using Niantic.Lightship.SharedAR.Rooms;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
@@ -22,6 +21,7 @@ public class IntroManager : MonoBehaviour
     [SerializeField] TMP_Dropdown colorPickDropdown;
 
     [SerializeField] private SharedSpaceManager sharedSpaceManager;     // References to Lightship AR Shared Space API
+    [SerializeField] private Texture2D trackingImage;
     UIManager uiManager;                                                // Reference to the UIManager component
 
     private string roomName;                                            // Name of the room to create or join to
@@ -36,6 +36,7 @@ public class IntroManager : MonoBehaviour
     private void Start()
     {
         uiManager = GetComponent<UIManager>();
+        sharedSpaceManager.sharedSpaceManagerStateChanged += OnColocalizationTrackingStateChanged;
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -138,8 +139,8 @@ public class IntroManager : MonoBehaviour
     {
         createNameInputField.text = "";
         isHost = true;
-        ConfigureSharedSpace();
         uiManager.AcceptCreateRoom();
+        ConfigureSharedSpace();
     }
 
     /**
@@ -177,8 +178,8 @@ public class IntroManager : MonoBehaviour
     public void AcceptJoinRoom()
     {
         isHost = false;
-        ConfigureSharedSpace();
         uiManager.AcceptJoinRoom();
+        ConfigureSharedSpace();
     }
 
     /**
@@ -215,14 +216,13 @@ public class IntroManager : MonoBehaviour
      */
     private void ConfigureSharedSpace()
     {
-        var mockTrackingArgs = ISharedSpaceTrackingOptions.CreateMockTrackingOptions();
+        var imageTrackingArgs = ISharedSpaceTrackingOptions.CreateImageTrackingOptions(trackingImage,0.09f);
         var roomArgs = ISharedSpaceRoomOptions.CreateLightshipRoomOptions(
             roomName,
             32,
             "Room created by user as: " + roomName
         );
-        sharedSpaceManager.StartSharedSpace(mockTrackingArgs, roomArgs);
-        StartSharedSpace();
+        sharedSpaceManager.StartSharedSpace(imageTrackingArgs, roomArgs);
     }
 
     /**
@@ -239,6 +239,19 @@ public class IntroManager : MonoBehaviour
         {
             Debug.Log("Connecting client");
             NetworkManager.Singleton.StartClient();
+        }
+    }
+
+    private void OnColocalizationTrackingStateChanged(SharedSpaceManager.SharedSpaceManagerStateChangeEventArgs args)
+    {
+        if (args.Tracking)
+        {
+            StartSharedSpace();
+            uiManager.ActivateTrackingMenu(true);
+        }
+        else
+        {
+            uiManager.ActivateTrackingMenu(false);
         }
     }
 

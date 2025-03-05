@@ -18,6 +18,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject profileMenu;                // Reference to the Profile Configuration menu canvas
     [SerializeField] private GameObject workspaceConfigMenu;        // Referene to the worspace config tools canvas
     [SerializeField] private GameObject mainMenu;                   // Referene to the main menu canvas
+    [SerializeField] private GameObject trackingButton;
     [SerializeField] private Color SelectedConfigStateColor;        // Color for the selected configuration option in the Workspace config menu
 
     [SerializeField] private UserConfiguration userConfiguration;   // Reference to the offline user configuration component
@@ -71,6 +72,7 @@ public class UIManager : MonoBehaviour
     public void AcceptCreateRoom()
     {
         createRoomMenu.SetActive(false);
+        mainMenu.SetActive(true);
     }
 
     /**
@@ -120,6 +122,11 @@ public class UIManager : MonoBehaviour
     {
         introMenu.SetActive(true);
         profileMenu.SetActive(false);
+    }
+
+    public void ActivateTrackingMenu(bool active)
+    {
+        trackingButton.SetActive(active);
     }
 
     /**

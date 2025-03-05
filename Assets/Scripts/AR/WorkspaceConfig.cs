@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 
 /**
  * Network Behaviour for creating the workspace plane of a room and configure it
@@ -29,7 +30,8 @@ public class WorkspaceConfig : NetworkBehaviour
     private TrackingManager trackingManager;                    // Reference to the TrackingManager component in the parent object
     private UIManager uiManager;                                // Reference to the UIManager component loaded in the scene
 
-    private GameObject currentWorkspaceInstance;                // Current instance of the workspace plane
+    private GameObject currentEditableWorkspace;                // Current instance of the workspace plane
+    private NetworkObject currentWorkspace;                      // Current NetworkObject of the workspace plane
     private IDragBehaviour drag;                                // Reference to the Drag Behaviour of the current workspace
     private int currentConfigState;                             // Defines the current Config State of the app
 
@@ -49,8 +51,11 @@ public class WorkspaceConfig : NetworkBehaviour
         raycastManager = arConfig.GetComponentInChildren<ARRaycastManager>();
         trackingManager = arConfig.GetComponentInChildren<TrackingManager>();
         uiManager = ui.GetComponent<UIManager>();
-        if(CheckForWorkspace())
-            gameObject.transform.SetParent(currentWorkspaceInstance.transform);
+        if (CheckForWorkspace())
+        {
+            Debug.Log("Found workspace");
+            MoveParticipantsToWorkspaceAnchorRpc();
+        }
         ConfigureWorspaceMenu();
         DetectingPlanes(IsServer);
     }
@@ -212,21 +217,21 @@ public class WorkspaceConfig : NetworkBehaviour
         {
             //NetworkObject worspaceNetworkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(workspacePrefab.GetComponent<NetworkObject>(), clientId, false, false, false, planePosition, planeRotation);
             //currentWorkspaceInstance = worspaceNetworkObject.gameObject;
-            currentWorkspaceInstance = Instantiate(workspacePrefab, planePosition, planeRotation);
-            Vector2 workspaceSize = new Vector2(currentWorkspaceInstance.GetComponent<Renderer>().bounds.size.x, currentWorkspaceInstance.GetComponent<Renderer>().bounds.size.z);
+            currentEditableWorkspace = Instantiate(workspacePrefab, planePosition, planeRotation);
+            Vector2 workspaceSize = new Vector2(currentEditableWorkspace.GetComponent<Renderer>().bounds.size.x, currentEditableWorkspace.GetComponent<Renderer>().bounds.size.z);
             Vector3 ratioSize = new Vector3(planeSize.x / workspaceSize.x, 1.0f, planeSize.y / workspaceSize.y);
-            currentWorkspaceInstance.transform.localScale = ratioSize;
+            currentEditableWorkspace.transform.localScale = ratioSize;
 
             // Spawns the workspace in the room
-            NetworkObject worspaceNetworkObject = currentWorkspaceInstance.GetComponent<NetworkObject>();
-            
-            worspaceNetworkObject.SpawnWithOwnership(clientId);
+            currentWorkspace = currentEditableWorkspace.GetComponent<NetworkObject>();
 
-            gameObject.transform.SetParent(worspaceNetworkObject.transform);
+            currentWorkspace.SpawnWithOwnership(clientId);
+
+            gameObject.transform.SetParent(currentWorkspace.transform);
 
             // Setups the configuration menu
             isConfiguringWorkspace = true;
-            drag = currentWorkspaceInstance.GetComponent<IDragBehaviour>();
+            drag = currentEditableWorkspace.GetComponent<IDragBehaviour>();
             drag.SetOnConfig(true);
             SetConfigState(POSITIONXZ_STATE);
             uiManager.WorkspaceConfiguration();
@@ -238,9 +243,24 @@ public class WorkspaceConfig : NetworkBehaviour
         GameObject[] workspaceSearch = GameObject.FindGameObjectsWithTag("workspace");
         if(workspaceSearch.Length > 0)
         {
-            currentWorkspaceInstance = workspaceSearch[0];
+            currentWorkspace = workspaceSearch[0].GetComponent<NetworkObject>();
             return true;
         }
         return false;
+    }
+
+    [Rpc(SendTo.Server)]
+    public void MoveParticipantsToWorkspaceAnchorRpc()
+    {
+        currentWorkspace = GameObject.FindGameObjectWithTag("workspace").GetComponent<NetworkObject>();
+        if (IsHost)
+        {
+            Debug.Log("Is Host");
+            foreach (NetworkClient participant in NetworkManager.Singleton.ConnectedClientsList)
+            {
+                Debug.Log("Found: " + participant.PlayerObject.gameObject.name);
+                participant.PlayerObject.gameObject.transform.SetParent(currentWorkspace.transform);
+            }
+        }
     }
 }
