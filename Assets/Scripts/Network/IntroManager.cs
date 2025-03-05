@@ -1,6 +1,5 @@
 using Niantic.Lightship.SharedAR.Colocalization;
 using Niantic.Lightship.SharedAR.Rooms;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
@@ -22,16 +21,13 @@ public class IntroManager : MonoBehaviour
     [SerializeField] TMP_Dropdown colorPickDropdown;
 
     [SerializeField] private SharedSpaceManager sharedSpaceManager;     // References to Lightship AR Shared Space API
-    [SerializeField] private Texture2D targetImage;
-    [SerializeField] private float targetImageSize;
-    
+    [SerializeField] private Texture2D trackingImage;
     UIManager uiManager;                                                // Reference to the UIManager component
 
     private string roomName;                                            // Name of the room to create or join to
     private string username;
     private Color userColor;
     private bool isHost;                                                // Flag that determines if the user is creating or joining a room
-    private bool isTracking = false;
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
@@ -41,11 +37,6 @@ public class IntroManager : MonoBehaviour
     {
         uiManager = GetComponent<UIManager>();
         sharedSpaceManager.sharedSpaceManagerStateChanged += OnColocalizationTrackingStateChanged;
-    }
-
-    private void Update()
-    {
-        //Debug.Log("Tracking: " + isTracking);
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -59,11 +50,6 @@ public class IntroManager : MonoBehaviour
     public bool IsHost()
     {
         return isHost;
-    }
-
-    public bool IsTracking()
-    {
-        return isTracking;
     }
 
     /**
@@ -230,34 +216,42 @@ public class IntroManager : MonoBehaviour
      */
     private void ConfigureSharedSpace()
     {
-        var roomTrackingArgs = ISharedSpaceTrackingOptions.CreateImageTrackingOptions(targetImage, targetImageSize);
+        var imageTrackingArgs = ISharedSpaceTrackingOptions.CreateImageTrackingOptions(trackingImage,0.09f);
         var roomArgs = ISharedSpaceRoomOptions.CreateLightshipRoomOptions(
             roomName,
             32,
             "Room created by user as: " + roomName
         );
-        sharedSpaceManager.StartSharedSpace(roomTrackingArgs, roomArgs);
+        sharedSpaceManager.StartSharedSpace(imageTrackingArgs, roomArgs);
     }
 
     /**
      * Joins a room as a host or a client given the status of the user identified in the intro scene
      */
+    private void StartSharedSpace()
+    {
+        if (isHost)
+        {
+            Debug.Log("Connecting host");
+            NetworkManager.Singleton.StartHost();
+        }
+        else
+        {
+            Debug.Log("Connecting client");
+            NetworkManager.Singleton.StartClient();
+        }
+    }
+
     private void OnColocalizationTrackingStateChanged(SharedSpaceManager.SharedSpaceManagerStateChangeEventArgs args)
     {
         if (args.Tracking)
         {
-            if (isHost)
-            {
-                Debug.Log("Connecting host");
-                NetworkManager.Singleton.StartHost();
-            }
-            else
-            {
-                Debug.Log("Connecting client");
-                NetworkManager.Singleton.StartClient();
-            }
-            isTracking = true;
-            uiManager.SetTrackingStatus("OK", MainMenuManager.TRACKING_OK_STATE);
+            StartSharedSpace();
+            uiManager.ActivateTrackingMenu(true);
+        }
+        else
+        {
+            uiManager.ActivateTrackingMenu(false);
         }
     }
 

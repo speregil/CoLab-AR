@@ -18,11 +18,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject profileMenu;                // Reference to the Profile Configuration menu canvas
     [SerializeField] private GameObject workspaceConfigMenu;        // Referene to the worspace config tools canvas
     [SerializeField] private GameObject mainMenu;                   // Referene to the main menu canvas
+    [SerializeField] private GameObject trackingButton;
     [SerializeField] private Color SelectedConfigStateColor;        // Color for the selected configuration option in the Workspace config menu
 
     [SerializeField] private UserConfiguration userConfiguration;   // Reference to the offline user configuration component
     private IntroManager introManager;                              // Reference to the Intro Scene actions manager
-    private MainMenuManager menuManager;
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
@@ -31,7 +31,6 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         introManager = GetComponent<IntroManager>();
-        menuManager = mainMenu.GetComponent<MainMenuManager>();
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -125,14 +124,9 @@ public class UIManager : MonoBehaviour
         profileMenu.SetActive(false);
     }
 
-    public bool IsTrackingActive()
+    public void ActivateTrackingMenu(bool active)
     {
-        return introManager.IsTracking();
-    }
-
-    public void SetTrackingStatus(string status, int code)
-    {
-        menuManager.SetTrackingStatus(status, code);
+        trackingButton.SetActive(active);
     }
 
     /**
@@ -148,12 +142,12 @@ public class UIManager : MonoBehaviour
     }
 
     /**
-     * Hides the workspace configuration menu and shows the tracking status panel
+     * Hides the workspace configuration menu and shows the main menu button
      */
     public void AcceptWorkspaceConfiguration()
     {
         workspaceConfigMenu.SetActive(false);
-        menuManager.ActivateMainMenu();
+        mainMenu.SetActive(true);
     }
 
     /**

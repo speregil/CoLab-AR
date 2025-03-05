@@ -1,10 +1,10 @@
-using Niantic.Lightship.SharedAR.Colocalization;
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 
 /**
  * Network Behaviour for creating the workspace plane of a room and configure it
@@ -24,20 +24,19 @@ public class WorkspaceConfig : NetworkBehaviour
     // Fields
     //------------------------------------------------------------------------------------------------------
 
-    [SerializeField] private GameObject workspacePrefab;                // Prefab for the workspace plane
-    [SerializeField] private SharedSpaceManager sharedSpaceManager;     // References to Lightship AR Shared Space API
+    [SerializeField] private GameObject workspacePrefab;        // Prefab for the workspace plane      
+    
+    private ARRaycastManager raycastManager;                    // Reference to the ARRaycastManager component in the parent object
+    private TrackingManager trackingManager;                    // Reference to the TrackingManager component in the parent object
+    private UIManager uiManager;                                // Reference to the UIManager component loaded in the scene
 
-    private ARRaycastManager raycastManager;                            // Reference to the ARRaycastManager component in the parent object
-    private TrackingManager trackingManager;                            // Reference to the TrackingManager component in the parent object
-    private UIManager uiManager;                                        // Reference to the UIManager component loaded in the scene
+    private GameObject currentEditableWorkspace;                // Current instance of the workspace plane
+    private NetworkObject currentWorkspace;                      // Current NetworkObject of the workspace plane
+    private IDragBehaviour drag;                                // Reference to the Drag Behaviour of the current workspace
+    private int currentConfigState;                             // Defines the current Config State of the app
 
-    private GameObject currentWorkspaceInstance;                        // Current instance of the workspace plane
-    private IDragBehaviour drag;                                        // Reference to the Drag Behaviour of the current workspace
-    private int currentConfigState;                                     // Defines the current Config State of the app
-
-    private bool isDetectingPlanes = false;                             // Flag that determines if the script is currently tracking planes or not
-    private bool isConfiguringWorkspace = false;                        // Flag that determines if the user is currently configuring pos/rot of the workspace
-    private bool isConfigOn = true;
+    private bool isDetectingPlanes = false;                     // Flag that determines if the script is currently tracking planes or not
+    private bool isConfiguringWorkspace = false;                // Flag that determines if the user is currently configuring pos/rot of the workspace
 
     //------------------------------------------------------------------------------------------------------
     // Network Behaviour Functions
@@ -52,29 +51,32 @@ public class WorkspaceConfig : NetworkBehaviour
         raycastManager = arConfig.GetComponentInChildren<ARRaycastManager>();
         trackingManager = arConfig.GetComponentInChildren<TrackingManager>();
         uiManager = ui.GetComponent<UIManager>();
-
+        if (CheckForWorkspace())
+        {
+            Debug.Log("Found workspace");
+            MoveParticipantsToWorkspaceAnchorRpc();
+        }
         ConfigureWorspaceMenu();
+        DetectingPlanes(IsServer);
     }
 
     void Update()
     {
         if (!IsOwner) return;
 
-        if (isConfigOn)
+        // Input check for mobile builds
+        if (isDetectingPlanes && Input.touchCount > 0)
         {
-            ManageInput();
-            if (uiManager.IsTrackingActive() && !isDetectingPlanes)
-            {
-                if (!isConfiguringWorkspace) 
-                {
-                    if (IsServer)
-                    {
-                        isDetectingPlanes = true;
-                        DetectingPlanes(true);
-                    }
-                    else isConfigOn = false;
-                }
-            }
+            Touch touch = Input.GetTouch(index: 0);
+            Vector2 touchPosition = touch.position;
+            ARRaycasting(touchPosition);
+        }
+        // Input check for PC builds
+        else if (isDetectingPlanes && Input.GetMouseButtonDown(0))
+        {
+            Vector3 mousePosition = Input.mousePosition;
+            Vector2 mousePositionMap = new Vector2(mousePosition.x, mousePosition.y);
+            ARRaycasting(mousePositionMap);
         }
     }
 
@@ -106,24 +108,6 @@ public class WorkspaceConfig : NetworkBehaviour
         configBtn.onClick.AddListener(() => SetConfigState(SCALE_STATE));
     }
 
-    private void ManageInput()
-    {
-        // Input check for mobile builds
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(index: 0);
-            Vector2 touchPosition = touch.position;
-            ARRaycasting(touchPosition);
-        }
-        // Input check for PC builds
-        else if (Input.GetMouseButtonDown(0))
-        {
-            Vector3 mousePosition = Input.mousePosition;
-            Vector2 mousePositionMap = new Vector2(mousePosition.x, mousePosition.y);
-            ARRaycasting(mousePositionMap);
-        }
-    }
-
     /**
      * Controls the raycasting process and the creation of the workspace plane when selecting a detected plane
      * @param position Vector2 representing the raycat origin position
@@ -142,7 +126,6 @@ public class WorkspaceConfig : NetworkBehaviour
             InstantiateWorkspace(pose.position,pose.rotation,planeSize, NetworkManager.Singleton.LocalClientId);
 
             // Deactivates plane detection and cleans the screen
-            isConfiguringWorkspace = true;
             trackingManager.CleanTrackables();
             DetectingPlanes(false);
         }
@@ -164,11 +147,6 @@ public class WorkspaceConfig : NetworkBehaviour
     public bool IsDetectingPlanes()
     {
         return isDetectingPlanes;
-    }
-
-    public bool IsConfigurationOn()
-    {
-        return isConfigOn;
     }
 
     /**
@@ -213,8 +191,8 @@ public class WorkspaceConfig : NetworkBehaviour
      */
     public void FinishConfiguration()
     {
+        
         isConfiguringWorkspace = false;
-        isConfigOn = false;
         drag.SetOnConfig(false);
         uiManager.AcceptWorkspaceConfiguration();
     }
@@ -232,29 +210,57 @@ public class WorkspaceConfig : NetworkBehaviour
      *  @param planePosition Vector3 representing the position of the detected plane selected
      *  @param planeRotation Quaternion representing the rotation of the detected plane selected
      */
-    void InstantiateWorkspace(Vector3 planePosition, Quaternion planeRotation, Vector2 planeSize, ulong clientId)
+    public void InstantiateWorkspace(Vector3 planePosition, Quaternion planeRotation, Vector2 planeSize, ulong clientId)
     {
         // Instantiates the workspace and scales it
         if (IsServer) 
         {
             //NetworkObject worspaceNetworkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(workspacePrefab.GetComponent<NetworkObject>(), clientId, false, false, false, planePosition, planeRotation);
             //currentWorkspaceInstance = worspaceNetworkObject.gameObject;
-            currentWorkspaceInstance = Instantiate(workspacePrefab, planePosition, planeRotation);
-            Vector2 workspaceSize = new Vector2(currentWorkspaceInstance.GetComponent<Renderer>().bounds.size.x, currentWorkspaceInstance.GetComponent<Renderer>().bounds.size.z);
+            currentEditableWorkspace = Instantiate(workspacePrefab, planePosition, planeRotation);
+            Vector2 workspaceSize = new Vector2(currentEditableWorkspace.GetComponent<Renderer>().bounds.size.x, currentEditableWorkspace.GetComponent<Renderer>().bounds.size.z);
             Vector3 ratioSize = new Vector3(planeSize.x / workspaceSize.x, 1.0f, planeSize.y / workspaceSize.y);
-            currentWorkspaceInstance.transform.localScale = ratioSize;
+            currentEditableWorkspace.transform.localScale = ratioSize;
 
             // Spawns the workspace in the room
-            NetworkObject worspaceNetworkObject = currentWorkspaceInstance.GetComponent<NetworkObject>();
-            
-            worspaceNetworkObject.SpawnWithOwnership(clientId);
+            currentWorkspace = currentEditableWorkspace.GetComponent<NetworkObject>();
+
+            currentWorkspace.SpawnWithOwnership(clientId);
+
+            gameObject.transform.SetParent(currentWorkspace.transform);
 
             // Setups the configuration menu
             isConfiguringWorkspace = true;
-            drag = currentWorkspaceInstance.GetComponent<IDragBehaviour>();
+            drag = currentEditableWorkspace.GetComponent<IDragBehaviour>();
             drag.SetOnConfig(true);
             SetConfigState(POSITIONXZ_STATE);
             uiManager.WorkspaceConfiguration();
+        }
+    }
+
+    public bool CheckForWorkspace()
+    {
+        GameObject[] workspaceSearch = GameObject.FindGameObjectsWithTag("workspace");
+        if(workspaceSearch.Length > 0)
+        {
+            currentWorkspace = workspaceSearch[0].GetComponent<NetworkObject>();
+            return true;
+        }
+        return false;
+    }
+
+    [Rpc(SendTo.Server)]
+    public void MoveParticipantsToWorkspaceAnchorRpc()
+    {
+        currentWorkspace = GameObject.FindGameObjectWithTag("workspace").GetComponent<NetworkObject>();
+        if (IsHost)
+        {
+            Debug.Log("Is Host");
+            foreach (NetworkClient participant in NetworkManager.Singleton.ConnectedClientsList)
+            {
+                Debug.Log("Found: " + participant.PlayerObject.gameObject.name);
+                participant.PlayerObject.gameObject.transform.SetParent(currentWorkspace.transform);
+            }
         }
     }
 }

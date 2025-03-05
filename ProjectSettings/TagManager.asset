@@ -6,6 +6,7 @@ TagManager:
   tags:
   - participant
   - anchor
+  - workspace
   layers:
   - Default
   - TransparentFX
