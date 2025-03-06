@@ -46,6 +46,7 @@ public class WorkspaceConfig : NetworkBehaviour
     {
         if (!IsOwner) return;
 
+        Debug.Log("Object spawned on network");
         GameObject arConfig = GameObject.Find("ARConfig");
         GameObject ui = GameObject.Find("UI");
         raycastManager = arConfig.GetComponentInChildren<ARRaycastManager>();

@@ -216,6 +216,7 @@ public class IntroManager : MonoBehaviour
      */
     private void ConfigureSharedSpace()
     {
+        Debug.Log("Configuring Shared Space");
         var imageTrackingArgs = ISharedSpaceTrackingOptions.CreateImageTrackingOptions(trackingImage,0.09f);
         var roomArgs = ISharedSpaceRoomOptions.CreateLightshipRoomOptions(
             roomName,
@@ -244,10 +245,12 @@ public class IntroManager : MonoBehaviour
 
     private void OnColocalizationTrackingStateChanged(SharedSpaceManager.SharedSpaceManagerStateChangeEventArgs args)
     {
+        Debug.Log("Tracking State changed");
         if (args.Tracking)
         {
-            StartSharedSpace();
+            Debug.Log("Tracking Image");
             uiManager.ActivateTrackingMenu(true);
+            StartSharedSpace();
         }
         else
         {
