@@ -55,7 +55,7 @@ public class WorkspaceConfig : NetworkBehaviour
         if (CheckForWorkspace())
         {
             Debug.Log("Found workspace");
-            MoveParticipantsToWorkspaceAnchorRpc();
+            //MoveParticipantsToWorkspaceAnchorRpc();
         }
         ConfigureWorspaceMenu();
         DetectingPlanes(IsServer);
@@ -226,7 +226,7 @@ public class WorkspaceConfig : NetworkBehaviour
 
             currentWorkspace.SpawnWithOwnership(clientId);
             trackingManager.AddAnchor(currentWorkspace.gameObject);
-            gameObject.transform.SetParent(currentWorkspace.transform);
+            //gameObject.transform.SetParent(currentWorkspace.transform);
 
             // Setups the configuration menu
             isConfiguringWorkspace = true;

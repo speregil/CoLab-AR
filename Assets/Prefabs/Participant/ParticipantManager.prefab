@@ -408,6 +408,7 @@ GameObject:
   - component: {fileID: 5171220643260157711}
   - component: {fileID: 8060788700919516432}
   - component: {fileID: -3629699762860139784}
+  - component: {fileID: -5087816497760622788}
   m_Layer: 0
   m_Name: ParticipantManager
   m_TagString: participant
@@ -443,7 +444,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2815689013
+  GlobalObjectIdHash: 1137683391
   InScenePlacedSourceGlobalObjectIdHash: 1137683391
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 0
@@ -481,6 +482,19 @@ MonoBehaviour:
   gaze: {fileID: 8462665798826977941}
   nameplate: {fileID: 8349218625490966200}
   PointerPrefab: {fileID: 6382456511583307689, guid: a939d1411ca85c74dbf6c2a8e46f9c9d, type: 3}
+--- !u!114 &-5087816497760622788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6343761103022612183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c28ed28c284b8bbb08e7d5bded1bd9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _putInSharedOrigin: 1
 --- !u!1 &7943078776079937665
 GameObject:
   m_ObjectHideFlags: 0

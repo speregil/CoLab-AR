@@ -10739,6 +10739,7 @@ MonoBehaviour:
   responseMessageTxt: {fileID: 511072696}
   joinNameDropdown: {fileID: 1729029506}
   colorPickDropdown: {fileID: 666809022}
+  roomAnchorPrefab: {fileID: 2591087716411460047, guid: ecadfdc9ee3d71a4b81ff809660b53d2, type: 3}
   sharedSpaceManager: {fileID: 5426667641372302178}
   trackingImage: {fileID: 2800000, guid: bc60ffbea3f0ce0459ead5da819865c0, type: 3}
 --- !u!114 &2494317853737590180

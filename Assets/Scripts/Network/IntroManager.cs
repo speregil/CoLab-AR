@@ -19,6 +19,7 @@ public class IntroManager : MonoBehaviour
     [SerializeField] TMP_Text responseMessageTxt;                       // Reference to the response message text in the profile menu 
     [SerializeField] TMP_Dropdown joinNameDropdown;                     // Reference to the input field for the name of a room to join to
     [SerializeField] TMP_Dropdown colorPickDropdown;
+    [SerializeField] GameObject roomAnchorPrefab;
 
     [SerializeField] private SharedSpaceManager sharedSpaceManager;     // References to Lightship AR Shared Space API
     [SerializeField] private Texture2D trackingImage;
@@ -234,7 +235,11 @@ public class IntroManager : MonoBehaviour
         if (isHost)
         {
             Debug.Log("Connecting host");
-            NetworkManager.Singleton.StartHost();
+            if(NetworkManager.Singleton.StartHost())
+            {
+                GameObject roomAnchorInstance = Instantiate(roomAnchorPrefab);
+                roomAnchorInstance.GetComponent<NetworkObject>().SpawnWithOwnership(NetworkManager.ServerClientId);
+            }
         }
         else
         {

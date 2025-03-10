@@ -20,6 +20,7 @@ public class CameraAnchor : NetworkBehaviour
         transform.position = mainCamera.transform.position;
         transform.rotation = mainCamera.transform.rotation;
         
+        base.OnNetworkSpawn();
     }
 
     // Update is called once per frame
