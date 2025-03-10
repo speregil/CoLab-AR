@@ -1,14 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MainMenuManager : MonoBehaviour
 {
+    //------------------------------------------------------------------------------------------------------
+    // Constants
+    //------------------------------------------------------------------------------------------------------
+
+    public const int INTERACTION_STATE_POINT = 0;
+    public const int INTERACTION_STATE_GRAB = 1;
+    public const int INTERACTION_STATE_VOTE = 2;
     public const int TRACKING_OK_STATE = 0;                                    
     public const int TRACKING_WARNING_STATE = 1;                                     
     public const int TRACKING_NONE_STATE = 2;
+
+    //------------------------------------------------------------------------------------------------------
+    // Fields
+    //------------------------------------------------------------------------------------------------------
 
     [SerializeField] private GameObject mainButton;
     [SerializeField] private GameObject mainMenu;
@@ -18,6 +30,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject trackingPanel;
     [SerializeField] private TMP_Text   trackingStateLbl;
     [SerializeField] private TMP_Text   participantOptionsUsernameLabel;
+    [SerializeField] private float mouseHoldTimer;
 
     private SessionManager sessionManager;
 
@@ -25,7 +38,10 @@ public class MainMenuManager : MonoBehaviour
     private Button mainButtonBtn;
 
     private bool onMainMenu = false;
-    
+    private bool mousePressed = false;
+    private float mouseHoldTime = 0.0f;
+    private int currentInteractionState = INTERACTION_STATE_POINT;
+
 
     // Start is called before the first frame update
     void Start()
@@ -33,6 +49,60 @@ public class MainMenuManager : MonoBehaviour
         mainButtonLbl = mainButton.transform.GetComponentInChildren<TMP_Text>();
         mainButtonBtn = mainButton.GetComponentInChildren<Button>();
         mainButtonBtn.onClick.AddListener(OpenMainMenu);
+    }
+
+    void Update()
+    {
+        bool mouseClick = false;
+        bool mouseHold = false;
+        bool touchInput = Input.touchCount > 0;
+        bool touchHold = false;
+
+        if (Input.GetMouseButton(0))
+        {
+            mousePressed = true;
+            mouseHoldTime += 0.5f;
+            if (mouseHoldTime >= mouseHoldTimer)
+            {
+                Debug.Log("mouseHold");
+                mouseHold = true;
+                mouseHoldTime = 0.0f;
+            }
+        }
+        else if (mousePressed)
+        {
+            mouseClick = true;
+            mousePressed = false;
+        }
+
+        ManageInteraction(mouseClick, mouseHold, touchInput, touchHold);
+    }
+
+    public void ManageInteraction(bool mouseClick, bool mouseHold, bool touchInput, bool touchHold)
+    {
+        Ray ray = new Ray();
+
+        if (mouseClick)
+            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (touchInput)
+        {
+            Touch touch = Input.GetTouch(index: 0);
+            ray = Camera.main.ScreenPointToRay(touch.position);
+        }
+
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, 100))
+        {
+            if (hit.transform.tag == "anchor")
+            {
+                GameObject selectedParticipant = hit.transform.gameObject;
+                sessionManager.SelectParticipant(selectedParticipant);
+                SessionManager selectedParticipantManager = selectedParticipant.GetComponentInParent<SessionManager>();
+                OpenParticipantOptions(sessionManager.GetUsernameById(selectedParticipantManager.OwnerClientId));
+            }
+        }
     }
 
     public void SetTrackingStatus(string status, int code)
@@ -154,6 +224,11 @@ public class MainMenuManager : MonoBehaviour
     public void OnPingParticipant()
     {
         sessionManager.PingParticipant();
+    }
+
+    public void OnInteractionModeSelect(int mode)
+    { 
+        currentInteractionState = mode;
     }
 
     public void SetSessionManager(SessionManager sessionManager)

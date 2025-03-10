@@ -127,7 +127,7 @@ public class WorkspaceConfig : NetworkBehaviour
             InstantiateWorkspace(pose.position,pose.rotation,planeSize, NetworkManager.Singleton.LocalClientId);
 
             // Deactivates plane detection and cleans the screen
-            trackingManager.CleanTrackables();
+            trackingManager.CleanDetectedPlanes();
             DetectingPlanes(false);
         }
     }
@@ -216,8 +216,6 @@ public class WorkspaceConfig : NetworkBehaviour
         // Instantiates the workspace and scales it
         if (IsServer) 
         {
-            //NetworkObject worspaceNetworkObject = NetworkManager.SpawnManager.InstantiateAndSpawn(workspacePrefab.GetComponent<NetworkObject>(), clientId, false, false, false, planePosition, planeRotation);
-            //currentWorkspaceInstance = worspaceNetworkObject.gameObject;
             currentEditableWorkspace = Instantiate(workspacePrefab, planePosition, planeRotation);
             Vector2 workspaceSize = new Vector2(currentEditableWorkspace.GetComponent<Renderer>().bounds.size.x, currentEditableWorkspace.GetComponent<Renderer>().bounds.size.z);
             Vector3 ratioSize = new Vector3(planeSize.x / workspaceSize.x, 1.0f, planeSize.y / workspaceSize.y);
@@ -227,7 +225,7 @@ public class WorkspaceConfig : NetworkBehaviour
             currentWorkspace = currentEditableWorkspace.GetComponent<NetworkObject>();
 
             currentWorkspace.SpawnWithOwnership(clientId);
-
+            trackingManager.AddAnchor(currentWorkspace.gameObject);
             gameObject.transform.SetParent(currentWorkspace.transform);
 
             // Setups the configuration menu

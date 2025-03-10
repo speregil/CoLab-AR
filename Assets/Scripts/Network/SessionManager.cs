@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using TMPro;
+using Unity.VisualScripting;
 
 /**
  * Behaviour that controls the network functions of a participant who joined a room
@@ -41,44 +42,10 @@ public class SessionManager : NetworkBehaviour
         }
     }
 
-    void Update()
-    {
-        if (!IsOwner) return;
-
-        bool mouseInput = Input.GetMouseButtonDown(0);
-        bool touchInput = Input.touchCount > 0;
-
-        if (mouseInput || touchInput)
-        {
-            Ray ray = new Ray();
-
-            if(mouseInput)
-                ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (touchInput)
-            {
-                Touch touch = Input.GetTouch(index: 0);
-                ray = Camera.main.ScreenPointToRay(touch.position);
-            }
-
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, 100))
-            {
-                if(hit.transform.tag == "anchor")
-                {
-                    selectedParticipant = hit.transform.gameObject;
-                    SessionManager selectedParticipantManager = selectedParticipant.GetComponentInParent<SessionManager>();
-                    mainMenu.OpenParticipantOptions(GetUsernameById(selectedParticipantManager.OwnerClientId));
-                }
-            }
-        }
-    }
-
     //------------------------------------------------------------------------------------------------------
     // Functions
     //------------------------------------------------------------------------------------------------------
-
+    
     public MainMenuManager GetMainMenuReference()
     {
         return mainMenu;
@@ -155,6 +122,13 @@ public class SessionManager : NetworkBehaviour
         position.y = position.y + 0.5f;
         mainMenu.CloseParticipantOptions();
         SpawnPingRpc(position, NetworkManager.Singleton.LocalClientId);
+    }
+
+    public void SelectParticipant(GameObject participant)
+    {
+        if (!IsOwner) return;
+
+        selectedParticipant = participant;
     }
 
     public void UnselectParticipant()

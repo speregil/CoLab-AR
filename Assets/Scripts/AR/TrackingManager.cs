@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
@@ -15,6 +13,7 @@ public class TrackingManager : MonoBehaviour
 
     private GameObject trackables;          // Parent gameobject for all the AR planes detected
     private ARPlaneManager planeManager;    // Reference to the ARPlaneManager beheviour
+    private ARAnchorManager anchorManager;  // Reference to the ARAnchorManager beheviour
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
@@ -24,6 +23,8 @@ public class TrackingManager : MonoBehaviour
     {
         trackables = transform.Find("Trackables").gameObject;
         planeManager = GetComponent<ARPlaneManager>();
+        anchorManager = GetComponent<ARAnchorManager>();
+        anchorManager.anchorsChanged += OnAnchorsChanged;
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -44,11 +45,25 @@ public class TrackingManager : MonoBehaviour
      * Destroys all the planes detected and tracked by the ARPlaneManager behaviour, leaving the Trakables
      * node empty
      */
-    public void CleanTrackables()
+    public void CleanDetectedPlanes()
     {
-        foreach (Transform child in trackables.transform)
+        foreach (var plane in planeManager.trackables)
         {
-            Destroy(child.gameObject);
+            plane.gameObject.SetActive(false);
+        }
+    }
+
+    public void AddAnchor(GameObject anchorObject) 
+    {
+        anchorObject.AddComponent<ARAnchor>();
+    }
+
+    private void OnAnchorsChanged(ARAnchorsChangedEventArgs args)
+    {
+        Debug.Log("Anchors changed event");
+        foreach (var anchor in args.added)
+        {
+            Debug.Log("Anchor added: " + anchor.gameObject.name);
         }
     }
 }
