@@ -13,9 +13,6 @@ public class SessionManager : NetworkBehaviour
     // Fields
     //------------------------------------------------------------------------------------------------------
 
-    [SerializeField] private GameObject mainBody;
-    [SerializeField] private GameObject gaze;
-    [SerializeField] private GameObject nameplate;
     [SerializeField] private GameObject PointerPrefab;
 
     private Dictionary<string, Color> participants = new Dictionary<string, Color>();
@@ -36,10 +33,7 @@ public class SessionManager : NetworkBehaviour
         mainMenu = mainMenuObject.GetComponent<MainMenuManager>();
         RegisterNewParticipantRpc(userConfig.GetProfileStruct(), NetworkManager.Singleton.LocalClientId);
 
-        if (IsOwner) {
-            mainMenu.SetSessionManager(this);
-            gaze.SetActive(false);
-        }
+        if (IsOwner) mainMenu.SetSessionManager(this);
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -56,18 +50,6 @@ public class SessionManager : NetworkBehaviour
         return participants;
     }
 
-    public void ApplyAnchorColor(Color participantColor)
-    {
-        Material mainMaterial = mainBody.GetComponent<Renderer>().material;
-        mainMaterial.SetColor("_Color", normalizeColor(participantColor));
-    }
-
-    public void UpdateAnchorNameplate(string username)
-    {
-        TMP_Text label = nameplate.transform.Find("Panel").gameObject.GetComponentInChildren<TMP_Text>();
-        label.text = username;
-    }
-
     private void LocalUpdateAnchors()
     {
         GameObject[] localParticipants = GameObject.FindGameObjectsWithTag("participant");
@@ -75,6 +57,7 @@ public class SessionManager : NetworkBehaviour
         foreach (GameObject local in localParticipants)
         {
             SessionManager localManager = local.GetComponent<SessionManager>();
+            CameraAnchor localAnchor = local.GetComponent<CameraAnchor>();
             ulong localOwnerId = localManager.OwnerClientId;
 
             string username = "";
@@ -88,8 +71,8 @@ public class SessionManager : NetworkBehaviour
             if (username != "")
             {
                 Color participantColor = participants[username];
-                localManager.ApplyAnchorColor(participantColor);
-                localManager.UpdateAnchorNameplate(username);
+                localAnchor.ApplyAnchorColor(participantColor);
+                localAnchor.UpdateAnchorNameplate(username);
             }
         }
     }
@@ -150,15 +133,6 @@ public class SessionManager : NetworkBehaviour
         }
 
         return username;
-    }
-
-    private Color normalizeColor(Color baseColor)
-    {
-        Color normalizedColor = new Color();
-        normalizedColor.r = baseColor.r / 255;
-        normalizedColor.g = baseColor.g / 255;
-        normalizedColor.b = baseColor.b / 255;
-        return normalizedColor;
     }
 
     [Rpc(SendTo.ClientsAndHost)]
