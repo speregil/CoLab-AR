@@ -1992,10 +1992,11 @@ MonoBehaviour:
   participantsMenu: {fileID: 1445988276}
   participantLabelPrefab: {fileID: 5111697513826951667, guid: dabb6b86d213eec49a84aa6b1c08e713, type: 3}
   participantOptions: {fileID: 243272397}
-  trackingPanel: {fileID: 0}
-  trackingStateLbl: {fileID: 0}
   participantOptionsUsernameLabel: {fileID: 1913440311}
+  trackingButton: {fileID: 537848863}
+  trackingStateLbl: {fileID: 894370976}
   mouseHoldTimer: 500
+  sessionCamera: {fileID: 4181977792802708489}
 --- !u!114 &384863537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2516,7 +2517,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &537848864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4086,7 +4087,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -9511,7 +9512,7 @@ MonoBehaviour:
   profileMenu: {fileID: 1789607024}
   workspaceConfigMenu: {fileID: 4948780934776003329}
   mainMenu: {fileID: 384863535}
-  trackingButton: {fileID: 537848863}
+  mainMenuManager: {fileID: 384863536}
   SelectedConfigStateColor: {r: 0, g: 0, b: 0, a: 0}
   userConfiguration: {fileID: 2042532990}
 --- !u!114 &787845122372311298

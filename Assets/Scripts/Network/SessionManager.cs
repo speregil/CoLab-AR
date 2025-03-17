@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-using TMPro;
-using Unity.VisualScripting;
 
 /**
  * Behaviour that controls the network functions of a participant who joined a room

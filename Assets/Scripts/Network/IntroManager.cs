@@ -18,16 +18,16 @@ public class IntroManager : MonoBehaviour
     [SerializeField] TMP_InputField usernameInputField;                 // Reference to the input field for the username of the current user's profile
     [SerializeField] TMP_Text responseMessageTxt;                       // Reference to the response message text in the profile menu 
     [SerializeField] TMP_Dropdown joinNameDropdown;                     // Reference to the input field for the name of a room to join to
-    [SerializeField] TMP_Dropdown colorPickDropdown;
-    [SerializeField] GameObject roomAnchorPrefab;
+    [SerializeField] TMP_Dropdown colorPickDropdown;                    // Reference to the dropdown field for the color of the user
+    [SerializeField] GameObject roomAnchorPrefab;                       // Prefab for the room anchor object
 
     [SerializeField] private SharedSpaceManager sharedSpaceManager;     // References to Lightship AR Shared Space API
-    [SerializeField] private Texture2D trackingImage;
+    [SerializeField] private Texture2D trackingImage;                   // Reference to the image used for tracking
     UIManager uiManager;                                                // Reference to the UIManager component
 
     private string roomName;                                            // Name of the room to create or join to
-    private string username;
-    private Color userColor;
+    private string username;                                            // Name of the user's profile
+    private Color userColor;                                            // Color of the user's profile
     private bool isHost;                                                // Flag that determines if the user is creating or joining a room
 
     //------------------------------------------------------------------------------------------------------
@@ -89,6 +89,10 @@ public class IntroManager : MonoBehaviour
         roomName = joinNameDropdown.options[value].text;
     }
 
+    /**
+     * Callback launched when the dropdown field of the color pick menu changes value
+     * @param value index of the new value
+     */
     public void OnColorPick(int value)
     {
         switch (value)
@@ -248,21 +252,24 @@ public class IntroManager : MonoBehaviour
         }
     }
 
+    /**
+     * Callback function that is launched when the tracking state of the colocalization system changes
+     * @param args Event arguments that contain the new tracking state
+     */
     private void OnColocalizationTrackingStateChanged(SharedSpaceManager.SharedSpaceManagerStateChangeEventArgs args)
     {
         Debug.Log("Tracking State changed");
         if (args.Tracking)
         {
             Debug.Log("Tracking Image");
-            uiManager.ActivateTrackingMenu(true);
+            uiManager.ChangeTrackingState(MainMenuManager.TRACKING_OK_STATE);
             StartSharedSpace();
-        }
-        else
-        {
-            uiManager.ActivateTrackingMenu(false);
         }
     }
 
+    /**
+     * Asks the RoomManagementService to delete all the rooms storaged in the SharedAR service
+     */
     public void PurgeRooms()
     {
         List<IRoom> roomList = new List<IRoom>();

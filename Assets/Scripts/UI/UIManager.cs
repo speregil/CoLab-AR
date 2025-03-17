@@ -18,11 +18,12 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject profileMenu;                // Reference to the Profile Configuration menu canvas
     [SerializeField] private GameObject workspaceConfigMenu;        // Referene to the worspace config tools canvas
     [SerializeField] private GameObject mainMenu;                   // Referene to the main menu canvas
-    [SerializeField] private GameObject trackingButton;
+    [SerializeField] private MainMenuManager mainMenuManager;
     [SerializeField] private Color SelectedConfigStateColor;        // Color for the selected configuration option in the Workspace config menu
 
     [SerializeField] private UserConfiguration userConfiguration;   // Reference to the offline user configuration component
     private IntroManager introManager;                              // Reference to the Intro Scene actions manager
+    
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
@@ -124,11 +125,6 @@ public class UIManager : MonoBehaviour
         profileMenu.SetActive(false);
     }
 
-    public void ActivateTrackingMenu(bool active)
-    {
-        trackingButton.SetActive(active);
-    }
-
     /**
      * Shows the workspace configuration menu
      */
@@ -170,5 +166,10 @@ public class UIManager : MonoBehaviour
             workspaceButton = flowButtons.Find(buttonName).gameObject;
 
         return workspaceButton.GetComponent<Button>();
+    }
+
+    public void ChangeTrackingState(int status)
+    {
+        mainMenuManager.SetTrackingStatus(status);
     }
 }
