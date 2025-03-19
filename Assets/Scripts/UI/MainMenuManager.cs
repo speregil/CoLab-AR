@@ -34,6 +34,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private TMP_Text participantOptionsUsernameLabel;          // Reference to the username label in the participant options panel 
     [SerializeField] private GameObject trackingButton;                         // Reference to the tracking button
     [SerializeField] private TMP_Text   trackingStateLbl;                       // Reference to the label in the tracking button
+    [SerializeField] private GameObject modelsOptions;
+    [SerializeField] private GameObject addModelsPanel;
     [SerializeField] private float mouseHoldTimer;                              // Time to consider a mouse hold
     [SerializeField] private GameObject sessionCamera;                          // Reference to the ARCamera component of each participant
 
@@ -221,6 +223,23 @@ public class MainMenuManager : MonoBehaviour
         }
     }
 
+    public void OpenModelsOptions()
+    {
+        modelsOptions.SetActive(true);
+        mainMenu.SetActive(false);
+        mainButtonLbl.text = "Back";
+        mainButtonBtn.onClick.RemoveAllListeners();
+        mainButtonBtn.onClick.AddListener(CloseModelsOptions);
+    }
+
+    public void OpenAddModelsPanel()
+    {
+        modelsOptions.SetActive(false);
+        addModelsPanel.SetActive(true);
+        mainButtonBtn.onClick.RemoveAllListeners();
+        mainButtonBtn.onClick.AddListener(CloseAddModelsPanel);
+    }
+
     /**
      * Closes the main menu
      */
@@ -261,6 +280,18 @@ public class MainMenuManager : MonoBehaviour
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(OpenMainMenu);
         sessionManager.UnselectParticipant();
+    }
+
+    public void CloseModelsOptions()
+    {
+        modelsOptions.SetActive(false);
+        OpenMainMenu();
+    }
+
+    public void CloseAddModelsPanel()
+    {
+        addModelsPanel.SetActive(false);
+        OpenModelsOptions();
     }
 
     /**
