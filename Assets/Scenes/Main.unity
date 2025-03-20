@@ -2267,6 +2267,7 @@ MonoBehaviour:
   addModelsPanel: {fileID: 1394350174}
   mouseHoldTimer: 500
   sessionCamera: {fileID: 4181977792802708489}
+  trackingManager: {fileID: 7800234115431314299}
 --- !u!114 &384863537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7535,7 +7536,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1597906361}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 384863536}
+        m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
+        m_MethodName: ActivateModelPositioning
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1597906361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16352,7 +16365,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa17d122634046b4a8e23048891fafc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_RaycastPrefab: {fileID: 0}
+  m_RaycastPrefab: {fileID: 328461490179453782, guid: 5ad5b299b98281241b4a033a7f1277df, type: 3}
 --- !u!114 &8171424588723756061
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -37,7 +37,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject modelsOptions;
     [SerializeField] private GameObject addModelsPanel;
     [SerializeField] private float mouseHoldTimer;                              // Time to consider a mouse hold
-    [SerializeField] private GameObject sessionCamera;                          // Reference to the ARCamera component of each participant
+    [SerializeField] private GameObject sessionCamera;
+    [SerializeField] private TrackingManager trackingManager;
 
     private SessionManager sessionManager;                                      // Reference to the SessionManager component
 
@@ -292,6 +293,11 @@ public class MainMenuManager : MonoBehaviour
     {
         addModelsPanel.SetActive(false);
         OpenModelsOptions();
+    }
+
+    public void ActivateModelPositioning()
+    {
+        trackingManager.ActivateModelPositioning(true);
     }
 
     /**

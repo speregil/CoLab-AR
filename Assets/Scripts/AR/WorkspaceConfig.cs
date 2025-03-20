@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
@@ -117,7 +116,7 @@ public class WorkspaceConfig : NetworkBehaviour
     {
         List<ARRaycastHit> hits = new List<ARRaycastHit>();
 
-        if (raycastManager.Raycast(position, hits, trackableTypes: UnityEngine.XR.ARSubsystems.TrackableType.PlaneEstimated))
+        if (raycastManager.Raycast(position, hits, TrackableType.PlaneEstimated))
         {
             // Identyfies the plane hit with the raycast
             Pose pose = hits[0].pose;

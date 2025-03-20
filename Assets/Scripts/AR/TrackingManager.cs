@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.XR.ARSubsystems;
 using UnityEngine.XR.ARFoundation;
 
 /**
@@ -11,9 +13,12 @@ public class TrackingManager : MonoBehaviour
     // Fields
     //------------------------------------------------------------------------------------------------------
 
-    private GameObject trackables;          // Parent gameobject for all the AR planes detected
-    private ARPlaneManager planeManager;    // Reference to the ARPlaneManager beheviour
-    private ARAnchorManager anchorManager;  // Reference to the ARAnchorManager beheviour
+    private GameObject trackables;              // Parent gameobject for all the AR planes detected
+    private ARPlaneManager planeManager;        // Reference to the ARPlaneManager component
+    private ARAnchorManager anchorManager;      // Reference to the ARAnchorManager component
+    private ARRaycastManager raycastManager;    // Reference to the ARRaycastManager component
+
+    private bool onAddModel = false;            // Flag to know if the user is currently adding a model to the scene
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
@@ -25,6 +30,22 @@ public class TrackingManager : MonoBehaviour
         planeManager = GetComponent<ARPlaneManager>();
         anchorManager = GetComponent<ARAnchorManager>();
         anchorManager.anchorsChanged += OnAnchorsChanged;
+        raycastManager = GetComponent<ARRaycastManager>();
+    }
+
+    void Update()
+    {
+        if (onAddModel)
+        {
+            Vector3 screenCenter = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+            Ray ray = Camera.main.ScreenPointToRay(screenCenter);
+            List<ARRaycastHit> hits = new List<ARRaycastHit>();
+            if (raycastManager.Raycast(ray, hits, TrackableType.PlaneWithinPolygon))
+            {
+                Pose hitPose = hits[0].pose;
+                Debug.Log("Hit pose: " + hitPose.position);
+            }   
+        }
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -56,6 +77,11 @@ public class TrackingManager : MonoBehaviour
     public void AddAnchor(GameObject anchorObject) 
     {
         anchorObject.AddComponent<ARAnchor>();
+    }
+
+    public void ActivateModelPositioning(bool isActive)
+    {
+        onAddModel = isActive;
     }
 
     private void OnAnchorsChanged(ARAnchorsChangedEventArgs args)
