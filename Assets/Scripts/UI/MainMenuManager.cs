@@ -224,6 +224,9 @@ public class MainMenuManager : MonoBehaviour
         }
     }
 
+    /**
+     * Opens the models options menu
+     */
     public void OpenModelsOptions()
     {
         modelsOptions.SetActive(true);
@@ -233,6 +236,9 @@ public class MainMenuManager : MonoBehaviour
         mainButtonBtn.onClick.AddListener(CloseModelsOptions);
     }
 
+    /**
+     * Opens the selection panel to add a model to the scene
+     */
     public void OpenAddModelsPanel()
     {
         modelsOptions.SetActive(false);
@@ -283,20 +289,32 @@ public class MainMenuManager : MonoBehaviour
         sessionManager.UnselectParticipant();
     }
 
+    /**
+     * Closes the models options menu
+     */
     public void CloseModelsOptions()
     {
         modelsOptions.SetActive(false);
         OpenMainMenu();
     }
 
+    /**
+     * Closes the model selection panel
+     */
     public void CloseAddModelsPanel()
     {
+        trackingManager.ActivateModelPositioning(false);
         addModelsPanel.SetActive(false);
         OpenModelsOptions();
     }
 
-    public void ActivateModelPositioning()
+    /**
+     * Callback for the button that changes the type of model to add to the scene
+     * @param modelType Type of the model to add
+     */
+    public void ActivateModelPositioning(int modelType)
     {
+        trackingManager.ChangeToAddModel(modelType);
         trackingManager.ActivateModelPositioning(true);
     }
 

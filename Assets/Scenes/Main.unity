@@ -3515,7 +3515,7 @@ GameObject:
   - component: {fileID: 597532097}
   - component: {fileID: 597532096}
   m_Layer: 0
-  m_Name: CilinderBtn
+  m_Name: CylinderBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7540,7 +7540,7 @@ MonoBehaviour:
       - m_Target: {fileID: 384863536}
         m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
         m_MethodName: ActivateModelPositioning
-        m_Mode: 1
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -16168,6 +16168,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 254fbae352fc381459d3ee35f9b12de5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cubeModelPrefab: {fileID: 77244629651346300, guid: 524a3778b6466ee46a81b0335f4335af, type: 3}
+  cubeModelPrefabPrev: {fileID: 77244629651346300, guid: b61afccf381327c439897813079a471f, type: 3}
+  boxModelPrefab: {fileID: 0}
+  boxModelPrefabPrev: {fileID: 0}
+  pyramidModelPrefab: {fileID: 0}
+  pyramidModelPrefabPrev: {fileID: 0}
+  sphereModelPrefab: {fileID: 0}
+  sphereModelPrefabPrev: {fileID: 0}
+  cylinderModelPrefab: {fileID: 0}
+  cylinderModelPrefabPrev: {fileID: 0}
 --- !u!114 &7836908395353234205
 MonoBehaviour:
   m_ObjectHideFlags: 0

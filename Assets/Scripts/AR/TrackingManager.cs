@@ -10,8 +10,30 @@ using UnityEngine.XR.ARFoundation;
 public class TrackingManager : MonoBehaviour
 {
     //------------------------------------------------------------------------------------------------------
+    // Constants
+    //------------------------------------------------------------------------------------------------------
+
+    // Constants for the model types to add to the scene
+    public const int ADD_CUBE_MODEL = 0;
+    public const int ADD_BOX_MODEL = 1;
+    public const int ADD_PYRAMID_MODEL = 2;
+    public const int ADD_SPHERE_MODEL = 3;
+    public const int ADD_CYLINDER_MODEL = 4;
+
+    //------------------------------------------------------------------------------------------------------
     // Fields
     //------------------------------------------------------------------------------------------------------
+
+    [SerializeField] private GameObject cubeModelPrefab;
+    [SerializeField] private GameObject cubeModelPrefabPrev;
+    [SerializeField] private GameObject boxModelPrefab;
+    [SerializeField] private GameObject boxModelPrefabPrev;
+    [SerializeField] private GameObject pyramidModelPrefab;
+    [SerializeField] private GameObject pyramidModelPrefabPrev;
+    [SerializeField] private GameObject sphereModelPrefab;
+    [SerializeField] private GameObject sphereModelPrefabPrev;
+    [SerializeField] private GameObject cylinderModelPrefab;
+    [SerializeField] private GameObject cylinderModelPrefabPrev;
 
     private GameObject trackables;              // Parent gameobject for all the AR planes detected
     private ARPlaneManager planeManager;        // Reference to the ARPlaneManager component
@@ -19,6 +41,10 @@ public class TrackingManager : MonoBehaviour
     private ARRaycastManager raycastManager;    // Reference to the ARRaycastManager component
 
     private bool onAddModel = false;            // Flag to know if the user is currently adding a model to the scene
+    private GameObject toAddModelPrev;          // Reference to the model being added to the scene
+    private GameObject toAddModel;
+    private GameObject currentPreview = null;
+    
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
@@ -39,12 +65,38 @@ public class TrackingManager : MonoBehaviour
         {
             Vector3 screenCenter = new Vector3(Screen.width / 2, Screen.height / 2, 0);
             Ray ray = Camera.main.ScreenPointToRay(screenCenter);
+            
             List<ARRaycastHit> hits = new List<ARRaycastHit>();
             if (raycastManager.Raycast(ray, hits, TrackableType.PlaneWithinPolygon))
             {
                 Pose hitPose = hits[0].pose;
-                Debug.Log("Hit pose: " + hitPose.position);
-            }   
+
+                if (currentPreview == null)
+                {
+                    currentPreview = Instantiate(toAddModelPrev, hitPose.position, Quaternion.identity);
+                    float height = currentPreview.GetComponent<MeshRenderer>().bounds.size.y;
+                    currentPreview.transform.position = new Vector3(hitPose.position.x, hitPose.position.y + height / 2, hitPose.position.z);
+                }
+                else
+                    currentPreview.transform.position = hitPose.position;
+
+                if(Input.GetMouseButtonDown(0) || Input.touchCount > 0)
+                {
+                    Destroy(currentPreview);
+                    currentPreview = null;
+
+                    GameObject model = Instantiate(toAddModel, hitPose.position, Quaternion.identity);
+                    float height = model.GetComponent<MeshRenderer>().bounds.size.y;
+                    model.transform.position = new Vector3(hitPose.position.x, hitPose.position.y + height / 2, hitPose.position.z);
+                    NetworkObject networkModel = model.GetComponent<NetworkObject>();
+                    networkModel.SpawnWithOwnership(NetworkManager.Singleton.LocalClientId);
+                }
+            }
+            else
+            {
+                Destroy(currentPreview);
+                currentPreview = null;
+            }
         }
     }
 
@@ -77,6 +129,33 @@ public class TrackingManager : MonoBehaviour
     public void AddAnchor(GameObject anchorObject) 
     {
         anchorObject.AddComponent<ARAnchor>();
+    }
+
+    public void ChangeToAddModel(int modelType)
+    {    
+        switch (modelType)
+        {
+            case ADD_CUBE_MODEL:
+                toAddModelPrev = cubeModelPrefabPrev;
+                toAddModel = cubeModelPrefab;
+                break;
+            case ADD_BOX_MODEL:
+                toAddModelPrev = boxModelPrefabPrev;
+                toAddModel = boxModelPrefab;
+                break;
+            case ADD_PYRAMID_MODEL:
+                toAddModelPrev = pyramidModelPrefabPrev;
+                toAddModel = pyramidModelPrefab;
+                break;
+            case ADD_SPHERE_MODEL:
+                toAddModelPrev = pyramidModelPrefabPrev;
+                toAddModel = sphereModelPrefab;
+                break;
+            case ADD_CYLINDER_MODEL:
+                toAddModelPrev = cylinderModelPrefabPrev;
+                toAddModel = cylinderModelPrefab;
+                break;
+        }
     }
 
     public void ActivateModelPositioning(bool isActive)
