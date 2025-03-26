@@ -120,6 +120,7 @@ public class WorkspaceConfig : NetworkBehaviour
         {
             // Identyfies the plane hit with the raycast
             Pose pose = hits[0].pose;
+            hits[0].trackable.gameObject.tag = "selected";
             Vector2 planeSize = new Vector2(hits[0].trackable.gameObject.GetComponent<Renderer>().bounds.size.x, hits[0].trackable.gameObject.GetComponent<Renderer>().bounds.size.z);
             
             // Host call to create the workspace plane

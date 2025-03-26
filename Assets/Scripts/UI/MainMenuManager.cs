@@ -318,6 +318,11 @@ public class MainMenuManager : MonoBehaviour
         trackingManager.ActivateModelPositioning(true);
     }
 
+    public void AddCurrentModel()
+    {
+        trackingManager.AddModel();
+    }
+
     /**
      * Callback for the gaze toggle button to turn the gaze of a selected participant on or off
      * @param toggle Flag to know if the gaze is active or not

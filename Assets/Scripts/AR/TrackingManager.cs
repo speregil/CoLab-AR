@@ -3,6 +3,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.XR.ARSubsystems;
 using UnityEngine.XR.ARFoundation;
+using Unity.VisualScripting;
 
 /**
  * Behaviour that manages the the plane detection functions using for the room configuration
@@ -40,6 +41,7 @@ public class TrackingManager : MonoBehaviour
     private ARAnchorManager anchorManager;      // Reference to the ARAnchorManager component
     private ARRaycastManager raycastManager;    // Reference to the ARRaycastManager component
 
+    private Pose hitPose;                       // Pose of the hit point of the raycast
     private bool onAddModel = false;            // Flag to know if the user is currently adding a model to the scene
     private GameObject toAddModelPrev;          // Reference to the model being added to the scene
     private GameObject toAddModel;
@@ -68,28 +70,19 @@ public class TrackingManager : MonoBehaviour
             
             List<ARRaycastHit> hits = new List<ARRaycastHit>();
             if (raycastManager.Raycast(ray, hits, TrackableType.PlaneWithinPolygon))
-            {
-                Pose hitPose = hits[0].pose;
-
-                if (currentPreview == null)
+            {  
+                hitPose = hits[0].pose;
+                Debug.Log(hits[0].trackable.gameObject.tag);
+                if (hits[0].trackable.gameObject.tag.Equals("selected"))
                 {
-                    currentPreview = Instantiate(toAddModelPrev, hitPose.position, Quaternion.identity);
-                    float height = currentPreview.GetComponent<MeshRenderer>().bounds.size.y;
-                    currentPreview.transform.position = new Vector3(hitPose.position.x, hitPose.position.y + height / 2, hitPose.position.z);
-                }
-                else
-                    currentPreview.transform.position = hitPose.position;
-
-                if(Input.GetMouseButtonDown(0) || Input.touchCount > 0)
-                {
-                    Destroy(currentPreview);
-                    currentPreview = null;
-
-                    GameObject model = Instantiate(toAddModel, hitPose.position, Quaternion.identity);
-                    float height = model.GetComponent<MeshRenderer>().bounds.size.y;
-                    model.transform.position = new Vector3(hitPose.position.x, hitPose.position.y + height / 2, hitPose.position.z);
-                    NetworkObject networkModel = model.GetComponent<NetworkObject>();
-                    networkModel.SpawnWithOwnership(NetworkManager.Singleton.LocalClientId);
+                    if (currentPreview == null)
+                    {
+                        currentPreview = Instantiate(toAddModelPrev, hitPose.position, Quaternion.identity);
+                        float height = currentPreview.GetComponent<MeshRenderer>().bounds.size.y;
+                        currentPreview.transform.position = new Vector3(hitPose.position.x, hitPose.position.y + height / 2, hitPose.position.z);
+                    }
+                    else
+                        currentPreview.transform.position = hitPose.position;
                 }
             }
             else
@@ -132,7 +125,10 @@ public class TrackingManager : MonoBehaviour
     }
 
     public void ChangeToAddModel(int modelType)
-    {    
+    {
+        Destroy(currentPreview);
+        currentPreview = null;
+
         switch (modelType)
         {
             case ADD_CUBE_MODEL:
@@ -148,7 +144,7 @@ public class TrackingManager : MonoBehaviour
                 toAddModel = pyramidModelPrefab;
                 break;
             case ADD_SPHERE_MODEL:
-                toAddModelPrev = pyramidModelPrefabPrev;
+                toAddModelPrev = sphereModelPrefabPrev;
                 toAddModel = sphereModelPrefab;
                 break;
             case ADD_CYLINDER_MODEL:
@@ -161,6 +157,21 @@ public class TrackingManager : MonoBehaviour
     public void ActivateModelPositioning(bool isActive)
     {
         onAddModel = isActive;
+    }
+
+    public void AddModel()
+    {
+        if (currentPreview != null)
+        {
+            Destroy(currentPreview);
+            currentPreview = null;
+
+            GameObject model = Instantiate(toAddModel, hitPose.position, Quaternion.identity);
+            float height = model.GetComponent<MeshRenderer>().bounds.size.y;
+            model.transform.position = new Vector3(hitPose.position.x, hitPose.position.y + height / 2, hitPose.position.z);
+            NetworkObject networkModel = model.GetComponent<NetworkObject>();
+            networkModel.SpawnWithOwnership(NetworkManager.Singleton.LocalClientId);
+        }
     }
 
     private void OnAnchorsChanged(ARAnchorsChangedEventArgs args)
