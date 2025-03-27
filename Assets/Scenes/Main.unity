@@ -4631,7 +4631,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 384863536}
         m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
-        m_MethodName: AddCurrentModel
+        m_MethodName: OnPlaceModel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

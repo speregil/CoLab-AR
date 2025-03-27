@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -318,9 +319,12 @@ public class MainMenuManager : MonoBehaviour
         trackingManager.ActivateModelPositioning(true);
     }
 
-    public void AddCurrentModel()
+    public void OnPlaceModel()
     {
-        trackingManager.AddModel();
+        int modelType = trackingManager.GetToAddModelType();
+        Vector3 hitPosition = trackingManager.GetHitPosition();
+        ulong clientId = NetworkManager.Singleton.LocalClientId;
+        sessionManager.AddModelRpc(modelType,hitPosition,clientId);
     }
 
     /**
@@ -374,5 +378,10 @@ public class MainMenuManager : MonoBehaviour
     public GameObject GetSessionCamera()
     {
         return sessionCamera;
+    }
+
+    public GameObject GetToAddModel(int modelType)
+    {
+        return trackingManager.GetToAddModel(modelType);
     }
 }

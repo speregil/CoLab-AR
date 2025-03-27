@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.XR.ARSubsystems;
 using UnityEngine.XR.ARFoundation;
-using Unity.VisualScripting;
+using static TreeEditor.TreeEditorHelper;
 
 /**
  * Behaviour that manages the the plane detection functions using for the room configuration
@@ -41,10 +39,10 @@ public class TrackingManager : MonoBehaviour
     private ARAnchorManager anchorManager;      // Reference to the ARAnchorManager component
     private ARRaycastManager raycastManager;    // Reference to the ARRaycastManager component
 
-    private Pose hitPose;                       // Pose of the hit point of the raycast
+    private Vector3 hitPosition;                // Pose of the hit point of the raycast
     private bool onAddModel = false;            // Flag to know if the user is currently adding a model to the scene
     private GameObject toAddModelPrev;          // Reference to the model being added to the scene
-    private GameObject toAddModel;
+    private int toAddModel;
     private GameObject currentPreview = null;
     
 
@@ -68,21 +66,20 @@ public class TrackingManager : MonoBehaviour
             Vector3 screenCenter = new Vector3(Screen.width / 2, Screen.height / 2, 0);
             Ray ray = Camera.main.ScreenPointToRay(screenCenter);
             
-            List<ARRaycastHit> hits = new List<ARRaycastHit>();
-            if (raycastManager.Raycast(ray, hits, TrackableType.PlaneWithinPolygon))
-            {  
-                hitPose = hits[0].pose;
-                Debug.Log(hits[0].trackable.gameObject.tag);
-                if (hits[0].trackable.gameObject.tag.Equals("selected"))
-                {
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                if (hit.transform.gameObject.tag.Equals("workspace"))
+                {   
+                    hitPosition = hit.point;
                     if (currentPreview == null)
                     {
-                        currentPreview = Instantiate(toAddModelPrev, hitPose.position, Quaternion.identity);
+                        currentPreview = Instantiate(toAddModelPrev, hitPosition, Quaternion.identity);
                         float height = currentPreview.GetComponent<MeshRenderer>().bounds.size.y;
-                        currentPreview.transform.position = new Vector3(hitPose.position.x, hitPose.position.y + height / 2, hitPose.position.z);
+                        currentPreview.transform.position = new Vector3(hitPosition.x, hitPosition.y + height / 2, hitPosition.z);
                     }
                     else
-                        currentPreview.transform.position = hitPose.position;
+                        currentPreview.transform.position = hitPosition;
                 }
             }
             else
@@ -133,45 +130,49 @@ public class TrackingManager : MonoBehaviour
         {
             case ADD_CUBE_MODEL:
                 toAddModelPrev = cubeModelPrefabPrev;
-                toAddModel = cubeModelPrefab;
+                toAddModel = modelType;
                 break;
             case ADD_BOX_MODEL:
                 toAddModelPrev = boxModelPrefabPrev;
-                toAddModel = boxModelPrefab;
+                toAddModel = modelType;
                 break;
             case ADD_PYRAMID_MODEL:
                 toAddModelPrev = pyramidModelPrefabPrev;
-                toAddModel = pyramidModelPrefab;
+                toAddModel = modelType;
                 break;
             case ADD_SPHERE_MODEL:
                 toAddModelPrev = sphereModelPrefabPrev;
-                toAddModel = sphereModelPrefab;
+                toAddModel = modelType;
                 break;
             case ADD_CYLINDER_MODEL:
                 toAddModelPrev = cylinderModelPrefabPrev;
-                toAddModel = cylinderModelPrefab;
+                toAddModel = modelType;
                 break;
+        }
+    }
+
+    public GameObject GetToAddModel(int modelType)
+    {
+        switch (modelType)
+        {
+            case ADD_CUBE_MODEL:
+                return cubeModelPrefab;
+            case ADD_BOX_MODEL:
+                return boxModelPrefab;
+            case ADD_PYRAMID_MODEL:
+                return pyramidModelPrefab;
+            case ADD_SPHERE_MODEL:
+                return sphereModelPrefab;
+            case ADD_CYLINDER_MODEL:
+                return cylinderModelPrefab;
+            default:
+                return null;
         }
     }
 
     public void ActivateModelPositioning(bool isActive)
     {
         onAddModel = isActive;
-    }
-
-    public void AddModel()
-    {
-        if (currentPreview != null)
-        {
-            Destroy(currentPreview);
-            currentPreview = null;
-
-            GameObject model = Instantiate(toAddModel, hitPose.position, Quaternion.identity);
-            float height = model.GetComponent<MeshRenderer>().bounds.size.y;
-            model.transform.position = new Vector3(hitPose.position.x, hitPose.position.y + height / 2, hitPose.position.z);
-            NetworkObject networkModel = model.GetComponent<NetworkObject>();
-            networkModel.SpawnWithOwnership(NetworkManager.Singleton.LocalClientId);
-        }
     }
 
     private void OnAnchorsChanged(ARAnchorsChangedEventArgs args)
@@ -181,5 +182,15 @@ public class TrackingManager : MonoBehaviour
         {
             Debug.Log("Anchor added: " + anchor.gameObject.name);
         }
+    }
+
+    public int GetToAddModelType()
+    {
+        return toAddModel;
+    }
+
+    public Vector3 GetHitPosition()
+    {
+        return hitPosition;
     }
 }

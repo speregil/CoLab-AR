@@ -162,4 +162,22 @@ public class SessionManager : NetworkBehaviour
             pointerNetworkObject.SpawnWithOwnership(clientID);
         }
     }
+
+    [Rpc(SendTo.Server)]
+    public void AddModelRpc(int modelType, Vector3 position, ulong ownerId)
+    {
+        if (IsServer)
+        {
+            GameObject modelPrefab = mainMenu.GetToAddModel(modelType);
+
+            if (modelPrefab != null)
+            {
+                GameObject model = Instantiate(modelPrefab, position, Quaternion.identity);
+                //float height = model.GetComponent<MeshRenderer>().bounds.size.y;
+                //model.transform.position = new Vector3(hitPosition.x, hitPosition.y + height / 2, hitPosition.z);
+                NetworkObject networkModel = model.GetComponent<NetworkObject>();
+                networkModel.SpawnWithOwnership(ownerId);
+            }
+        }
+    }
 }
