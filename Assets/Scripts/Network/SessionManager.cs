@@ -173,11 +173,27 @@ public class SessionManager : NetworkBehaviour
             if (modelPrefab != null)
             {
                 GameObject model = Instantiate(modelPrefab, position, Quaternion.identity);
-                //float height = model.GetComponent<MeshRenderer>().bounds.size.y;
-                //model.transform.position = new Vector3(hitPosition.x, hitPosition.y + height / 2, hitPosition.z);
+                ModelData data = model.GetComponent<ModelData>();
+                data.OwnerId = ownerId;
+                data.ModelId = model.GetInstanceID().ToString();
+                model.name = "UserModel" + data.ModelId;
+                Debug.Log("Model ID: " + data.ModelId);
                 NetworkObject networkModel = model.GetComponent<NetworkObject>();
                 networkModel.SpawnWithOwnership(ownerId);
             }
+        }
+    }
+
+    [Rpc(SendTo.Server)]
+    public void DeleteModelRpc(string modelID, ulong senderId)
+    {
+        GameObject model = GameObject.Find("UserModel" + modelID);
+        ModelData data = model.GetComponent<ModelData>();
+        if(data.OwnerId == senderId)
+        {
+            Debug.Log("You can delete this");
+            //NetworkObject networkModel = model.GetComponent<NetworkObject>();
+            //networkModel.Despawn(true);
         }
     }
 }

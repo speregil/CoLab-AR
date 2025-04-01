@@ -1,7 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
-using static TreeEditor.TreeEditorHelper;
 
 /**
  * Behaviour that manages the the plane detection functions using for the room configuration
@@ -41,6 +40,7 @@ public class TrackingManager : MonoBehaviour
 
     private Vector3 hitPosition;                // Pose of the hit point of the raycast
     private bool onAddModel = false;            // Flag to know if the user is currently adding a model to the scene
+    private bool onDeleteModel = false;         // Flag to know if the user is currently deleting a model from the scene
     private GameObject toAddModelPrev;          // Reference to the model being added to the scene
     private int toAddModel;
     private GameObject currentPreview = null;
@@ -87,6 +87,11 @@ public class TrackingManager : MonoBehaviour
                 Destroy(currentPreview);
                 currentPreview = null;
             }
+        }
+
+        if (onDeleteModel)
+        { 
+            Debug.Log("On Deleting mode");
         }
     }
 

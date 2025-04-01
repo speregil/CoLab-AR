@@ -37,9 +37,10 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private TMP_Text   trackingStateLbl;                       // Reference to the label in the tracking button
     [SerializeField] private GameObject modelsOptions;
     [SerializeField] private GameObject addModelsPanel;
-    [SerializeField] private float mouseHoldTimer;                              // Time to consider a mouse hold
+    [SerializeField] private GameObject deleteModelsPanel;
     [SerializeField] private GameObject sessionCamera;
     [SerializeField] private TrackingManager trackingManager;
+    [SerializeField] private GameObject crosshairImage;
 
     private SessionManager sessionManager;                                      // Reference to the SessionManager component
 
@@ -66,29 +67,10 @@ public class MainMenuManager : MonoBehaviour
 
     void Update()
     {
-        bool mouseClick = false;
-        bool mouseHold = false;
+        bool mouseClick = Input.GetMouseButtonDown(0);
         bool touchInput = Input.touchCount > 0;
-        bool touchHold = false;
 
-        if (Input.GetMouseButton(0))
-        {
-            mousePressed = true;
-            mouseHoldTime += 0.5f;
-            if (mouseHoldTime >= mouseHoldTimer)
-            {
-                Debug.Log("mouseHold");
-                mouseHold = true;
-                mouseHoldTime = 0.0f;
-            }
-        }
-        else if (mousePressed)
-        {
-            mouseClick = true;
-            mousePressed = false;
-        }
-
-        ManageInteraction(mouseClick, mouseHold, touchInput, touchHold);
+        ManageInteraction(mouseClick, touchInput);
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -102,7 +84,7 @@ public class MainMenuManager : MonoBehaviour
      * @param touchInput Flag to know if there is touch input
      * @param touchHold Flag to know if the touch is being held
      */
-    public void ManageInteraction(bool mouseClick, bool mouseHold, bool touchInput, bool touchHold)
+    public void ManageInteraction(bool mouseClick, bool touchInput)
     {
         Ray ray = new Ray();
 
@@ -244,8 +226,18 @@ public class MainMenuManager : MonoBehaviour
     {
         modelsOptions.SetActive(false);
         addModelsPanel.SetActive(true);
+        crosshairImage.SetActive(true);
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseAddModelsPanel);
+    }
+
+    public void OpenDeleteModelPanel() 
+    {
+        modelsOptions.SetActive(false);
+        deleteModelsPanel.SetActive(true);
+        crosshairImage.SetActive(true);
+        mainButtonBtn.onClick.RemoveAllListeners();
+        mainButtonBtn.onClick.AddListener(CloseDeleteModelsPanel);
     }
 
     /**
@@ -254,6 +246,7 @@ public class MainMenuManager : MonoBehaviour
     public void CloseMainMenu()
     {
         mainMenu.SetActive(false);
+        crosshairImage.SetActive(false);
         mainButtonLbl.text = "Open";
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(OpenMainMenu);
@@ -306,6 +299,14 @@ public class MainMenuManager : MonoBehaviour
     {
         trackingManager.ActivateModelPositioning(false);
         addModelsPanel.SetActive(false);
+        crosshairImage.SetActive(false);
+        OpenModelsOptions();
+    }
+
+    public void CloseDeleteModelsPanel()
+    {
+        deleteModelsPanel.SetActive(false);
+        crosshairImage.SetActive(false);
         OpenModelsOptions();
     }
 
@@ -325,6 +326,11 @@ public class MainMenuManager : MonoBehaviour
         Vector3 hitPosition = trackingManager.GetHitPosition();
         ulong clientId = NetworkManager.Singleton.LocalClientId;
         sessionManager.AddModelRpc(modelType,hitPosition,clientId);
+    }
+
+    public void OnDeleteModel()
+    {
+        Debug.Log("Try to delete");
     }
 
     /**
