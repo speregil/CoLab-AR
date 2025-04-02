@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -171,5 +169,15 @@ public class UIManager : MonoBehaviour
     public void ChangeTrackingState(int status)
     {
         mainMenuManager.SetTrackingStatus(status);
+    }
+
+    public Vector3 GetCrosshairPosition()
+    {
+        return mainMenuManager.GetCrosshairPosition();
+    }
+
+    public bool IsPositionOnButton(Vector3 position)
+    {
+        return mainMenuManager.IsPositionOnButton(position);
     }
 }

@@ -2402,6 +2402,7 @@ MonoBehaviour:
   sessionCamera: {fileID: 4181977792802708489}
   trackingManager: {fileID: 7800234115431314299}
   crosshairImage: {fileID: 1504423906}
+  crosshairBehaviour: {fileID: 0}
 --- !u!114 &384863537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4755,7 +4756,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 379.08945, y: -203.48474}
+  m_AnchoredPosition: {x: 379.08945, y: -219.92252}
   m_SizeDelta: {x: 758.1789, y: 86.9695}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &679262998
@@ -7436,6 +7437,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1394350175}
   - component: {fileID: 1394350176}
+  - component: {fileID: 1394350178}
+  - component: {fileID: 1394350177}
   m_Layer: 0
   m_Name: ModelsPanel
   m_TagString: Untagged
@@ -7461,8 +7464,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 205, y: -1785}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 505.97, y: -1867}
+  m_SizeDelta: {x: 751.9381, y: 279.845}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1394350176
 MonoBehaviour:
@@ -7490,6 +7493,44 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1394350177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1394350174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.5471698, g: 0.53942686, b: 0.53942686, a: 0.57254905}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1394350178
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1394350174}
+  m_CullTransparentMesh: 1
 --- !u!1 &1403317210
 GameObject:
   m_ObjectHideFlags: 0
@@ -7915,6 +7956,7 @@ GameObject:
   - component: {fileID: 1504423907}
   - component: {fileID: 1504423909}
   - component: {fileID: 1504423908}
+  - component: {fileID: 1504423910}
   m_Layer: 0
   m_Name: crosshair
   m_TagString: Untagged
@@ -7979,6 +8021,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1504423906}
   m_CullTransparentMesh: 1
+--- !u!114 &1504423910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1504423906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 586cd21dc3da1144f8cabbf463393222, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiManager: {fileID: 780698997446308497}
 --- !u!1 &1538124063
 GameObject:
   m_ObjectHideFlags: 0
@@ -17137,6 +17192,7 @@ MonoBehaviour:
   sphereModelPrefabPrev: {fileID: 5856855836918299632, guid: 0f54c47640aa59046ad2d6cff8194fde, type: 3}
   cylinderModelPrefab: {fileID: 0}
   cylinderModelPrefabPrev: {fileID: 0}
+  uiManager: {fileID: 780698997446308497}
 --- !u!114 &7836908395353234205
 MonoBehaviour:
   m_ObjectHideFlags: 0

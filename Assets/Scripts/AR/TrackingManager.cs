@@ -33,6 +33,7 @@ public class TrackingManager : MonoBehaviour
     [SerializeField] private GameObject cylinderModelPrefab;
     [SerializeField] private GameObject cylinderModelPrefabPrev;
 
+    [SerializeField] private UIManager uiManager;
     private GameObject trackables;              // Parent gameobject for all the AR planes detected
     private ARPlaneManager planeManager;        // Reference to the ARPlaneManager component
     private ARAnchorManager anchorManager;      // Reference to the ARAnchorManager component
@@ -44,7 +45,9 @@ public class TrackingManager : MonoBehaviour
     private GameObject toAddModelPrev;          // Reference to the model being added to the scene
     private int toAddModel;
     private GameObject currentPreview = null;
-    
+
+    Vector3 rayOrigin = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
@@ -63,35 +66,14 @@ public class TrackingManager : MonoBehaviour
     {
         if (onAddModel)
         {
-            Vector3 screenCenter = new Vector3(Screen.width / 2, Screen.height / 2, 0);
-            Ray ray = Camera.main.ScreenPointToRay(screenCenter);
-            
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
-            {
-                if (hit.transform.gameObject.tag.Equals("workspace"))
-                {   
-                    hitPosition = hit.point;
-                    if (currentPreview == null)
-                    {
-                        currentPreview = Instantiate(toAddModelPrev, hitPosition, Quaternion.identity);
-                        float height = currentPreview.GetComponent<MeshRenderer>().bounds.size.y;
-                        currentPreview.transform.position = new Vector3(hitPosition.x, hitPosition.y + height / 2, hitPosition.z);
-                    }
-                    else
-                        currentPreview.transform.position = hitPosition;
-                }
-            }
-            else
-            {
-                Destroy(currentPreview);
-                currentPreview = null;
-            }
+           rayOrigin = uiManager.GetCrosshairPosition();
+           TrackingModelsRaycast();
         }
 
         if (onDeleteModel)
-        { 
-            Debug.Log("On Deleting mode");
+        {
+            rayOrigin = uiManager.GetCrosshairPosition();
+            Debug.Log("Deleting objecct on: " + rayOrigin);
         }
     }
 
@@ -178,6 +160,35 @@ public class TrackingManager : MonoBehaviour
     public void ActivateModelPositioning(bool isActive)
     {
         onAddModel = isActive;
+
+        if (!isActive) resetModelsRaycast();
+    }
+
+    private void TrackingModelsRaycast()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(rayOrigin);
+
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
+        {
+            if (hit.transform.gameObject.tag.Equals("workspace"))
+            {
+                hitPosition = hit.point;
+                if (currentPreview == null)
+                {
+                    currentPreview = Instantiate(toAddModelPrev, hitPosition, Quaternion.identity);
+                    float height = currentPreview.GetComponent<MeshRenderer>().bounds.size.y;
+                    currentPreview.transform.position = new Vector3(hitPosition.x, hitPosition.y + height / 2, hitPosition.z);
+                }
+                else
+                    currentPreview.transform.position = hitPosition;
+            }
+        }
+        else
+        {
+            Destroy(currentPreview);
+            currentPreview = null;
+        }
     }
 
     private void OnAnchorsChanged(ARAnchorsChangedEventArgs args)
@@ -191,11 +202,19 @@ public class TrackingManager : MonoBehaviour
 
     public int GetToAddModelType()
     {
-        return toAddModel;
+        return currentPreview != null ? toAddModel : -1;
     }
 
     public Vector3 GetHitPosition()
     {
         return hitPosition;
+    }
+
+    private void resetModelsRaycast()
+    {
+        rayOrigin = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+        Destroy(currentPreview);
+        currentPreview = null;
+        toAddModelPrev = null;
     }
 }

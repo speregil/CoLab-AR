@@ -41,6 +41,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject sessionCamera;
     [SerializeField] private TrackingManager trackingManager;
     [SerializeField] private GameObject crosshairImage;
+    [SerializeField] private CrosshairBehaviour crosshairBehaviour;
 
     private SessionManager sessionManager;                                      // Reference to the SessionManager component
 
@@ -48,8 +49,6 @@ public class MainMenuManager : MonoBehaviour
     private Button mainButtonBtn;                                               // Reference to the button component of the main button
 
     private bool onMainMenu = false;                                            // Flag to know if the main menu is open
-    private bool mousePressed = false;                                          // Flag to know if the mouse is pressed
-    private float mouseHoldTime = 0.0f;                                         // Time since the last frame the mouse was pressed
     private int currentInteractionState = INTERACTION_STATE_POINT;              // Current interaction state with digital objects
 
 
@@ -62,6 +61,7 @@ public class MainMenuManager : MonoBehaviour
         mainButtonLbl = mainButton.transform.GetComponentInChildren<TMP_Text>();
         mainButtonBtn = mainButton.GetComponentInChildren<Button>();
         mainButtonBtn.onClick.AddListener(OpenMainMenu);
+        crosshairBehaviour = crosshairImage.GetComponent<CrosshairBehaviour>();
         SetTrackingStatus(TRACKING_NONE_STATE);
     }
 
@@ -176,7 +176,6 @@ public class MainMenuManager : MonoBehaviour
         }
         else
             Debug.Log("Invalid list");
-
     }
 
      /**
@@ -299,6 +298,7 @@ public class MainMenuManager : MonoBehaviour
     {
         trackingManager.ActivateModelPositioning(false);
         addModelsPanel.SetActive(false);
+        crosshairBehaviour.ResetCrosshair();
         crosshairImage.SetActive(false);
         OpenModelsOptions();
     }
@@ -306,6 +306,7 @@ public class MainMenuManager : MonoBehaviour
     public void CloseDeleteModelsPanel()
     {
         deleteModelsPanel.SetActive(false);
+        crosshairBehaviour.ResetCrosshair();
         crosshairImage.SetActive(false);
         OpenModelsOptions();
     }
@@ -323,9 +324,12 @@ public class MainMenuManager : MonoBehaviour
     public void OnPlaceModel()
     {
         int modelType = trackingManager.GetToAddModelType();
-        Vector3 hitPosition = trackingManager.GetHitPosition();
-        ulong clientId = NetworkManager.Singleton.LocalClientId;
-        sessionManager.AddModelRpc(modelType,hitPosition,clientId);
+        if (modelType >= 0)
+        {
+            Vector3 hitPosition = trackingManager.GetHitPosition();
+            ulong clientId = NetworkManager.Singleton.LocalClientId;
+            sessionManager.AddModelRpc(modelType, hitPosition, clientId);
+        }
     }
 
     public void OnDeleteModel()
@@ -389,5 +393,32 @@ public class MainMenuManager : MonoBehaviour
     public GameObject GetToAddModel(int modelType)
     {
         return trackingManager.GetToAddModel(modelType);
+    }
+
+    public Vector3 GetCrosshairPosition()
+    {
+        return crosshairBehaviour.GetCurrentPosition();
+    }
+
+    public bool IsPositionOnButton(Vector3 position)
+    {
+        bool onPosition = false;
+        onPosition = CheckCorners(mainButton.GetComponent<RectTransform>(), position);
+        onPosition = onPosition || CheckCorners(trackingButton.GetComponent<RectTransform>(), position);
+        onPosition = onPosition || CheckCorners(addModelsPanel.GetComponent<RectTransform>(), position);
+
+        return onPosition;
+    }
+
+    private bool CheckCorners(RectTransform uiRect, Vector3 position)
+    {
+        Vector3[] corners = new Vector3[4];
+        uiRect.GetWorldCorners(corners);
+
+        if (position.x >= corners[0].x && position.x <= corners[2].x &&
+            position.y >= corners[0].y && position.y <= corners[2].y)
+            return true;
+
+        return false;
     }
 }
