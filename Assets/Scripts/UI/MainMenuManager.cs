@@ -38,6 +38,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject modelsOptions;
     [SerializeField] private GameObject addModelsPanel;
     [SerializeField] private GameObject deleteModelsPanel;
+    [SerializeField] private GameObject deleteModelsBtn;
     [SerializeField] private GameObject sessionCamera;
     [SerializeField] private TrackingManager trackingManager;
     [SerializeField] private GameObject crosshairImage;
@@ -234,6 +235,7 @@ public class MainMenuManager : MonoBehaviour
     {
         modelsOptions.SetActive(false);
         deleteModelsPanel.SetActive(true);
+        trackingManager.ActivateModelDeletion(true);
         crosshairImage.SetActive(true);
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseDeleteModelsPanel);
@@ -305,6 +307,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void CloseDeleteModelsPanel()
     {
+        trackingManager.ActivateModelDeletion(false);
         deleteModelsPanel.SetActive(false);
         crosshairBehaviour.ResetCrosshair();
         crosshairImage.SetActive(false);
@@ -334,7 +337,11 @@ public class MainMenuManager : MonoBehaviour
 
     public void OnDeleteModel()
     {
-        Debug.Log("Try to delete");
+        GameObject modelToDelete = trackingManager.GetCurrentSelection();
+        if(modelToDelete != null) 
+        { 
+            Debug.Log("You are going to delete: " + modelToDelete.name);
+        }
     }
 
     /**
@@ -406,6 +413,7 @@ public class MainMenuManager : MonoBehaviour
         onPosition = CheckCorners(mainButton.GetComponent<RectTransform>(), position);
         onPosition = onPosition || CheckCorners(trackingButton.GetComponent<RectTransform>(), position);
         onPosition = onPosition || CheckCorners(addModelsPanel.GetComponent<RectTransform>(), position);
+        onPosition = onPosition || CheckCorners(deleteModelsBtn.GetComponent<RectTransform>(), position);
 
         return onPosition;
     }

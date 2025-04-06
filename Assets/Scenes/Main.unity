@@ -2399,6 +2399,7 @@ MonoBehaviour:
   modelsOptions: {fileID: 1779382413}
   addModelsPanel: {fileID: 1394350174}
   deleteModelsPanel: {fileID: 387567795}
+  deleteModelsBtn: {fileID: 344286038}
   sessionCamera: {fileID: 4181977792802708489}
   trackingManager: {fileID: 7800234115431314299}
   crosshairImage: {fileID: 1504423906}
@@ -17192,6 +17193,8 @@ MonoBehaviour:
   sphereModelPrefabPrev: {fileID: 5856855836918299632, guid: 0f54c47640aa59046ad2d6cff8194fde, type: 3}
   cylinderModelPrefab: {fileID: 0}
   cylinderModelPrefabPrev: {fileID: 0}
+  normalModelMaterial: {fileID: 2100000, guid: f046df13d49ddeb4481e05747227f7ab, type: 2}
+  selectedMaterial: {fileID: 2100000, guid: ed4fffede56278e498efc2ffaee8b4e4, type: 2}
   uiManager: {fileID: 780698997446308497}
 --- !u!114 &7836908395353234205
 MonoBehaviour:

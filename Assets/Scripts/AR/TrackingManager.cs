@@ -32,6 +32,8 @@ public class TrackingManager : MonoBehaviour
     [SerializeField] private GameObject sphereModelPrefabPrev;
     [SerializeField] private GameObject cylinderModelPrefab;
     [SerializeField] private GameObject cylinderModelPrefabPrev;
+    [SerializeField] private Material normalModelMaterial;
+    [SerializeField] private Material selectedMaterial;
 
     [SerializeField] private UIManager uiManager;
     private GameObject trackables;              // Parent gameobject for all the AR planes detected
@@ -42,11 +44,13 @@ public class TrackingManager : MonoBehaviour
     private Vector3 hitPosition;                // Pose of the hit point of the raycast
     private bool onAddModel = false;            // Flag to know if the user is currently adding a model to the scene
     private bool onDeleteModel = false;         // Flag to know if the user is currently deleting a model from the scene
+    private bool onMoveModel = false;
     private GameObject toAddModelPrev;          // Reference to the model being added to the scene
     private int toAddModel;
     private GameObject currentPreview = null;
-
-    Vector3 rayOrigin = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+    private GameObject currentSelection = null;
+    private Vector3 rayOrigin = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+    
 
 
     //------------------------------------------------------------------------------------------------------
@@ -64,16 +68,9 @@ public class TrackingManager : MonoBehaviour
 
     void Update()
     {
-        if (onAddModel)
-        {
-           rayOrigin = uiManager.GetCrosshairPosition();
-           TrackingModelsRaycast();
-        }
-
-        if (onDeleteModel)
-        {
+        if(onAddModel || onDeleteModel || onMoveModel) { 
             rayOrigin = uiManager.GetCrosshairPosition();
-            Debug.Log("Deleting objecct on: " + rayOrigin);
+            TrackingModelsRaycast();
         }
     }
 
@@ -164,6 +161,12 @@ public class TrackingManager : MonoBehaviour
         if (!isActive) resetModelsRaycast();
     }
 
+    public void ActivateModelDeletion(bool isActive)
+    {
+        onDeleteModel = isActive;
+        if (!isActive) resetModelsRaycast();
+    }
+
     private void TrackingModelsRaycast()
     {
         Ray ray = Camera.main.ScreenPointToRay(rayOrigin);
@@ -171,17 +174,28 @@ public class TrackingManager : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
-            if (hit.transform.gameObject.tag.Equals("workspace"))
+            if (hit.transform.gameObject.tag.Equals("workspace") || hit.transform.gameObject.tag.Equals("model"))
             {
                 hitPosition = hit.point;
-                if (currentPreview == null)
-                {
-                    currentPreview = Instantiate(toAddModelPrev, hitPosition, Quaternion.identity);
-                    float height = currentPreview.GetComponent<MeshRenderer>().bounds.size.y;
-                    currentPreview.transform.position = new Vector3(hitPosition.x, hitPosition.y + height / 2, hitPosition.z);
+                if (onAddModel) { 
+                    if (currentPreview == null)
+                    {
+                        currentPreview = Instantiate(toAddModelPrev, hitPosition, Quaternion.identity);
+                        float height = currentPreview.GetComponent<MeshRenderer>().bounds.size.y;
+                        currentPreview.transform.position = new Vector3(hitPosition.x, hitPosition.y + height / 2, hitPosition.z);
+                    }
+                    else
+                        currentPreview.transform.position = hitPosition;
                 }
-                else
-                    currentPreview.transform.position = hitPosition;
+                else if(hit.transform.gameObject.tag.Equals("model")) 
+                {
+                    currentSelection = hit.transform.gameObject;
+                    currentSelection.GetComponent<MeshRenderer>().material = selectedMaterial;
+                }
+                else {
+                    currentSelection.GetComponent<MeshRenderer>().material = normalModelMaterial;
+                    currentSelection = null;
+                }
             }
         }
         else
@@ -210,11 +224,17 @@ public class TrackingManager : MonoBehaviour
         return hitPosition;
     }
 
+    public GameObject GetCurrentSelection()
+    {
+        return currentSelection;
+    }
+
     private void resetModelsRaycast()
     {
         rayOrigin = new Vector3(Screen.width / 2, Screen.height / 2, 0);
-        Destroy(currentPreview);
+        if (currentPreview != null) Destroy(currentPreview);
         currentPreview = null;
         toAddModelPrev = null;
+        currentSelection = null;
     }
 }

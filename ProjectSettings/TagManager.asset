@@ -8,6 +8,7 @@ TagManager:
   - anchor
   - workspace
   - selected
+  - model
   layers:
   - Default
   - TransparentFX
