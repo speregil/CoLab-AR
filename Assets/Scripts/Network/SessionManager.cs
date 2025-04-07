@@ -186,15 +186,19 @@ public class SessionManager : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server)]
-    public void DeleteModelRpc(string modelID, ulong senderId)
+    public void DeleteModelRpc(string modelID)
     {
         GameObject model = GameObject.Find("UserModel" + modelID);
-        ModelData data = model.GetComponent<ModelData>();
-        if(data.OwnerId == senderId)
+        if (model != null)
         {
-            Debug.Log("You can delete this");
-            //NetworkObject networkModel = model.GetComponent<NetworkObject>();
-            //networkModel.Despawn(true);
+            Debug.Log("Deleting model: " + modelID);
+            ModelData data = model.GetComponent<ModelData>();
+            NetworkObject networkModel = model.GetComponent<NetworkObject>();
+            networkModel.Despawn(true);
+        }
+        else
+        {
+            Debug.Log("Model not found: " + modelID);
         }
     }
 }

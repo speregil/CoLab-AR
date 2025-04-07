@@ -3759,7 +3759,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 597532097}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 384863536}
+        m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
+        m_MethodName: ActivateModelPositioning
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 4
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &597532097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6900,7 +6912,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1231431120}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 384863536}
+        m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
+        m_MethodName: ActivateModelPositioning
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1231431120
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17187,12 +17211,12 @@ MonoBehaviour:
   cubeModelPrefabPrev: {fileID: 77244629651346300, guid: b61afccf381327c439897813079a471f, type: 3}
   boxModelPrefab: {fileID: 5177737636055239450, guid: a6e5ad6007b308a4ebdf867523b87630, type: 3}
   boxModelPrefabPrev: {fileID: 5177737636055239450, guid: 6c3f778fbf04950488aa7cb9e6d8be22, type: 3}
-  pyramidModelPrefab: {fileID: 0}
-  pyramidModelPrefabPrev: {fileID: 0}
+  pyramidModelPrefab: {fileID: 8269148479149677909, guid: bdc0a2ed0cd06b649b8adf9843d4b304, type: 3}
+  pyramidModelPrefabPrev: {fileID: 1261854263279127598, guid: 456dec57a3af1c444a26a4065d468e65, type: 3}
   sphereModelPrefab: {fileID: 5856855836918299632, guid: f15213c9f39a45a4788cb8f8b0aadf64, type: 3}
   sphereModelPrefabPrev: {fileID: 5856855836918299632, guid: 0f54c47640aa59046ad2d6cff8194fde, type: 3}
-  cylinderModelPrefab: {fileID: 0}
-  cylinderModelPrefabPrev: {fileID: 0}
+  cylinderModelPrefab: {fileID: 5421444078064454622, guid: fcef0a66fe7b0f5488e08aa52eb37b8f, type: 3}
+  cylinderModelPrefabPrev: {fileID: 98462756572522015, guid: dac5f0ce8d4f8b74080df07e1e6e823a, type: 3}
   normalModelMaterial: {fileID: 2100000, guid: f046df13d49ddeb4481e05747227f7ab, type: 2}
   selectedMaterial: {fileID: 2100000, guid: ed4fffede56278e498efc2ffaee8b4e4, type: 2}
   uiManager: {fileID: 780698997446308497}
