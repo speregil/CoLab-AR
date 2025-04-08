@@ -193,8 +193,11 @@ public class TrackingManager : MonoBehaviour
                     currentSelection.GetComponent<MeshRenderer>().material = selectedMaterial;
                 }
                 else {
-                    currentSelection.GetComponent<MeshRenderer>().material = normalModelMaterial;
-                    currentSelection = null;
+                    if(currentSelection != null)
+                    {
+                        currentSelection.GetComponent<MeshRenderer>().material = normalModelMaterial;
+                        currentSelection = null;
+                    }
                 }
             }
         }

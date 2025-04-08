@@ -341,6 +341,7 @@ public class MainMenuManager : MonoBehaviour
         if(modelToDelete != null) 
         { 
             Debug.Log("You are going to delete: " + modelToDelete.name);
+            sessionManager.DeleteModelRpc(modelToDelete.GetComponent<ModelData>().ModelId);
         }
     }
 
