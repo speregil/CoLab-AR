@@ -42,12 +42,16 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject sessionCamera;
     [SerializeField] private TrackingManager trackingManager;
     [SerializeField] private GameObject crosshairImage;
-    [SerializeField] private CrosshairBehaviour crosshairBehaviour;
+
+    [SerializeField] private Sprite mainButtonTexture;
+    [SerializeField] private Sprite closeButtonTexture;
+    [SerializeField] private Sprite backButtonTexture;
 
     private SessionManager sessionManager;                                      // Reference to the SessionManager component
 
-    private TMP_Text mainButtonLbl;                                             // Reference to the text label of the main button
-    private Button mainButtonBtn;                                               // Reference to the button component of the main button
+    private Image mainButtonLbl;                                             // Reference to the text label of the main button
+    private Button mainButtonBtn;
+    private CrosshairBehaviour crosshairBehaviour;
 
     private bool onMainMenu = false;                                            // Flag to know if the main menu is open
     private int currentInteractionState = INTERACTION_STATE_POINT;              // Current interaction state with digital objects
@@ -59,7 +63,7 @@ public class MainMenuManager : MonoBehaviour
 
     void Start()
     {
-        mainButtonLbl = mainButton.transform.GetComponentInChildren<TMP_Text>();
+        mainButtonLbl = mainButton.GetComponent<Image>();
         mainButtonBtn = mainButton.GetComponentInChildren<Button>();
         mainButtonBtn.onClick.AddListener(OpenMainMenu);
         crosshairBehaviour = crosshairImage.GetComponent<CrosshairBehaviour>();
@@ -150,7 +154,7 @@ public class MainMenuManager : MonoBehaviour
     public void OpenMainMenu()
     {
         mainMenu.SetActive(true);
-        mainButtonLbl.text = "Close";
+        mainButtonBtn.image.sprite = closeButtonTexture;
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseMainMenu);
         onMainMenu = true;
@@ -163,7 +167,7 @@ public class MainMenuManager : MonoBehaviour
     {
         mainMenu.SetActive(false);
         participantsMenu.SetActive(true);
-        mainButtonLbl.text = "Back";
+        mainButtonBtn.image.sprite = backButtonTexture;
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseParticipantsMenu);
 
@@ -201,7 +205,7 @@ public class MainMenuManager : MonoBehaviour
         {
             participantOptions.SetActive(true);
             participantOptionsUsernameLabel.text = username;
-            mainButtonLbl.text = "Close";
+            mainButtonBtn.image.sprite = closeButtonTexture;
             mainButtonBtn.onClick.RemoveAllListeners();
             mainButtonBtn.onClick.AddListener(CloseParticipantOptions);
         }
@@ -214,7 +218,7 @@ public class MainMenuManager : MonoBehaviour
     {
         modelsOptions.SetActive(true);
         mainMenu.SetActive(false);
-        mainButtonLbl.text = "Back";
+        mainButtonBtn.image.sprite = backButtonTexture;
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseModelsOptions);
     }
@@ -248,7 +252,7 @@ public class MainMenuManager : MonoBehaviour
     {
         mainMenu.SetActive(false);
         crosshairImage.SetActive(false);
-        mainButtonLbl.text = "Open";
+        mainButtonBtn.image.sprite = mainButtonTexture;
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(OpenMainMenu);
         onMainMenu = false;
@@ -267,7 +271,7 @@ public class MainMenuManager : MonoBehaviour
         participantOptionsUsernameLabel.text = "username";
         mainMenu.SetActive(true);
         participantsMenu.SetActive(false);
-        mainButtonLbl.text = "Close";
+        mainButtonBtn.image.sprite = closeButtonTexture;
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseMainMenu);
     }
@@ -278,7 +282,7 @@ public class MainMenuManager : MonoBehaviour
     public void CloseParticipantOptions()
     {
         participantOptions.SetActive(false);
-        mainButtonLbl.text = "Open";
+        mainButtonBtn.image.sprite = mainButtonTexture;
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(OpenMainMenu);
         sessionManager.UnselectParticipant();
