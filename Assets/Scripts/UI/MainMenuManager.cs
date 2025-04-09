@@ -34,7 +34,6 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject participantOptions;                     // Reference to the participant options panel
     [SerializeField] private TMP_Text participantOptionsUsernameLabel;          // Reference to the username label in the participant options panel 
     [SerializeField] private GameObject trackingButton;                         // Reference to the tracking button
-    [SerializeField] private TMP_Text   trackingStateLbl;                       // Reference to the label in the tracking button
     [SerializeField] private GameObject modelsOptions;
     [SerializeField] private GameObject addModelsPanel;
     [SerializeField] private GameObject deleteModelsPanel;
@@ -46,11 +45,14 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private Sprite mainButtonTexture;
     [SerializeField] private Sprite closeButtonTexture;
     [SerializeField] private Sprite backButtonTexture;
+    [SerializeField] private Sprite trackingOffButtonTexture;
+    [SerializeField] private Sprite trackingOnButtonTexture;
+    [SerializeField] private Sprite trackingWarningButtonTexture;
 
     private SessionManager sessionManager;                                      // Reference to the SessionManager component
 
-    private Image mainButtonLbl;                                             // Reference to the text label of the main button
     private Button mainButtonBtn;
+    private Button trackingButtonBtn;
     private CrosshairBehaviour crosshairBehaviour;
 
     private bool onMainMenu = false;                                            // Flag to know if the main menu is open
@@ -63,8 +65,8 @@ public class MainMenuManager : MonoBehaviour
 
     void Start()
     {
-        mainButtonLbl = mainButton.GetComponent<Image>();
-        mainButtonBtn = mainButton.GetComponentInChildren<Button>();
+        mainButtonBtn = mainButton.GetComponent<Button>();
+        trackingButtonBtn = trackingButton.GetComponent<Button>();
         mainButtonBtn.onClick.AddListener(OpenMainMenu);
         crosshairBehaviour = crosshairImage.GetComponent<CrosshairBehaviour>();
         SetTrackingStatus(TRACKING_NONE_STATE);
@@ -122,20 +124,23 @@ public class MainMenuManager : MonoBehaviour
      */
     public void SetTrackingStatus(int code)
     {
-        switch (code)
+        if (trackingButtonBtn != null)
         {
-            case TRACKING_OK_STATE:
-                Debug.Log("Tracking OK");
-                trackingStateLbl.color = Color.green;
-                break;
-            case TRACKING_WARNING_STATE:
-                Debug.Log("Tracking Warning");
-                trackingStateLbl.color = Color.yellow;
-                break;
-            case TRACKING_NONE_STATE:
-                Debug.Log("Tracking None");
-                trackingStateLbl.color = Color.red;
-                break;
+            switch (code)
+            {
+                case TRACKING_OK_STATE:
+                    Debug.Log("Tracking OK");
+                    trackingButtonBtn.image.sprite = trackingOnButtonTexture;
+                    break;
+                case TRACKING_WARNING_STATE:
+                    Debug.Log("Tracking Warning");
+                    trackingButtonBtn.image.sprite = trackingWarningButtonTexture;
+                    break;
+                case TRACKING_NONE_STATE:
+                    Debug.Log("Tracking None");
+                    trackingButtonBtn.image.sprite = trackingOffButtonTexture;
+                    break;
+            }
         }
     }
 
