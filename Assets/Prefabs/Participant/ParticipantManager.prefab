@@ -420,7 +420,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd3d7af9516b4bd49a075d98c4ff37f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  workspacePrefab: {fileID: 5514888900471754074, guid: aec815610b10d294f9ae7f1e0a736c6d, type: 3}
+  workspacePrefab: {fileID: 5514888900471754074, guid: c6bc454601e75db4c916a4945941e8e4, type: 3}
 --- !u!114 &-3629699762860139784
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -433,9 +433,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51aecd3e7b4314445a956ffb3e39e822, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainBody: {fileID: 2737694164373843188}
-  gaze: {fileID: 8462665798826977941}
-  nameplate: {fileID: 8349218625490966200}
   PointerPrefab: {fileID: 6382456511583307689, guid: a939d1411ca85c74dbf6c2a8e46f9c9d, type: 3}
 --- !u!114 &-5087816497760622788
 MonoBehaviour:
