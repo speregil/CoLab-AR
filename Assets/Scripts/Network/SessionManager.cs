@@ -168,7 +168,6 @@ public class SessionManager : NetworkBehaviour
     {
         if (IsServer)
         {
-            Debug.Log("Server position: " + position);
             GameObject modelPrefab = mainMenu.GetToAddModel(modelType);
 
             if (modelPrefab != null)

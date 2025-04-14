@@ -36,6 +36,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject trackingButton;                         // Reference to the tracking button
     [SerializeField] private GameObject modelsOptions;
     [SerializeField] private GameObject addModelsPanel;
+    [SerializeField] private GameObject moveModelsPanel;
+    [SerializeField] private GameObject moveModelsSelectButton;
     [SerializeField] private GameObject deleteModelsPanel;
     [SerializeField] private GameObject deleteModelsBtn;
     [SerializeField] private GameObject sessionCamera;
@@ -53,6 +55,7 @@ public class MainMenuManager : MonoBehaviour
 
     private Button mainButtonBtn;
     private Button trackingButtonBtn;
+    private Button selectButtonBtn;
     private CrosshairBehaviour crosshairBehaviour;
 
     private bool onMainMenu = false;                                            // Flag to know if the main menu is open
@@ -67,6 +70,7 @@ public class MainMenuManager : MonoBehaviour
     {
         mainButtonBtn = mainButton.GetComponent<Button>();
         trackingButtonBtn = trackingButton.GetComponent<Button>();
+        selectButtonBtn = moveModelsSelectButton.GetComponent<Button>();
         mainButtonBtn.onClick.AddListener(OpenMainMenu);
         crosshairBehaviour = crosshairImage.GetComponent<CrosshairBehaviour>();
         SetTrackingStatus(TRACKING_NONE_STATE);
@@ -240,6 +244,16 @@ public class MainMenuManager : MonoBehaviour
         mainButtonBtn.onClick.AddListener(CloseAddModelsPanel);
     }
 
+    public void OpenMoveModelsPanel()
+    {
+        modelsOptions.SetActive(false);
+        moveModelsPanel.SetActive(true);
+        crosshairImage.SetActive(true);
+        trackingManager.ActivateModelMovement(true);
+        mainButtonBtn.onClick.RemoveAllListeners();
+        mainButtonBtn.onClick.AddListener(CloseMoveModelsPanel);
+    }
+
     public void OpenDeleteModelPanel() 
     {
         modelsOptions.SetActive(false);
@@ -311,6 +325,16 @@ public class MainMenuManager : MonoBehaviour
         addModelsPanel.SetActive(false);
         crosshairBehaviour.ResetCrosshair();
         crosshairImage.SetActive(false);
+        OpenModelsOptions();
+    }
+
+    private void CloseMoveModelsPanel()
+    {
+        moveModelsPanel.SetActive(false);
+        crosshairBehaviour.ResetCrosshair();
+        crosshairImage.SetActive(false);
+        trackingManager.SelectCurrentModel(false);
+        trackingManager.ActivateModelMovement(false);
         OpenModelsOptions();
     }
 
@@ -387,6 +411,24 @@ public class MainMenuManager : MonoBehaviour
     public void OnInteractionModeSelect(int mode)
     { 
         currentInteractionState = mode;
+    }
+
+    public void OnMoveModelSelect()
+    {
+        if (trackingManager.SelectCurrentModel(true))
+        {
+            moveModelsSelectButton.GetComponentInChildren<TMP_Text>().text = "Drop";
+            selectButtonBtn.onClick.RemoveAllListeners();
+            selectButtonBtn.onClick.AddListener(OnDropModelSelect);
+        }
+    }
+
+    public void OnDropModelSelect()
+    {
+        trackingManager.SelectCurrentModel(false);
+        moveModelsSelectButton.GetComponentInChildren<TMP_Text>().text = "Select";
+        selectButtonBtn.onClick.RemoveAllListeners();
+        selectButtonBtn.onClick.AddListener(OnMoveModelSelect);
     }
 
     /**

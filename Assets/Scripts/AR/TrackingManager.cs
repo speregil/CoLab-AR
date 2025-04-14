@@ -45,6 +45,7 @@ public class TrackingManager : MonoBehaviour
     private bool onAddModel = false;            // Flag to know if the user is currently adding a model to the scene
     private bool onDeleteModel = false;         // Flag to know if the user is currently deleting a model from the scene
     private bool onMoveModel = false;
+    private bool onSelectedModel = false;
     private GameObject toAddModelPrev;          // Reference to the model being added to the scene
     private int toAddModel;
     private GameObject currentPreview = null;
@@ -167,6 +168,27 @@ public class TrackingManager : MonoBehaviour
         if (!isActive) resetModelsRaycast();
     }
 
+    public void ActivateModelMovement(bool isActive)
+    {
+        onMoveModel = isActive;
+        if (!isActive) resetModelsRaycast();
+    }
+
+    public bool SelectCurrentModel(bool isSelected)
+    {
+        if (currentSelection != null)
+        {
+            onSelectedModel = isSelected;
+            if (!isSelected)
+            {
+                currentSelection.GetComponent<MeshRenderer>().material = normalModelMaterial;
+                currentSelection = null;
+            }
+            return true;
+        }
+        return false;
+    }
+
     private void TrackingModelsRaycast()
     {
         Ray ray = Camera.main.ScreenPointToRay(rayOrigin);
@@ -187,13 +209,19 @@ public class TrackingManager : MonoBehaviour
                     else
                         currentPreview.transform.position = hitPosition;
                 }
+                else if (onSelectedModel)
+                {
+                    Vector3 newPosition = new Vector3(hitPosition.x, currentSelection.transform.position.y, hitPosition.z);
+                    currentSelection.transform.position = newPosition;
+                }
                 else if(hit.transform.gameObject.tag.Equals("model")) 
                 {
                     currentSelection = hit.transform.gameObject;
                     currentSelection.GetComponent<MeshRenderer>().material = selectedMaterial;
                 }
-                else {
-                    if(currentSelection != null)
+                else 
+                {
+                    if(currentSelection != null && !onSelectedModel)
                     {
                         currentSelection.GetComponent<MeshRenderer>().material = normalModelMaterial;
                         currentSelection = null;
