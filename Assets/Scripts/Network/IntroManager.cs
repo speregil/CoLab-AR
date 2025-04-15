@@ -228,6 +228,7 @@ public class IntroManager : MonoBehaviour
             32,
             "Room created by user as: " + roomName
         );
+        roomName = "";
         sharedSpaceManager.StartSharedSpace(imageTrackingArgs, roomArgs);
     }
 

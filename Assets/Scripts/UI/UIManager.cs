@@ -180,4 +180,10 @@ public class UIManager : MonoBehaviour
     {
         return mainMenuManager.IsPositionOnButton(position);
     }
+
+    public void LeaveRoom()
+    {
+        mainMenu.SetActive(false);
+        introMenu.SetActive(true);
+    }
 }

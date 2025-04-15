@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using Niantic.Lightship.SharedAR.Colocalization;
 
 /**
  * Behaviour that controls the network functions of a participant who joined a room
@@ -17,6 +18,7 @@ public class SessionManager : NetworkBehaviour
     private GameObject selectedParticipant;
     private UserConfiguration userConfig;
     private MainMenuManager mainMenu;
+    private SharedSpaceManager sharedSpaceManager;
 
     private int defaultParticipantCounter = 1;
 
@@ -29,6 +31,7 @@ public class SessionManager : NetworkBehaviour
         userConfig = GameObject.Find("OfflineConfig").GetComponent<UserConfiguration>();
         GameObject mainMenuObject = GameObject.Find("UI").transform.Find("MainMenu").gameObject;
         mainMenu = mainMenuObject.GetComponent<MainMenuManager>();
+        sharedSpaceManager = GameObject.Find("ARConfig").GetComponentInChildren<SharedSpaceManager>();
         RegisterNewParticipantRpc(userConfig.GetProfileStruct(), NetworkManager.Singleton.LocalClientId);
 
         if (IsOwner) mainMenu.SetSessionManager(this);
@@ -133,6 +136,12 @@ public class SessionManager : NetworkBehaviour
         return username;
     }
 
+    public void LeaveRoom()
+    {
+        Debug.Log("Leaving room");
+        ParticipantLeavesRoomRpc(userConfig.GetProfileStruct(), NetworkManager.Singleton.LocalClientId);
+    }
+
     [Rpc(SendTo.ClientsAndHost)]
     private void RegisterNewParticipantRpc(UserConfiguration.ProfileStruct newUserProfile, ulong clientID)
     {
@@ -151,6 +160,25 @@ public class SessionManager : NetworkBehaviour
 
         if (IsOwner)
             LocalUpdateAnchors();
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void ParticipantLeavesRoomRpc(UserConfiguration.ProfileStruct userProfile, ulong clientID)
+    {
+        string participantName = userProfile.username.ToString() + ":" + clientID;
+        string removalKey = "";
+        foreach(string name in participants.Keys)
+        { 
+            if (name == participantName)
+            {
+                removalKey = name;
+                break;
+            }
+        }
+        participants.Remove(removalKey);
+
+        if(IsOwner)
+            Debug.Log("Participant Shutdown");
     }
 
     [Rpc(SendTo.Server)]

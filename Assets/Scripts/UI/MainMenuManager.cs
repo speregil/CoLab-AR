@@ -27,36 +27,54 @@ public class MainMenuManager : MonoBehaviour
     // Fields
     //------------------------------------------------------------------------------------------------------
 
+    [Header("Managers")]
+
+    [SerializeField] private UIManager uiManager;
+    [SerializeField] private TrackingManager trackingManager;
+
+    private SessionManager sessionManager;                                      // Reference to the SessionManager component
+    private CrosshairBehaviour crosshairBehaviour;
+
+    [Header("Top Panel")]
+
     [SerializeField] private GameObject mainButton;                             // Reference to the main button that opens the main menu
+    [SerializeField] private Sprite mainButtonTexture;
+    [SerializeField] private Sprite closeButtonTexture;
+    [SerializeField] private Sprite backButtonTexture;
+    [SerializeField] private GameObject trackingButton;                         // Reference to the tracking button
+    [SerializeField] private Sprite trackingOffButtonTexture;
+    [SerializeField] private Sprite trackingOnButtonTexture;
+    [SerializeField] private Sprite trackingWarningButtonTexture;
+
+    private Button mainButtonBtn;
+    private Button trackingButtonBtn;
+
+    [Header("Main Menu")]
+
     [SerializeField] private GameObject mainMenu;                               // Reference to the main menu panel
     [SerializeField] private GameObject participantsMenu;                       // Reference to the participants menu panel
     [SerializeField] private GameObject participantLabelPrefab;                 // Prefab for the labels of each entry in the participants menu
-    [SerializeField] private GameObject participantOptions;                     // Reference to the participant options panel
-    [SerializeField] private TMP_Text participantOptionsUsernameLabel;          // Reference to the username label in the participant options panel 
-    [SerializeField] private GameObject trackingButton;                         // Reference to the tracking button
+    [SerializeField] private GameObject sessionPanel;
+
+    [Header("Model Options")]
+
     [SerializeField] private GameObject modelsOptions;
     [SerializeField] private GameObject addModelsPanel;
     [SerializeField] private GameObject moveModelsPanel;
     [SerializeField] private GameObject moveModelsSelectButton;
     [SerializeField] private GameObject deleteModelsPanel;
     [SerializeField] private GameObject deleteModelsBtn;
-    [SerializeField] private GameObject sessionCamera;
-    [SerializeField] private TrackingManager trackingManager;
-    [SerializeField] private GameObject crosshairImage;
-
-    [SerializeField] private Sprite mainButtonTexture;
-    [SerializeField] private Sprite closeButtonTexture;
-    [SerializeField] private Sprite backButtonTexture;
-    [SerializeField] private Sprite trackingOffButtonTexture;
-    [SerializeField] private Sprite trackingOnButtonTexture;
-    [SerializeField] private Sprite trackingWarningButtonTexture;
-
-    private SessionManager sessionManager;                                      // Reference to the SessionManager component
-
-    private Button mainButtonBtn;
-    private Button trackingButtonBtn;
     private Button selectButtonBtn;
-    private CrosshairBehaviour crosshairBehaviour;
+
+    [Header("Participant Options")]
+
+    [SerializeField] private GameObject participantOptions;                     // Reference to the participant options panel
+    [SerializeField] private TMP_Text participantOptionsUsernameLabel;          // Reference to the username label in the participant options panel
+
+    [Header("UI Objects")]
+
+    [SerializeField] private GameObject sessionCamera;
+    [SerializeField] private GameObject crosshairImage;
 
     private bool onMainMenu = false;                                            // Flag to know if the main menu is open
     private int currentInteractionState = INTERACTION_STATE_POINT;              // Current interaction state with digital objects
@@ -158,6 +176,73 @@ public class MainMenuManager : MonoBehaviour
     }
 
     /**
+     * Adds a participant to the participants menu list
+     * @param username Username of the participant to add
+     */
+    private void AddParticipantToList(string username)
+    {
+        GameObject labelInstance = GameObject.Instantiate(participantLabelPrefab);
+        TMP_Text usernameLbl = labelInstance.GetComponentInChildren<TMP_Text>();
+        usernameLbl.text = username;
+        labelInstance.transform.SetParent(participantsMenu.transform, false);
+    }
+
+    /**
+    * Assignis the session manager of the session participant to the main menu manager
+    * @param sessionManager Reference to the SessionManager component of the session participant
+    */
+    public void SetSessionManager(SessionManager sessionManager)
+    {
+        this.sessionManager = sessionManager;
+    }
+
+    /**
+     * Return the ARCamera component of the session participant
+     * @return GameObject Reference to the ARCamera component of the session participant
+     */
+    public GameObject GetSessionCamera()
+    {
+        return sessionCamera;
+    }
+
+    public GameObject GetToAddModel(int modelType)
+    {
+        return trackingManager.GetToAddModel(modelType);
+    }
+
+    public Vector3 GetCrosshairPosition()
+    {
+        return crosshairBehaviour.GetCurrentPosition();
+    }
+
+    public bool IsPositionOnButton(Vector3 position)
+    {
+        bool onPosition = false;
+        onPosition = CheckCorners(mainButton.GetComponent<RectTransform>(), position);
+        onPosition = onPosition || CheckCorners(trackingButton.GetComponent<RectTransform>(), position);
+        onPosition = onPosition || CheckCorners(addModelsPanel.GetComponent<RectTransform>(), position);
+        onPosition = onPosition || CheckCorners(deleteModelsBtn.GetComponent<RectTransform>(), position);
+
+        return onPosition;
+    }
+
+    private bool CheckCorners(RectTransform uiRect, Vector3 position)
+    {
+        Vector3[] corners = new Vector3[4];
+        uiRect.GetWorldCorners(corners);
+
+        if (position.x >= corners[0].x && position.x <= corners[2].x &&
+            position.y >= corners[0].y && position.y <= corners[2].y)
+            return true;
+
+        return false;
+    }
+
+    //------------------------------------------------------------------------------------------------------
+    // UI Open Callbacks
+    //------------------------------------------------------------------------------------------------------
+
+    /**
      * Opens the main menu
      */
     public void OpenMainMenu()
@@ -190,19 +275,7 @@ public class MainMenuManager : MonoBehaviour
         }
         else
             Debug.Log("Invalid list");
-    }
-
-     /**
-     * Adds a participant to the participants menu list
-     * @param username Username of the participant to add
-     */
-    private void AddParticipantToList(string username)
-    {
-        GameObject labelInstance = GameObject.Instantiate(participantLabelPrefab);
-        TMP_Text usernameLbl = labelInstance.GetComponentInChildren<TMP_Text>();
-        usernameLbl.text = username;
-        labelInstance.transform.SetParent(participantsMenu.transform, false);
-    }
+    } 
 
     /**
      * Opens the participant options menu
@@ -264,6 +337,19 @@ public class MainMenuManager : MonoBehaviour
         mainButtonBtn.onClick.AddListener(CloseDeleteModelsPanel);
     }
 
+    public void OpenSessionPanel()
+    {
+        mainMenu.SetActive(false);
+        sessionPanel.SetActive(true);
+        mainButtonBtn.image.sprite = backButtonTexture;
+        mainButtonBtn.onClick.RemoveAllListeners();
+        mainButtonBtn.onClick.AddListener(CloseSessionPanel);
+    }
+
+    //-------------------------------------------------------------------------------------------------------
+    // UI Close Callbacks
+    //-------------------------------------------------------------------------------------------------------
+
     /**
      * Closes the main menu
      */
@@ -288,11 +374,11 @@ public class MainMenuManager : MonoBehaviour
         }
 
         participantOptionsUsernameLabel.text = "username";
-        mainMenu.SetActive(true);
         participantsMenu.SetActive(false);
         mainButtonBtn.image.sprite = closeButtonTexture;
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseMainMenu);
+        OpenMainMenu();
     }
 
     /**
@@ -346,6 +432,19 @@ public class MainMenuManager : MonoBehaviour
         crosshairImage.SetActive(false);
         OpenModelsOptions();
     }
+
+    public void CloseSessionPanel()
+    {
+        sessionPanel.SetActive(false);
+        mainButtonBtn.image.sprite = closeButtonTexture;
+        mainButtonBtn.onClick.RemoveAllListeners();
+        mainButtonBtn.onClick.AddListener(CloseMainMenu);
+        OpenMainMenu();
+    }
+
+    //------------------------------------------------------------------------------------------------------
+    // Callbacks for UI Buttons
+    //------------------------------------------------------------------------------------------------------
 
     /**
      * Callback for the button that changes the type of model to add to the scene
@@ -431,54 +530,11 @@ public class MainMenuManager : MonoBehaviour
         selectButtonBtn.onClick.AddListener(OnMoveModelSelect);
     }
 
-    /**
-     * Assignis the session manager of the session participant to the main menu manager
-     * @param sessionManager Reference to the SessionManager component of the session participant
-     */
-    public void SetSessionManager(SessionManager sessionManager)
+    public void OnLeaveRoom()
     {
-        this.sessionManager = sessionManager;
-    }
-
-    /**
-     * Return the ARCamera component of the session participant
-     * @return GameObject Reference to the ARCamera component of the session participant
-     */
-    public GameObject GetSessionCamera()
-    {
-        return sessionCamera;
-    }
-
-    public GameObject GetToAddModel(int modelType)
-    {
-        return trackingManager.GetToAddModel(modelType);
-    }
-
-    public Vector3 GetCrosshairPosition()
-    {
-        return crosshairBehaviour.GetCurrentPosition();
-    }
-
-    public bool IsPositionOnButton(Vector3 position)
-    {
-        bool onPosition = false;
-        onPosition = CheckCorners(mainButton.GetComponent<RectTransform>(), position);
-        onPosition = onPosition || CheckCorners(trackingButton.GetComponent<RectTransform>(), position);
-        onPosition = onPosition || CheckCorners(addModelsPanel.GetComponent<RectTransform>(), position);
-        onPosition = onPosition || CheckCorners(deleteModelsBtn.GetComponent<RectTransform>(), position);
-
-        return onPosition;
-    }
-
-    private bool CheckCorners(RectTransform uiRect, Vector3 position)
-    {
-        Vector3[] corners = new Vector3[4];
-        uiRect.GetWorldCorners(corners);
-
-        if (position.x >= corners[0].x && position.x <= corners[2].x &&
-            position.y >= corners[0].y && position.y <= corners[2].y)
-            return true;
-
-        return false;
+        CloseSessionPanel();
+        CloseMainMenu();
+        sessionManager.LeaveRoom();
+        uiManager.LeaveRoom();
     }
 }
