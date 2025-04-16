@@ -55,6 +55,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject participantsMenu;                       // Reference to the participants menu panel
     [SerializeField] private GameObject participantLabelPrefab;                 // Prefab for the labels of each entry in the participants menu
     [SerializeField] private GameObject sessionPanel;
+    [SerializeField] private GameObject objectsPanel;
 
     [Header("Model Options")]
 
@@ -299,7 +300,7 @@ public class MainMenuManager : MonoBehaviour
     public void OpenModelsOptions()
     {
         modelsOptions.SetActive(true);
-        mainMenu.SetActive(false);
+        objectsPanel.SetActive(false);
         mainButtonBtn.image.sprite = backButtonTexture;
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseModelsOptions);
@@ -344,6 +345,15 @@ public class MainMenuManager : MonoBehaviour
         mainButtonBtn.image.sprite = backButtonTexture;
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseSessionPanel);
+    }
+
+    public void OpenObjectsPanel()
+    {
+        mainMenu.SetActive(false);
+        objectsPanel.SetActive(true);
+        mainButtonBtn.image.sprite = backButtonTexture;
+        mainButtonBtn.onClick.RemoveAllListeners();
+        mainButtonBtn.onClick.AddListener(CloseObjectsPanel);
     }
 
     //-------------------------------------------------------------------------------------------------------
@@ -399,7 +409,7 @@ public class MainMenuManager : MonoBehaviour
     public void CloseModelsOptions()
     {
         modelsOptions.SetActive(false);
-        OpenMainMenu();
+        OpenObjectsPanel();
     }
 
     /**
@@ -436,6 +446,15 @@ public class MainMenuManager : MonoBehaviour
     public void CloseSessionPanel()
     {
         sessionPanel.SetActive(false);
+        mainButtonBtn.image.sprite = closeButtonTexture;
+        mainButtonBtn.onClick.RemoveAllListeners();
+        mainButtonBtn.onClick.AddListener(CloseMainMenu);
+        OpenMainMenu();
+    }
+
+    public void CloseObjectsPanel()
+    {
+        objectsPanel.SetActive(false);
         mainButtonBtn.image.sprite = closeButtonTexture;
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseMainMenu);
@@ -528,6 +547,11 @@ public class MainMenuManager : MonoBehaviour
         moveModelsSelectButton.GetComponentInChildren<TMP_Text>().text = "Select";
         selectButtonBtn.onClick.RemoveAllListeners();
         selectButtonBtn.onClick.AddListener(OnMoveModelSelect);
+    }
+
+    public void OnChangeModelMovement(bool active)
+    {
+        trackingManager.SetXZModelMovement(active);
     }
 
     public void OnLeaveRoom()

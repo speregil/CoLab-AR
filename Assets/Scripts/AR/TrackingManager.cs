@@ -36,6 +36,7 @@ public class TrackingManager : MonoBehaviour
     [SerializeField] private Material selectedMaterial;
 
     [SerializeField] private UIManager uiManager;
+    [SerializeField] private float pixelToWorldScale;
     private GameObject trackables;              // Parent gameobject for all the AR planes detected
     private ARPlaneManager planeManager;        // Reference to the ARPlaneManager component
     private ARAnchorManager anchorManager;      // Reference to the ARAnchorManager component
@@ -46,11 +47,13 @@ public class TrackingManager : MonoBehaviour
     private bool onDeleteModel = false;         // Flag to know if the user is currently deleting a model from the scene
     private bool onMoveModel = false;
     private bool onSelectedModel = false;
+    private bool onXZ = true;
     private GameObject toAddModelPrev;          // Reference to the model being added to the scene
     private int toAddModel;
     private GameObject currentPreview = null;
     private GameObject currentSelection = null;
     private Vector3 rayOrigin = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+    private float previousYPosition;
     
 
 
@@ -65,11 +68,13 @@ public class TrackingManager : MonoBehaviour
         anchorManager = GetComponent<ARAnchorManager>();
         anchorManager.anchorsChanged += OnAnchorsChanged;
         raycastManager = GetComponent<ARRaycastManager>();
+        previousYPosition = rayOrigin.y;
     }
 
     void Update()
     {
-        if(onAddModel || onDeleteModel || onMoveModel) { 
+        if(onAddModel || onDeleteModel || onMoveModel) {
+            previousYPosition = rayOrigin.y;
             rayOrigin = uiManager.GetCrosshairPosition();
             TrackingModelsRaycast();
         }
@@ -211,8 +216,17 @@ public class TrackingManager : MonoBehaviour
                 }
                 else if (onSelectedModel)
                 {
-                    Vector3 newPosition = new Vector3(hitPosition.x, currentSelection.transform.position.y, hitPosition.z);
-                    currentSelection.transform.position = newPosition;
+                    if(onXZ)
+                    {
+                        Vector3 newPosition = new Vector3(hitPosition.x, currentSelection.transform.position.y, hitPosition.z);
+                        currentSelection.transform.position = newPosition;
+                    }
+                    else
+                    {
+                        float yPosition = currentSelection.transform.position.y + (rayOrigin.y - previousYPosition) * pixelToWorldScale;
+                        Vector3 newPosition = new Vector3(currentSelection.transform.position.x, yPosition, currentSelection.transform.position.z);
+                        currentSelection.transform.position = newPosition;
+                    }
                 }
                 else if(hit.transform.gameObject.tag.Equals("model")) 
                 {
@@ -260,9 +274,15 @@ public class TrackingManager : MonoBehaviour
         return currentSelection;
     }
 
+    public void SetXZModelMovement(bool active)
+    { 
+        onXZ = active;
+    }
+
     private void resetModelsRaycast()
     {
         rayOrigin = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+        previousYPosition = rayOrigin.y;
         if (currentPreview != null) Destroy(currentPreview);
         currentPreview = null;
         toAddModelPrev = null;
