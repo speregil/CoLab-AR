@@ -13,6 +13,7 @@ public class SessionManager : NetworkBehaviour
     //------------------------------------------------------------------------------------------------------
 
     [SerializeField] private GameObject PointerPrefab;
+    [SerializeField] GameObject roomAnchorPrefab;                       // Prefab for the room anchor object
 
     private Dictionary<string, Color> participants = new Dictionary<string, Color>();
     private GameObject selectedParticipant;
@@ -35,6 +36,12 @@ public class SessionManager : NetworkBehaviour
         RegisterNewParticipantRpc(userConfig.GetProfileStruct(), NetworkManager.Singleton.LocalClientId);
 
         if (IsOwner) mainMenu.SetSessionManager(this);
+
+        if (IsServer)
+        {
+            GameObject anchorInstance = GameObject.Instantiate(roomAnchorPrefab);
+            anchorInstance.GetComponent<NetworkObject>().Spawn();
+        }
     }
 
     //------------------------------------------------------------------------------------------------------

@@ -1,0 +1,1 @@
+C:\Users\Usuario\Documents\github\CoLab-AR\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\build\intermediates\cxx\RelWithDebInfo\3h3l6829\obj\arm64-v8a

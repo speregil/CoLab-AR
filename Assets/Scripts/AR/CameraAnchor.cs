@@ -18,7 +18,8 @@ public class CameraAnchor : NetworkBehaviour
     
     private SessionManager sessionManager;                  // Reference to the SessionManager component
     private GameObject roomCamera;                          // Reference to the global camera in each participant's instance of the room
-    private GameObject sessionCamera;                       // Reference to the own ARCamera component
+    private Vector3 previousPosition;
+    private Vector3 previousRotation;
 
     //------------------------------------------------------------------------------------------------------
     // Network Behaviour Functions
@@ -32,10 +33,9 @@ public class CameraAnchor : NetworkBehaviour
 
         if (IsOwner)
         {
-            sessionCamera = sessionManager.GetMainMenuReference().GetSessionCamera();
             gaze.SetActive(false);
-            transform.position = sessionCamera.transform.position;
-            transform.rotation = sessionCamera.transform.rotation;
+            previousPosition = transform.position;
+            previousRotation = transform.rotation.eulerAngles;
         }
     }
 
@@ -46,8 +46,16 @@ public class CameraAnchor : NetworkBehaviour
 
         if (IsOwner)
         {
-            transform.position = sessionCamera.transform.position;
-            transform.rotation = sessionCamera.transform.rotation;
+            Vector3 cameraPosition = roomCamera.transform.position;
+            Vector3 newPosition = new Vector3(cameraPosition.x - previousPosition.x, cameraPosition.y - previousPosition.y, cameraPosition.z - previousPosition.z);
+            transform.position = new Vector3(transform.position.x + newPosition.x, transform.position.y + newPosition.y, transform.position.z + newPosition.z);
+            previousPosition = transform.position;
+
+            Vector3 cameraRotation = roomCamera.transform.rotation.eulerAngles;
+            Vector3 newRotation = new Vector3(cameraRotation.x - previousRotation.x, cameraRotation.y - previousRotation.y, cameraRotation.z - previousRotation.z);
+            Vector3 setRotation = new Vector3(transform.rotation.eulerAngles.x + newRotation.x, transform.rotation.eulerAngles.y + newRotation.y, transform.rotation.eulerAngles.z + newRotation.z);
+            transform.rotation = Quaternion.Euler(setRotation);
+            previousRotation = transform.rotation.eulerAngles;
         }
     }
 

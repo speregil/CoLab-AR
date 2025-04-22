@@ -216,6 +216,11 @@ public class MainMenuManager : MonoBehaviour
         return crosshairBehaviour.GetCurrentPosition();
     }
 
+    public void ActivateCrosshair(bool active)
+    {
+        crosshairImage.SetActive(active);
+    }
+
     public bool IsPositionOnButton(Vector3 position)
     {
         bool onPosition = false;

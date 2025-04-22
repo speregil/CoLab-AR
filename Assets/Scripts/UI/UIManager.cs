@@ -133,6 +133,7 @@ public class UIManager : MonoBehaviour
         GameObject configButtons = configPanel.transform.GetChild(0).gameObject;
         Button positionXZ = configButtons.transform.Find("PositionXZBtn").gameObject.GetComponent<Button>();
         positionXZ.onClick.Invoke();
+        ActivateCrosshair(true);
     }
 
     /**
@@ -141,6 +142,7 @@ public class UIManager : MonoBehaviour
     public void AcceptWorkspaceConfiguration()
     {
         workspaceConfigMenu.SetActive(false);
+        ActivateCrosshair(false);
         mainMenu.SetActive(true);
     }
 
@@ -174,6 +176,11 @@ public class UIManager : MonoBehaviour
     public Vector3 GetCrosshairPosition()
     {
         return mainMenuManager.GetCrosshairPosition();
+    }
+
+    public void ActivateCrosshair(bool activate)
+    {
+        mainMenuManager.ActivateCrosshair(activate);
     }
 
     public bool IsPositionOnButton(Vector3 position)

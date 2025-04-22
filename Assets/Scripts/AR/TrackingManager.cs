@@ -39,7 +39,6 @@ public class TrackingManager : MonoBehaviour
     [SerializeField] private float pixelToWorldScale;
     private GameObject trackables;              // Parent gameobject for all the AR planes detected
     private ARPlaneManager planeManager;        // Reference to the ARPlaneManager component
-    private ARAnchorManager anchorManager;      // Reference to the ARAnchorManager component
     private ARRaycastManager raycastManager;    // Reference to the ARRaycastManager component
 
     private Vector3 hitPosition;                // Pose of the hit point of the raycast
@@ -65,8 +64,6 @@ public class TrackingManager : MonoBehaviour
     {
         trackables = transform.Find("Trackables").gameObject;
         planeManager = GetComponent<ARPlaneManager>();
-        anchorManager = GetComponent<ARAnchorManager>();
-        anchorManager.anchorsChanged += OnAnchorsChanged;
         raycastManager = GetComponent<ARRaycastManager>();
         previousYPosition = rayOrigin.y;
     }
@@ -247,15 +244,6 @@ public class TrackingManager : MonoBehaviour
         {
             Destroy(currentPreview);
             currentPreview = null;
-        }
-    }
-
-    private void OnAnchorsChanged(ARAnchorsChangedEventArgs args)
-    {
-        Debug.Log("Anchors changed event");
-        foreach (var anchor in args.added)
-        {
-            Debug.Log("Anchor added: " + anchor.gameObject.name);
         }
     }
 

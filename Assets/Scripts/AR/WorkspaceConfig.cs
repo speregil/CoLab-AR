@@ -36,6 +36,7 @@ public class WorkspaceConfig : NetworkBehaviour
 
     private bool isDetectingPlanes = false;                     // Flag that determines if the script is currently tracking planes or not
     private bool isConfiguringWorkspace = false;                // Flag that determines if the user is currently configuring pos/rot of the workspace
+    private Vector3 rayOrigin = new Vector3(Screen.width / 2, Screen.height / 2, 0);
 
     //------------------------------------------------------------------------------------------------------
     // Network Behaviour Functions
@@ -63,6 +64,8 @@ public class WorkspaceConfig : NetworkBehaviour
     void Update()
     {
         if (!IsOwner) return;
+
+        rayOrigin = uiManager.GetCrosshairPosition();
 
         // Input check for mobile builds
         if (isDetectingPlanes && Input.touchCount > 0)
