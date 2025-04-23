@@ -216,6 +216,11 @@ public class MainMenuManager : MonoBehaviour
         return crosshairBehaviour.GetCurrentPosition();
     }
 
+    public Vector3 GetCrosshairDiffPosition()
+    {
+        return crosshairBehaviour.GetDiffPosition();
+    }
+
     public void ActivateCrosshair(bool active)
     {
         crosshairImage.SetActive(active);

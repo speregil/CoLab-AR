@@ -178,6 +178,11 @@ public class UIManager : MonoBehaviour
         return mainMenuManager.GetCrosshairPosition();
     }
 
+    public Vector3 GetCrosshairDiffPosition()
+    {
+        return mainMenuManager.GetCrosshairDiffPosition();
+    }
+
     public void ActivateCrosshair(bool activate)
     {
         mainMenuManager.ActivateCrosshair(activate);

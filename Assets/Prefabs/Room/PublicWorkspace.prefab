@@ -12,12 +12,12 @@ GameObject:
   - component: {fileID: 5014880315914030375}
   - component: {fileID: 6545472481168712209}
   - component: {fileID: 5278759799117192875}
+  - component: {fileID: 6036859101013638237}
   - component: {fileID: 7306876300636224521}
-  - component: {fileID: 3220284185792231330}
-  - component: {fileID: 3017725821102644151}
-  - component: {fileID: 891908552555964215}
+  - component: {fileID: 4417548336636701344}
+  - component: {fileID: 7009085612943378328}
   m_Layer: 0
-  m_Name: TouchInputWorkspace
+  m_Name: PublicWorkspace
   m_TagString: workspace
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -63,10 +63,13 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 55fd2544d489dd34eb7276f002dc5c5e, type: 2}
+  - {fileID: 2100000, guid: 6720075989b70fc4b93c886d55044134, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -110,6 +113,22 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &6036859101013638237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5514888900471754074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eeb65b815a910014db57423e45fbe7e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  workspacePositionChange: 0.1
+  workspaceRotationChange: 180
+  workspaceScaleChange: 0.1
+  minimumScale: 0.05
 --- !u!114 &7306876300636224521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,34 +141,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 115426960
+  GlobalObjectIdHash: 1736630116
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
+  SynchronizeTransform: 0
   ActiveSceneSynchronization: 0
   SceneMigrationSynchronization: 1
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &3220284185792231330
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5514888900471754074}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd7a0092c3758c548b7a19daa9cdca87, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  movementTresshold: 50
-  workspacePositionChange: 2
-  workspaceRotationChange: 270
-  workspaceScaleChange: 0.3
-  minimumScale: 0.01
-  sensibility: 5
---- !u!114 &3017725821102644151
+--- !u!114 &4417548336636701344
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -180,7 +181,7 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!114 &891908552555964215
+--- !u!114 &7009085612943378328
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -1,61 +1,49 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CrosshairBehaviour : MonoBehaviour
 {
     [SerializeField] private UIManager uiManager;
+    [SerializeField] private PlayerInput playerInput;
 
-    private bool onClick = false;
+    private InputAction touchPress;
+    private InputAction touchPosition;
+
     private bool onTouch = false;
 
     private Vector3 currentPosition;
+    private Vector3 previousPosition;
+
+    private void Awake()
+    {
+        touchPress = playerInput.actions["TouchPress"];
+        touchPosition = playerInput.actions["TouchPosition"];
+    }
 
     private void Start()
     {
         gameObject.transform.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+        currentPosition = gameObject.transform.position;
+        previousPosition = gameObject.transform.position;
     }
 
     void Update()
     {
-        // Manage click events
-        if (onClick && Input.GetMouseButtonUp(0)) onClick = false;
+        if(touchPress.WasPerformedThisFrame()) onTouch = true;
 
-        if (!onClick && Input.GetMouseButtonDown(0))
+        if (touchPress.WasCompletedThisFrame())
         {
-            onClick = true;
-            if (!uiManager.IsPositionOnButton(Input.mousePosition))
-            {
-                currentPosition = Input.mousePosition;
-                gameObject.transform.position = currentPosition;
-            }
-        }
-
-        if (onClick)
-        {
-            if (!uiManager.IsPositionOnButton(Input.mousePosition))
-            {
-                currentPosition = Input.mousePosition;
-                gameObject.transform.position = currentPosition;
-            }
-        }
-
-        // Manage touch events
-        if (onTouch && Input.touchCount == 0) onTouch = false;
-
-        if (!onTouch && Input.touchCount > 0)
-        {
-            onTouch = true;
-            if (!uiManager.IsPositionOnButton(Input.GetTouch(0).position))
-            {
-                currentPosition = Input.GetTouch(0).position;
-                gameObject.transform.position = currentPosition;
-            }
+            previousPosition = currentPosition;
+            onTouch = false;
         }
 
         if (onTouch)
         {
-            if (!uiManager.IsPositionOnButton(Input.GetTouch(0).position))
+            Vector2 position = touchPosition.ReadValue<Vector2>();
+            if (!uiManager.IsPositionOnButton(position))
             {
-                currentPosition = Input.GetTouch(0).position;
+                previousPosition = currentPosition;
+                currentPosition = position;
                 gameObject.transform.position = currentPosition;
             }
         }
@@ -66,10 +54,16 @@ public class CrosshairBehaviour : MonoBehaviour
         return currentPosition;
     }
 
+    public Vector3 GetDiffPosition()
+    {
+        return new Vector3(currentPosition.x - previousPosition.x, currentPosition.y - previousPosition.y, 0);
+    }
+
     public void ResetCrosshair()
     {
        gameObject.transform.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
-       onClick = false;
+       currentPosition = gameObject.transform.position;
+       previousPosition = gameObject.transform.position;
        onTouch = false;
     }
 }

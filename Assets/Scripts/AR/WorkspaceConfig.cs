@@ -31,7 +31,7 @@ public class WorkspaceConfig : NetworkBehaviour
 
     private GameObject currentEditableWorkspace;                // Current instance of the workspace plane
     private NetworkObject currentWorkspace;                      // Current NetworkObject of the workspace plane
-    private IDragBehaviour drag;                                // Reference to the Drag Behaviour of the current workspace
+    private DragBehaviour drag;                                // Reference to the Drag Behaviour of the current workspace
     private int currentConfigState;                             // Defines the current Config State of the app
 
     private bool isDetectingPlanes = false;                     // Flag that determines if the script is currently tracking planes or not
@@ -228,12 +228,11 @@ public class WorkspaceConfig : NetworkBehaviour
             currentWorkspace = currentEditableWorkspace.GetComponent<NetworkObject>();
 
             currentWorkspace.SpawnWithOwnership(clientId);
-            trackingManager.AddAnchor(currentWorkspace.gameObject);
-            //gameObject.transform.SetParent(currentWorkspace.transform);
 
             // Setups the configuration menu
             isConfiguringWorkspace = true;
-            drag = currentEditableWorkspace.GetComponent<IDragBehaviour>();
+            drag = currentEditableWorkspace.GetComponent<DragBehaviour>();
+            drag.SetUIManager(uiManager);
             drag.SetOnConfig(true);
             SetConfigState(POSITIONXZ_STATE);
             uiManager.WorkspaceConfiguration();

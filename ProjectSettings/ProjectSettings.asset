@@ -165,7 +165,8 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   androidMinAspectRatio: 1
-  applicationIdentifier: {}
+  applicationIdentifier:
+    Android: com.com.creativetech.colabar.ColabAR
   buildNumber:
     Standalone: 0
     VisionOS: 0
@@ -875,7 +876,7 @@ PlayerSettings:
   qnxGraphicConfPath: 
   apiCompatibilityLevel: 6
   captureStartupLogs: {}
-  activeInputHandler: 2
+  activeInputHandler: 1
   windowsGamepadBackendHint: 0
   cloudProjectId: c0c5ca5e-ff44-462d-97a4-69c98f6c7a08
   framebufferDepthMemorylessMode: 0

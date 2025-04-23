@@ -472,6 +472,8 @@ MonoBehaviour:
   mainBody: {fileID: 2737694164373843188}
   gaze: {fileID: 8462665798826977941}
   nameplate: {fileID: 8349218625490966200}
+  movementScale: 1
+  rotationScale: 1
 --- !u!114 &706700248866213835
 MonoBehaviour:
   m_ObjectHideFlags: 0

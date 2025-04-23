@@ -15,11 +15,13 @@ public class CameraAnchor : NetworkBehaviour
     [SerializeField] private GameObject mainBody;           // Reference to the main body that represents the a participant in the augmented space
     [SerializeField] private GameObject gaze;               // Reference to the gaze object that shows the point of view of the participant
     [SerializeField] private GameObject nameplate;          // Reference to the nameplate with the username of the participant
-    
+    [SerializeField] private float movementScale;
+    [SerializeField] private float rotationScale;
+
     private SessionManager sessionManager;                  // Reference to the SessionManager component
     private GameObject roomCamera;                          // Reference to the global camera in each participant's instance of the room
-    private Vector3 previousPosition;
-    private Vector3 previousRotation;
+    private Vector3 previousCameraPosition;
+    private Vector3 previousCameraRotation;
 
     //------------------------------------------------------------------------------------------------------
     // Network Behaviour Functions
@@ -33,29 +35,32 @@ public class CameraAnchor : NetworkBehaviour
 
         if (IsOwner)
         {
+            mainBody.SetActive(false);
             gaze.SetActive(false);
-            previousPosition = transform.position;
-            previousRotation = transform.rotation.eulerAngles;
+            nameplate.SetActive(false);
+            previousCameraPosition = roomCamera.transform.position;
+            previousCameraRotation = roomCamera.transform.rotation.eulerAngles;
         }
     }
 
     void Update()
     {
+        
         if(nameplate.activeInHierarchy)
             nameplate.transform.LookAt(roomCamera.transform);
 
         if (IsOwner)
         {
             Vector3 cameraPosition = roomCamera.transform.position;
-            Vector3 newPosition = new Vector3(cameraPosition.x - previousPosition.x, cameraPosition.y - previousPosition.y, cameraPosition.z - previousPosition.z);
+            Vector3 newPosition = new Vector3(cameraPosition.x - previousCameraPosition.x, cameraPosition.y - previousCameraPosition.y, cameraPosition.z - previousCameraPosition.z) * movementScale;
             transform.position = new Vector3(transform.position.x + newPosition.x, transform.position.y + newPosition.y, transform.position.z + newPosition.z);
-            previousPosition = transform.position;
+            previousCameraPosition = roomCamera.transform.position;
 
             Vector3 cameraRotation = roomCamera.transform.rotation.eulerAngles;
-            Vector3 newRotation = new Vector3(cameraRotation.x - previousRotation.x, cameraRotation.y - previousRotation.y, cameraRotation.z - previousRotation.z);
+            Vector3 newRotation = new Vector3(cameraRotation.x - previousCameraRotation.x, cameraRotation.y - previousCameraRotation.y, cameraRotation.z - previousCameraRotation.z) * rotationScale;
             Vector3 setRotation = new Vector3(transform.rotation.eulerAngles.x + newRotation.x, transform.rotation.eulerAngles.y + newRotation.y, transform.rotation.eulerAngles.z + newRotation.z);
             transform.rotation = Quaternion.Euler(setRotation);
-            previousRotation = transform.rotation.eulerAngles;
+            previousCameraRotation = roomCamera.transform.rotation.eulerAngles;
         }
     }
 
