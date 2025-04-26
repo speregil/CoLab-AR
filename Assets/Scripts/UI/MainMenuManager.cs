@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /**
@@ -76,7 +77,10 @@ public class MainMenuManager : MonoBehaviour
 
     [SerializeField] private GameObject sessionCamera;
     [SerializeField] private GameObject crosshairImage;
+    [SerializeField] private PlayerInput playerInput;
 
+    private InputAction touchPress;
+    private InputAction touchPosition;
     private bool onMainMenu = false;                                            // Flag to know if the main menu is open
     private int currentInteractionState = INTERACTION_STATE_POINT;              // Current interaction state with digital objects
 
@@ -84,6 +88,12 @@ public class MainMenuManager : MonoBehaviour
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
     //------------------------------------------------------------------------------------------------------
+
+    private void Awake()
+    {
+        touchPress = playerInput.actions["TouchPress"];
+        touchPosition = playerInput.actions["TouchPosition"];
+    }
 
     void Start()
     {
@@ -97,10 +107,11 @@ public class MainMenuManager : MonoBehaviour
 
     void Update()
     {
-        bool mouseClick = Input.GetMouseButtonDown(0);
-        bool touchInput = Input.touchCount > 0;
-
-        ManageInteraction(mouseClick, touchInput);
+        if (touchPress.WasPressedThisFrame())
+        {
+            Vector2 position = touchPosition.ReadValue<Vector2>();
+            ManageInteraction(position);
+        }
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -114,18 +125,9 @@ public class MainMenuManager : MonoBehaviour
      * @param touchInput Flag to know if there is touch input
      * @param touchHold Flag to know if the touch is being held
      */
-    public void ManageInteraction(bool mouseClick, bool touchInput)
+    public void ManageInteraction(Vector2 position)
     {
-        Ray ray = new Ray();
-
-        if (mouseClick)
-            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (touchInput)
-        {
-            Touch touch = Input.GetTouch(index: 0);
-            ray = Camera.main.ScreenPointToRay(touch.position);
-        }
+        Ray ray = Camera.main.ScreenPointToRay(position);
 
         RaycastHit hit;
 
@@ -221,9 +223,11 @@ public class MainMenuManager : MonoBehaviour
         return crosshairBehaviour.GetDiffPosition();
     }
 
-    public void ActivateCrosshair(bool active)
+    public void ActivateCrosshair(bool active, bool bouncy, int type)
     {
         crosshairImage.SetActive(active);
+        crosshairBehaviour.SetAsBouncy(bouncy);
+        crosshairBehaviour.SetImage(type);
     }
 
     public bool IsPositionOnButton(Vector3 position)
@@ -237,7 +241,7 @@ public class MainMenuManager : MonoBehaviour
         return onPosition;
     }
 
-    private bool CheckCorners(RectTransform uiRect, Vector3 position)
+    public bool CheckCorners(RectTransform uiRect, Vector3 position)
     {
         Vector3[] corners = new Vector3[4];
         uiRect.GetWorldCorners(corners);
@@ -323,7 +327,7 @@ public class MainMenuManager : MonoBehaviour
     {
         modelsOptions.SetActive(false);
         addModelsPanel.SetActive(true);
-        crosshairImage.SetActive(true);
+        ActivateCrosshair(true, false,0);
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseAddModelsPanel);
     }
@@ -332,7 +336,7 @@ public class MainMenuManager : MonoBehaviour
     {
         modelsOptions.SetActive(false);
         moveModelsPanel.SetActive(true);
-        crosshairImage.SetActive(true);
+        ActivateCrosshair(true, false,0);
         trackingManager.ActivateModelMovement(true);
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseMoveModelsPanel);
@@ -343,7 +347,7 @@ public class MainMenuManager : MonoBehaviour
         modelsOptions.SetActive(false);
         deleteModelsPanel.SetActive(true);
         trackingManager.ActivateModelDeletion(true);
-        crosshairImage.SetActive(true);
+        ActivateCrosshair(true, false,0);
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseDeleteModelsPanel);
     }
@@ -376,7 +380,7 @@ public class MainMenuManager : MonoBehaviour
     public void CloseMainMenu()
     {
         mainMenu.SetActive(false);
-        crosshairImage.SetActive(false);
+        ActivateCrosshair(false, false,0);
         mainButtonBtn.image.sprite = mainButtonTexture;
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(OpenMainMenu);
@@ -430,7 +434,7 @@ public class MainMenuManager : MonoBehaviour
         trackingManager.ActivateModelPositioning(false);
         addModelsPanel.SetActive(false);
         crosshairBehaviour.ResetCrosshair();
-        crosshairImage.SetActive(false);
+        ActivateCrosshair(false, false,0);
         OpenModelsOptions();
     }
 
@@ -438,7 +442,7 @@ public class MainMenuManager : MonoBehaviour
     {
         moveModelsPanel.SetActive(false);
         crosshairBehaviour.ResetCrosshair();
-        crosshairImage.SetActive(false);
+        ActivateCrosshair(false, false,0);
         trackingManager.SelectCurrentModel(false);
         trackingManager.ActivateModelMovement(false);
         OpenModelsOptions();
@@ -449,7 +453,7 @@ public class MainMenuManager : MonoBehaviour
         trackingManager.ActivateModelDeletion(false);
         deleteModelsPanel.SetActive(false);
         crosshairBehaviour.ResetCrosshair();
-        crosshairImage.SetActive(false);
+        ActivateCrosshair(false, false,0);
         OpenModelsOptions();
     }
 

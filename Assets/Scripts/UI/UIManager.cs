@@ -129,11 +129,9 @@ public class UIManager : MonoBehaviour
     public void WorkspaceConfiguration()
     {
         workspaceConfigMenu.SetActive(true);
+        ActivateCrosshair(true, true, 0);
         GameObject configPanel = workspaceConfigMenu.transform.GetChild(0).gameObject;
         GameObject configButtons = configPanel.transform.GetChild(0).gameObject;
-        Button positionXZ = configButtons.transform.Find("PositionXZBtn").gameObject.GetComponent<Button>();
-        positionXZ.onClick.Invoke();
-        ActivateCrosshair(true);
     }
 
     /**
@@ -142,7 +140,7 @@ public class UIManager : MonoBehaviour
     public void AcceptWorkspaceConfiguration()
     {
         workspaceConfigMenu.SetActive(false);
-        ActivateCrosshair(false);
+        ActivateCrosshair(false,false,1);
         mainMenu.SetActive(true);
     }
 
@@ -183,14 +181,17 @@ public class UIManager : MonoBehaviour
         return mainMenuManager.GetCrosshairDiffPosition();
     }
 
-    public void ActivateCrosshair(bool activate)
+    public void ActivateCrosshair(bool activate, bool bouncy, int type)
     {
-        mainMenuManager.ActivateCrosshair(activate);
+        mainMenuManager.ActivateCrosshair(activate, bouncy, type);
     }
 
     public bool IsPositionOnButton(Vector3 position)
     {
-        return mainMenuManager.IsPositionOnButton(position);
+        bool isOnButton = false;
+        isOnButton = mainMenuManager.IsPositionOnButton(position);
+        isOnButton = mainMenuManager.CheckCorners(workspaceConfigMenu.transform.GetChild(0).GetComponent<RectTransform>(), position);
+        return isOnButton;
     }
 
     public void LeaveRoom()

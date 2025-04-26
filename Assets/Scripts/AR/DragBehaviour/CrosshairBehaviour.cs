@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class CrosshairBehaviour : MonoBehaviour
 {
     [SerializeField] private UIManager uiManager;
     [SerializeField] private PlayerInput playerInput;
+    [SerializeField] private Sprite[] imageOption;
 
     private InputAction touchPress;
     private InputAction touchPosition;
@@ -13,6 +15,8 @@ public class CrosshairBehaviour : MonoBehaviour
 
     private Vector3 currentPosition;
     private Vector3 previousPosition;
+    private Image currentImage;
+    private bool isBouncy = false;
 
     private void Awake()
     {
@@ -27,14 +31,24 @@ public class CrosshairBehaviour : MonoBehaviour
         previousPosition = gameObject.transform.position;
     }
 
+    private void OnEnable()
+    {
+        currentImage = GetComponent<Image>();
+    }
+
     void Update()
     {
         if(touchPress.WasPerformedThisFrame()) onTouch = true;
 
         if (touchPress.WasCompletedThisFrame())
         {
-            previousPosition = currentPosition;
-            onTouch = false;
+            if(isBouncy)
+                ResetCrosshair();
+            else 
+            {
+                previousPosition = currentPosition;
+                onTouch = false;
+            }
         }
 
         if (onTouch)
@@ -57,6 +71,17 @@ public class CrosshairBehaviour : MonoBehaviour
     public Vector3 GetDiffPosition()
     {
         return new Vector3(currentPosition.x - previousPosition.x, currentPosition.y - previousPosition.y, 0);
+    }
+
+    public void SetAsBouncy(bool bouncy)
+    {
+        isBouncy = bouncy;
+    }
+
+    public void SetImage(int index)
+    {
+        if (index < imageOption.Length)
+           currentImage.sprite = imageOption[index];
     }
 
     public void ResetCrosshair()

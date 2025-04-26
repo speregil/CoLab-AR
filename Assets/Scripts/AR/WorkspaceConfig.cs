@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
@@ -28,15 +29,18 @@ public class WorkspaceConfig : NetworkBehaviour
     private ARRaycastManager raycastManager;                    // Reference to the ARRaycastManager component in the parent object
     private TrackingManager trackingManager;                    // Reference to the TrackingManager component in the parent object
     private UIManager uiManager;                                // Reference to the UIManager component loaded in the scene
+    private PlayerInput playerInput;
 
     private GameObject currentEditableWorkspace;                // Current instance of the workspace plane
     private NetworkObject currentWorkspace;                      // Current NetworkObject of the workspace plane
     private DragBehaviour drag;                                // Reference to the Drag Behaviour of the current workspace
     private int currentConfigState;                             // Defines the current Config State of the app
 
+    private InputAction touchPress;
+    private InputAction touchPosition;
+
     private bool isDetectingPlanes = false;                     // Flag that determines if the script is currently tracking planes or not
     private bool isConfiguringWorkspace = false;                // Flag that determines if the user is currently configuring pos/rot of the workspace
-    private Vector3 rayOrigin = new Vector3(Screen.width / 2, Screen.height / 2, 0);
 
     //------------------------------------------------------------------------------------------------------
     // Network Behaviour Functions
@@ -46,17 +50,14 @@ public class WorkspaceConfig : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        Debug.Log("Object spawned on network");
         GameObject arConfig = GameObject.Find("ARConfig");
         GameObject ui = GameObject.Find("UI");
         raycastManager = arConfig.GetComponentInChildren<ARRaycastManager>();
         trackingManager = arConfig.GetComponentInChildren<TrackingManager>();
         uiManager = ui.GetComponent<UIManager>();
-        if (CheckForWorkspace())
-        {
-            Debug.Log("Found workspace");
-            //MoveParticipantsToWorkspaceAnchorRpc();
-        }
+        playerInput = ui.GetComponent<PlayerInput>();
+        touchPress = playerInput.actions["TouchPress"];
+        touchPosition = playerInput.actions["TouchPosition"];
         ConfigureWorspaceMenu();
         DetectingPlanes(IsServer);
     }
@@ -65,21 +66,10 @@ public class WorkspaceConfig : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        rayOrigin = uiManager.GetCrosshairPosition();
-
-        // Input check for mobile builds
-        if (isDetectingPlanes && Input.touchCount > 0)
+        if (isDetectingPlanes && touchPress.WasPressedThisFrame())
         {
-            Touch touch = Input.GetTouch(index: 0);
-            Vector2 touchPosition = touch.position;
-            ARRaycasting(touchPosition);
-        }
-        // Input check for PC builds
-        else if (isDetectingPlanes && Input.GetMouseButtonDown(0))
-        {
-            Vector3 mousePosition = Input.mousePosition;
-            Vector2 mousePositionMap = new Vector2(mousePosition.x, mousePosition.y);
-            ARRaycasting(mousePositionMap);
+            Vector2 position = touchPosition.ReadValue<Vector2>();
+            ARRaycasting(position);
         }
     }
 
@@ -186,6 +176,7 @@ public class WorkspaceConfig : NetworkBehaviour
      */
     public void SetConfigState(int state)
     {
+        drag.SetOnConfig(true);
         currentConfigState = state;
         drag.SetConfigState(currentConfigState);
     }
@@ -233,35 +224,9 @@ public class WorkspaceConfig : NetworkBehaviour
             isConfiguringWorkspace = true;
             drag = currentEditableWorkspace.GetComponent<DragBehaviour>();
             drag.SetUIManager(uiManager);
-            drag.SetOnConfig(true);
-            SetConfigState(POSITIONXZ_STATE);
+            //drag.SetOnConfig(true);
+            //SetConfigState(POSITIONXZ_STATE);
             uiManager.WorkspaceConfiguration();
-        }
-    }
-
-    public bool CheckForWorkspace()
-    {
-        GameObject[] workspaceSearch = GameObject.FindGameObjectsWithTag("workspace");
-        if(workspaceSearch.Length > 0)
-        {
-            currentWorkspace = workspaceSearch[0].GetComponent<NetworkObject>();
-            return true;
-        }
-        return false;
-    }
-
-    [Rpc(SendTo.Server)]
-    public void MoveParticipantsToWorkspaceAnchorRpc()
-    {
-        currentWorkspace = GameObject.FindGameObjectWithTag("workspace").GetComponent<NetworkObject>();
-        if (IsHost)
-        {
-            Debug.Log("Is Host");
-            foreach (NetworkClient participant in NetworkManager.Singleton.ConnectedClientsList)
-            {
-                Debug.Log("Found: " + participant.PlayerObject.gameObject.name);
-                participant.PlayerObject.gameObject.transform.SetParent(currentWorkspace.transform);
-            }
         }
     }
 }

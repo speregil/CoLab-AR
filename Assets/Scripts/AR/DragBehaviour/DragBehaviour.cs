@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UIElements;
 
 /**
  * Behaviour for managing the workspace configuration when the host is creating a room
@@ -18,6 +17,7 @@ public class DragBehaviour : MonoBehaviour
     private Vector3 originalPosition;                                         // Saves the original position of the workspace prior to user configuration
     private Quaternion originalRotation;                                      // Saves the original rotation of the workspace prior to the user configuration
     private Vector3 originalScale;                                            // Saves the original scale of the workspace prior to the user configuration
+    private Vector3 previousPosition;
 
     private int configState;                                                  // Current configuration state
     private bool onConfig = false;                                            // Flag that determines if the workspace is in configuration mode or not
@@ -43,6 +43,7 @@ public class DragBehaviour : MonoBehaviour
             switch (configState)
             {
                 case WorkspaceConfig.POSITIONXZ_STATE:
+                    previousPosition = transform.position;
                     MoveXZ();
                     break;
                 case WorkspaceConfig.POSITIONY_STATE:
@@ -67,9 +68,14 @@ public class DragBehaviour : MonoBehaviour
      * and the forward direction of the camera and the workspace
      */
     public void MoveXZ()
-    {
-        Vector3 diffPosition = uiManager.GetCrosshairDiffPosition();
-        transform.position = new Vector3(transform.position.x + (diffPosition.x * workspacePositionChange * Time.deltaTime), transform.position.y, transform.position.z + (diffPosition.y * workspacePositionChange * Time.deltaTime));
+    { 
+        if(uiManager.GetCrosshairDiffPosition() != Vector3.zero)
+        { 
+            Ray ray = Camera.main.ScreenPointToRay(uiManager.GetCrosshairPosition());
+            Vector3 rayPoint = ray.GetPoint(2);
+            Vector3 diffPosition = rayPoint - previousPosition;
+            transform.position = new Vector3(transform.position.x + (diffPosition.x * workspacePositionChange * Time.deltaTime), transform.position.y, transform.position.z + (diffPosition.z * workspacePositionChange * Time.deltaTime));
+        }
     }
 
     /**
@@ -113,6 +119,7 @@ public class DragBehaviour : MonoBehaviour
         transform.position = originalPosition;
         transform.rotation = originalRotation;
         transform.localScale = originalScale;
+        previousPosition = transform.position;
     }
 
     /**

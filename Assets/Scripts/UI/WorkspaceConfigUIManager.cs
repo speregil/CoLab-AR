@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +10,8 @@ public class WorkspaceConfigUIManager : MonoBehaviour
 
     [SerializeField] Color selectedOptionColor;
     [SerializeField] Color normalOptionColor;
+
+    [SerializeField] UIManager uiManager;
 
     public void SelectPositionXZ()
     {
@@ -30,6 +30,8 @@ public class WorkspaceConfigUIManager : MonoBehaviour
         colors = scaleBtt.colors;
         colors.normalColor = normalOptionColor;
         scaleBtt.colors = colors;
+
+        uiManager.ActivateCrosshair(true, true, 1);
     }
 
     public void SelectPositionY()
@@ -49,6 +51,8 @@ public class WorkspaceConfigUIManager : MonoBehaviour
         colors = scaleBtt.colors;
         colors.normalColor = normalOptionColor;
         scaleBtt.colors = colors;
+
+        uiManager.ActivateCrosshair(true, true, 2);
     }
 
     public void SelectRotation()
@@ -68,6 +72,8 @@ public class WorkspaceConfigUIManager : MonoBehaviour
         colors = scaleBtt.colors;
         colors.normalColor = normalOptionColor;
         scaleBtt.colors = colors;
+
+        uiManager.ActivateCrosshair(true, true, 3);
     }
 
     public void SelectScale()
@@ -87,5 +93,7 @@ public class WorkspaceConfigUIManager : MonoBehaviour
         colors = rotationBtt.colors;
         colors.normalColor = normalOptionColor;
         rotationBtt.colors = colors;
+
+        uiManager.ActivateCrosshair(true, true, 1);
     }
 }
