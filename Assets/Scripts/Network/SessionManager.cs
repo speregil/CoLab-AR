@@ -19,7 +19,7 @@ public class SessionManager : NetworkBehaviour
     private GameObject selectedParticipant;
     private UserConfiguration userConfig;
     private MainMenuManager mainMenu;
-    private SharedSpaceManager sharedSpaceManager;
+    private WorkspaceConfig workspaceConfig;
 
     private int defaultParticipantCounter = 1;
 
@@ -32,14 +32,14 @@ public class SessionManager : NetworkBehaviour
         userConfig = GameObject.Find("OfflineConfig").GetComponent<UserConfiguration>();
         GameObject mainMenuObject = GameObject.Find("UI").transform.Find("MainMenu").gameObject;
         mainMenu = mainMenuObject.GetComponent<MainMenuManager>();
-        sharedSpaceManager = GameObject.Find("ARConfig").GetComponentInChildren<SharedSpaceManager>();
+        workspaceConfig = GetComponent<WorkspaceConfig>();
         RegisterNewParticipantRpc(userConfig.GetProfileStruct(), NetworkManager.Singleton.LocalClientId);
 
         if (IsOwner) mainMenu.SetSessionManager(this);
 
         if (IsServer)
         {
-            GameObject anchorInstance = GameObject.Instantiate(roomAnchorPrefab);
+            GameObject anchorInstance = Instantiate(roomAnchorPrefab);
             anchorInstance.GetComponent<NetworkObject>().Spawn();
         }
     }
@@ -204,10 +204,13 @@ public class SessionManager : NetworkBehaviour
         if (IsServer)
         {
             GameObject modelPrefab = mainMenu.GetToAddModel(modelType);
+            GameObject localWorkspace = workspaceConfig.GetCurrentWorkspace();
 
             if (modelPrefab != null)
             {
-                GameObject model = Instantiate(modelPrefab, position, Quaternion.identity);
+                //Vector3 spawnPosition = localWorkspace.transform.InverseTransformPoint(position);
+                Vector3 spawnPosition = localWorkspace.transform.position;
+                GameObject model = Instantiate(modelPrefab, spawnPosition, Quaternion.identity);
                 ModelData data = model.GetComponent<ModelData>();
                 data.OwnerId = ownerId;
                 data.ModelId = model.GetInstanceID().ToString();
@@ -215,6 +218,8 @@ public class SessionManager : NetworkBehaviour
                 Debug.Log("Model ID: " + data.ModelId);
                 NetworkObject networkModel = model.GetComponent<NetworkObject>();
                 networkModel.SpawnWithOwnership(ownerId);
+                networkModel.transform.position = position;
+                //networkModel.transform.parent = localWorkspace.transform;
             }
         }
     }

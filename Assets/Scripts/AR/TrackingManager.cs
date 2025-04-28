@@ -103,11 +103,6 @@ public class TrackingManager : MonoBehaviour
         }
     }
 
-    public void AddAnchor(GameObject anchorObject) 
-    {
-        anchorObject.AddComponent<ARAnchor>();
-    }
-
     public void ChangeToAddModel(int modelType)
     {
         Destroy(currentPreview);

@@ -200,6 +200,11 @@ public class WorkspaceConfig : NetworkBehaviour
         drag.ResetToInitial();
     }
 
+    public GameObject GetCurrentWorkspace()
+    {
+        return currentWorkspace.gameObject;
+    }
+
     /**
      *  Creates a workspace plane based on the size of the selected detected plane
      *  @param planePosition Vector3 representing the position of the detected plane selected
@@ -210,7 +215,7 @@ public class WorkspaceConfig : NetworkBehaviour
         // Instantiates the workspace and scales it
         if (IsServer) 
         {
-            currentEditableWorkspace = Instantiate(workspacePrefab, planePosition, planeRotation);
+            currentEditableWorkspace = Instantiate(workspacePrefab);
             Vector2 workspaceSize = new Vector2(currentEditableWorkspace.GetComponent<Renderer>().bounds.size.x, currentEditableWorkspace.GetComponent<Renderer>().bounds.size.z);
             Vector3 ratioSize = new Vector3(planeSize.x / workspaceSize.x, 1.0f, planeSize.y / workspaceSize.y);
             currentEditableWorkspace.transform.localScale = ratioSize;
@@ -219,6 +224,8 @@ public class WorkspaceConfig : NetworkBehaviour
             currentWorkspace = currentEditableWorkspace.GetComponent<NetworkObject>();
 
             currentWorkspace.SpawnWithOwnership(clientId);
+            currentWorkspace.transform.position = planePosition;
+            currentWorkspace.transform.rotation = planeRotation;
 
             // Setups the configuration menu
             isConfiguringWorkspace = true;
