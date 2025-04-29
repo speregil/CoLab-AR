@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-using Niantic.Lightship.SharedAR.Colocalization;
 
 /**
  * Behaviour that controls the network functions of a participant who joined a room
@@ -13,7 +12,7 @@ public class SessionManager : NetworkBehaviour
     //------------------------------------------------------------------------------------------------------
 
     [SerializeField] private GameObject PointerPrefab;
-    [SerializeField] GameObject roomAnchorPrefab;                       // Prefab for the room anchor object
+                          // Prefab for the room anchor object
 
     private Dictionary<string, Color> participants = new Dictionary<string, Color>();
     private GameObject selectedParticipant;
@@ -29,6 +28,7 @@ public class SessionManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
         userConfig = GameObject.Find("OfflineConfig").GetComponent<UserConfiguration>();
         GameObject mainMenuObject = GameObject.Find("UI").transform.Find("MainMenu").gameObject;
         mainMenu = mainMenuObject.GetComponent<MainMenuManager>();
@@ -36,12 +36,6 @@ public class SessionManager : NetworkBehaviour
         RegisterNewParticipantRpc(userConfig.GetProfileStruct(), NetworkManager.Singleton.LocalClientId);
 
         if (IsOwner) mainMenu.SetSessionManager(this);
-
-        if (IsServer)
-        {
-            GameObject anchorInstance = Instantiate(roomAnchorPrefab);
-            anchorInstance.GetComponent<NetworkObject>().Spawn();
-        }
     }
 
     //------------------------------------------------------------------------------------------------------

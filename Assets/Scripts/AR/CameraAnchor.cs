@@ -29,6 +29,7 @@ public class CameraAnchor : NetworkBehaviour
 
     override public void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
         sessionManager = GetComponent<SessionManager>();
         nameplate.GetComponent<Canvas>().worldCamera = Camera.main;
         roomCamera = Camera.main.gameObject;
@@ -40,6 +41,9 @@ public class CameraAnchor : NetworkBehaviour
             nameplate.SetActive(false);
             previousCameraPosition = roomCamera.transform.position;
             previousCameraRotation = roomCamera.transform.rotation.eulerAngles;
+
+            transform.position += roomCamera.transform.position;
+            transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + roomCamera.transform.rotation.eulerAngles);
         }
     }
 

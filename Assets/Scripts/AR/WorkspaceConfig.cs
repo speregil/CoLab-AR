@@ -50,10 +50,10 @@ public class WorkspaceConfig : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        GameObject arConfig = GameObject.Find("ARConfig");
+        GameObject arConfig = GameObject.Find("XR Origin");
         GameObject ui = GameObject.Find("UI");
-        raycastManager = arConfig.GetComponentInChildren<ARRaycastManager>();
-        trackingManager = arConfig.GetComponentInChildren<TrackingManager>();
+        raycastManager = arConfig.GetComponent<ARRaycastManager>();
+        trackingManager = arConfig.GetComponent<TrackingManager>();
         uiManager = ui.GetComponent<UIManager>();
         playerInput = ui.GetComponent<PlayerInput>();
         touchPress = playerInput.actions["TouchPress"];
@@ -117,7 +117,7 @@ public class WorkspaceConfig : NetworkBehaviour
             Vector2 planeSize = new Vector2(hits[0].trackable.gameObject.GetComponent<Renderer>().bounds.size.x, hits[0].trackable.gameObject.GetComponent<Renderer>().bounds.size.z);
             
             // Host call to create the workspace plane
-            InstantiateWorkspace(pose.position,pose.rotation,planeSize, NetworkManager.Singleton.LocalClientId);
+            InstantiateWorkspaceRpc(pose.position,pose.rotation,planeSize, NetworkManager.Singleton.LocalClientId);
 
             // Deactivates plane detection and cleans the screen
             trackingManager.CleanDetectedPlanes();
@@ -210,30 +210,25 @@ public class WorkspaceConfig : NetworkBehaviour
      *  @param planePosition Vector3 representing the position of the detected plane selected
      *  @param planeRotation Quaternion representing the rotation of the detected plane selected
      */
-    public void InstantiateWorkspace(Vector3 planePosition, Quaternion planeRotation, Vector2 planeSize, ulong clientId)
+    [Rpc(SendTo.Server)]
+    public void InstantiateWorkspaceRpc(Vector3 planePosition, Quaternion planeRotation, Vector2 planeSize, ulong clientId)
     {
+        // Spawns the workspace in the room
+        currentEditableWorkspace = Instantiate(workspacePrefab);
+        currentWorkspace = currentEditableWorkspace.GetComponent<NetworkObject>();
+        currentWorkspace.SpawnWithOwnership(clientId);
+
         // Instantiates the workspace and scales it
-        if (IsServer) 
-        {
-            currentEditableWorkspace = Instantiate(workspacePrefab);
-            Vector2 workspaceSize = new Vector2(currentEditableWorkspace.GetComponent<Renderer>().bounds.size.x, currentEditableWorkspace.GetComponent<Renderer>().bounds.size.z);
-            Vector3 ratioSize = new Vector3(planeSize.x / workspaceSize.x, 1.0f, planeSize.y / workspaceSize.y);
-            currentEditableWorkspace.transform.localScale = ratioSize;
+        Vector2 workspaceSize = new Vector2(currentEditableWorkspace.GetComponent<Renderer>().bounds.size.x, currentEditableWorkspace.GetComponent<Renderer>().bounds.size.z);
+        Vector3 ratioSize = new Vector3(planeSize.x / workspaceSize.x, 1.0f, planeSize.y / workspaceSize.y);
+        currentWorkspace.gameObject.transform.localScale = ratioSize;
+        currentWorkspace.gameObject.transform.position = planePosition;
+        currentWorkspace.gameObject.transform.rotation = planeRotation;
 
-            // Spawns the workspace in the room
-            currentWorkspace = currentEditableWorkspace.GetComponent<NetworkObject>();
-
-            currentWorkspace.SpawnWithOwnership(clientId);
-            currentWorkspace.transform.position = planePosition;
-            currentWorkspace.transform.rotation = planeRotation;
-
-            // Setups the configuration menu
-            isConfiguringWorkspace = true;
-            drag = currentEditableWorkspace.GetComponent<DragBehaviour>();
-            drag.SetUIManager(uiManager);
-            //drag.SetOnConfig(true);
-            //SetConfigState(POSITIONXZ_STATE);
-            uiManager.WorkspaceConfiguration();
-        }
+        // Setups the configuration menu
+        isConfiguringWorkspace = true;
+        drag = currentWorkspace.gameObject.GetComponent<DragBehaviour>();
+        drag.SetUIManager(uiManager);   
+        uiManager.WorkspaceConfiguration();
     }
 }
