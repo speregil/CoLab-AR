@@ -38,6 +38,7 @@ public class IntroManager : MonoBehaviour
     {
         uiManager = GetComponent<UIManager>();
         sharedSpaceManager.sharedSpaceManagerStateChanged += OnColocalizationTrackingStateChanged;
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
     }
 
     //------------------------------------------------------------------------------------------------------
@@ -260,9 +261,14 @@ public class IntroManager : MonoBehaviour
         {
             Debug.Log("Tracking Image");
             uiManager.ChangeTrackingState(MainMenuManager.TRACKING_OK_STATE);
-            Instantiate(roomAnchorPrefab,sharedSpaceManager.SharedArOriginObject.transform, false);
             StartSharedSpace();
         }
+    }
+
+    private void OnClientConnectedCallback(ulong clientId)
+    {
+        //GameObject anchor = Instantiate(roomAnchorPrefab, sharedSpaceManager.SharedArOriginObject.transform, false);
+        //anchor.GetComponent<NetworkObject>().Spawn();
     }
 
     /**

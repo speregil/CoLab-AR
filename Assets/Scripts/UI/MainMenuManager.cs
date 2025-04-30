@@ -225,18 +225,29 @@ public class MainMenuManager : MonoBehaviour
 
     public void ActivateCrosshair(bool active, bool bouncy, int type)
     {
-        crosshairImage.SetActive(active);
-        crosshairBehaviour.SetAsBouncy(bouncy);
-        crosshairBehaviour.SetImage(type);
+        if (active)
+        {
+            crosshairImage.SetActive(active);
+            crosshairBehaviour.SetAsBouncy(bouncy);
+            crosshairBehaviour.SetImage(type);
+        }
+        else crosshairImage.SetActive(active);
+ 
     }
 
     public bool IsPositionOnButton(Vector3 position)
     {
         bool onPosition = false;
         onPosition = CheckCorners(mainButton.GetComponent<RectTransform>(), position);
+        Debug.Log("Is on main: " + onPosition);
         onPosition = onPosition || CheckCorners(trackingButton.GetComponent<RectTransform>(), position);
+        Debug.Log("Is on tracking: " + onPosition);
         onPosition = onPosition || CheckCorners(addModelsPanel.GetComponent<RectTransform>(), position);
+        Debug.Log("Is on add: " + onPosition);
         onPosition = onPosition || CheckCorners(deleteModelsBtn.GetComponent<RectTransform>(), position);
+        Debug.Log("Is on delete: " + onPosition);
+        onPosition = onPosition || CheckCorners(moveModelsPanel.GetComponent<RectTransform>(), position);
+        Debug.Log("Is on move: " + onPosition);
 
         return onPosition;
     }

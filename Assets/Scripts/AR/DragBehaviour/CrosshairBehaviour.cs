@@ -54,6 +54,7 @@ public class CrosshairBehaviour : MonoBehaviour
         if (onTouch)
         {
             Vector2 position = touchPosition.ReadValue<Vector2>();
+            Debug.Log(uiManager.IsPositionOnButton(position));
             if (!uiManager.IsPositionOnButton(position))
             {
                 previousPosition = currentPosition;
