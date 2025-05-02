@@ -99,6 +99,8 @@ public class WorkspaceConfig : NetworkBehaviour
 
         configBtn = uiManager.GetWorkspaceConfigButton("ScaleBtn", true);
         configBtn.onClick.AddListener(() => SetConfigState(SCALE_STATE));
+
+        uiManager.SetOnWorkspaceConfig(true);
     }
 
     /**

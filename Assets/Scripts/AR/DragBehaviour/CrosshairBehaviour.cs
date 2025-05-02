@@ -54,13 +54,14 @@ public class CrosshairBehaviour : MonoBehaviour
         if (onTouch)
         {
             Vector2 position = touchPosition.ReadValue<Vector2>();
-            Debug.Log(uiManager.IsPositionOnButton(position));
             if (!uiManager.IsPositionOnButton(position))
             {
+                Debug.Log("Fair Click");
                 previousPosition = currentPosition;
                 currentPosition = position;
                 gameObject.transform.position = currentPosition;
             }
+            else Debug.Log("On GUI");
         }
     }
 

@@ -82,6 +82,7 @@ public class MainMenuManager : MonoBehaviour
     private InputAction touchPress;
     private InputAction touchPosition;
     private bool onMainMenu = false;                                            // Flag to know if the main menu is open
+    private bool onWorkspaceConfig = false;                                     // Flag to know if the workspace configuration menu is open
     private int currentInteractionState = INTERACTION_STATE_POINT;              // Current interaction state with digital objects
 
 
@@ -239,15 +240,10 @@ public class MainMenuManager : MonoBehaviour
     {
         bool onPosition = false;
         onPosition = CheckCorners(mainButton.GetComponent<RectTransform>(), position);
-        Debug.Log("Is on main: " + onPosition);
         onPosition = onPosition || CheckCorners(trackingButton.GetComponent<RectTransform>(), position);
-        Debug.Log("Is on tracking: " + onPosition);
         onPosition = onPosition || CheckCorners(addModelsPanel.GetComponent<RectTransform>(), position);
-        Debug.Log("Is on add: " + onPosition);
         onPosition = onPosition || CheckCorners(deleteModelsBtn.GetComponent<RectTransform>(), position);
-        Debug.Log("Is on delete: " + onPosition);
         onPosition = onPosition || CheckCorners(moveModelsPanel.GetComponent<RectTransform>(), position);
-        Debug.Log("Is on move: " + onPosition);
 
         return onPosition;
     }
@@ -264,6 +260,11 @@ public class MainMenuManager : MonoBehaviour
         return false;
     }
 
+    public void SetOnWorkspaceConfig(bool onConfig)
+    {
+        onWorkspaceConfig = onConfig;
+    }
+
     //------------------------------------------------------------------------------------------------------
     // UI Open Callbacks
     //------------------------------------------------------------------------------------------------------
@@ -273,11 +274,14 @@ public class MainMenuManager : MonoBehaviour
      */
     public void OpenMainMenu()
     {
-        mainMenu.SetActive(true);
-        mainButtonBtn.image.sprite = closeButtonTexture;
-        mainButtonBtn.onClick.RemoveAllListeners();
-        mainButtonBtn.onClick.AddListener(CloseMainMenu);
-        onMainMenu = true;
+        if (!onWorkspaceConfig)
+        {
+            mainMenu.SetActive(true);
+            mainButtonBtn.image.sprite = closeButtonTexture;
+            mainButtonBtn.onClick.RemoveAllListeners();
+            mainButtonBtn.onClick.AddListener(CloseMainMenu);
+            onMainMenu = true;
+        }
     }
 
     /**

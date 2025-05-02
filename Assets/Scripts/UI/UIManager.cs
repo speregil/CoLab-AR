@@ -142,6 +142,7 @@ public class UIManager : MonoBehaviour
         workspaceConfigMenu.SetActive(false);
         ActivateCrosshair(false,false,1);
         mainMenu.SetActive(true);
+        SetOnWorkspaceConfig(false);
     }
 
     /**
@@ -190,8 +191,13 @@ public class UIManager : MonoBehaviour
     {
         bool isOnButton = false;
         isOnButton = mainMenuManager.IsPositionOnButton(position);
-        isOnButton = mainMenuManager.CheckCorners(workspaceConfigMenu.transform.GetChild(0).GetComponent<RectTransform>(), position);
+        isOnButton = isOnButton || mainMenuManager.CheckCorners(workspaceConfigMenu.transform.GetChild(0).GetComponent<RectTransform>(), position);
         return isOnButton;
+    }
+
+    public void SetOnWorkspaceConfig(bool onConfig)
+    {
+        mainMenuManager.SetOnWorkspaceConfig(onConfig);
     }
 
     public void LeaveRoom()
