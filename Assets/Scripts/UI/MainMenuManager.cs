@@ -141,6 +141,12 @@ public class MainMenuManager : MonoBehaviour
                 SessionManager selectedParticipantManager = selectedParticipant.GetComponentInParent<SessionManager>();
                 OpenParticipantOptions(sessionManager.GetUsernameById(selectedParticipantManager.OwnerClientId));
             }
+            else if (hit.transform.tag == "model")
+            {
+                GameObject selectedModel = hit.transform.gameObject;
+                ModelData modelData = selectedModel.GetComponent<ModelData>();
+                Debug.Log(modelData.ModelId);
+            }
         }
     }
 

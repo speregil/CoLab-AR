@@ -193,11 +193,9 @@ public class SessionManager : NetworkBehaviour
     [Rpc(SendTo.Server)]
     private void SpawnPingRpc(Vector3 position, ulong clientID)
     {
-        if (IsHost) { 
-            GameObject pointerInstance = Instantiate(PointerPrefab, position, Quaternion.identity);
-            NetworkObject pointerNetworkObject = pointerInstance.GetComponent<NetworkObject>();
-            pointerNetworkObject.SpawnWithOwnership(clientID);
-        }
+        GameObject pointerInstance = Instantiate(PointerPrefab, position, Quaternion.identity);
+        NetworkObject pointerNetworkObject = pointerInstance.GetComponent<NetworkObject>();
+        pointerNetworkObject.SpawnWithOwnership(clientID);
     }
 
     [Rpc(SendTo.Server)]

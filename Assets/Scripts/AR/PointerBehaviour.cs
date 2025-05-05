@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -17,9 +15,8 @@ public class PointerBehaviour : NetworkBehaviour
 
     private void Update()
     {
-        if (IsOwner) { 
+        if (IsOwner) {
             aliveFor += Time.deltaTime;
-            Debug.Log(aliveFor);
             if (aliveFor >= lifespan)
             {
                 DespawnPointerRpc();
