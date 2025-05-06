@@ -1,32 +1,25 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class PointerBehaviour : NetworkBehaviour
+public class PointerBehaviour : MonoBehaviour
 {
     [SerializeField] private float lifespan;
     private NetworkObject no;
     private float aliveFor = 0.0f;
 
-    public override void OnNetworkSpawn()
+    void Start()
     {
         no = GetComponent<NetworkObject>();
         aliveFor = 0.0f;
     }
 
-    private void Update()
+    void Update()
     {
-        if (IsOwner) {
-            aliveFor += Time.deltaTime;
-            if (aliveFor >= lifespan)
-            {
-                DespawnPointerRpc();
-            }
+        
+        aliveFor += Time.deltaTime;
+        if (aliveFor >= lifespan)
+        {
+            Destroy(gameObject);
         }
-    }
-
-    [Rpc(SendTo.Server)]
-    private void DespawnPointerRpc()
-    {
-        no.Despawn(true);
     }
 }

@@ -146,6 +146,7 @@ public class IntroManager : MonoBehaviour
         createNameInputField.text = "";
         isHost = true;
         uiManager.AcceptCreateRoom();
+        uiManager.SetOnWorkspaceConfig(true);
         ConfigureSharedSpace();
     }
 

@@ -23,7 +23,6 @@ public class SessionManager : NetworkBehaviour
     private WorkspaceConfig workspaceConfig;
 
     private int defaultParticipantCounter = 1;
-    private SharedSpaceManager sharedSpaceManager;
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
@@ -36,7 +35,6 @@ public class SessionManager : NetworkBehaviour
         GameObject mainMenuObject = GameObject.Find("UI").transform.Find("MainMenu").gameObject;
         mainMenu = mainMenuObject.GetComponent<MainMenuManager>();
         workspaceConfig = GetComponent<WorkspaceConfig>();
-        sharedSpaceManager = GameObject.Find("XR Origin").GetComponent<SharedSpaceManager>();
         RegisterNewParticipantRpc(userConfig.GetProfileStruct(), NetworkManager.Singleton.LocalClientId);
 
         if (IsOwner)
@@ -111,10 +109,10 @@ public class SessionManager : NetworkBehaviour
 
     public void PingParticipant()
     {
-        Vector3 position = selectedParticipant.transform.position;
-        position.y = position.y + 0.5f;
+        SessionManager selectedParticipantManager = selectedParticipant.GetComponentInParent<SessionManager>();
+        string participantUsername = GetUsernameById(selectedParticipantManager.OwnerClientId);
         mainMenu.CloseParticipantOptions();
-        SpawnPingRpc(position, NetworkManager.Singleton.LocalClientId);
+        ClientSpawnPingRpc(participantUsername);
     }
 
     public void SelectParticipant(GameObject participant)
@@ -129,6 +127,11 @@ public class SessionManager : NetworkBehaviour
         if (!IsOwner) return;
 
         selectedParticipant = null;
+    }
+
+    public UserConfiguration GetParticipantConfiguration()
+    {
+        return userConfig;
     }
 
     public string GetUsernameById(ulong id)
@@ -190,25 +193,37 @@ public class SessionManager : NetworkBehaviour
             Debug.Log("Participant Shutdown");
     }
 
-    [Rpc(SendTo.Server)]
-    private void SpawnPingRpc(Vector3 position, ulong clientID)
+    [Rpc(SendTo.Everyone)]
+    private void ClientSpawnPingRpc(string username)
     {
-        GameObject pointerInstance = Instantiate(PointerPrefab, position, Quaternion.identity);
-        NetworkObject pointerNetworkObject = pointerInstance.GetComponent<NetworkObject>();
-        pointerNetworkObject.SpawnWithOwnership(clientID);
+        Debug.Log("Pinged participant: " + username);
+        if (!IsOwner) return;
+
+        
+        GameObject[] participants = GameObject.FindGameObjectsWithTag("anchor");
+        foreach (GameObject participant in participants)
+        {
+            SessionManager participantManager = participant.GetComponentInParent<SessionManager>();
+            string participantUsername = GetUsernameById(participantManager.OwnerClientId);
+            if (participantUsername == username)
+            {
+                Debug.Log("Found Participant");
+                GameObject pointerInstance = Instantiate(PointerPrefab, participant.transform.position, Quaternion.identity);
+                pointerInstance.transform.SetParent(participant.transform);
+                pointerInstance.transform.localPosition = new Vector3(0, 0.5f, 0);
+            }
+        }
     }
 
     [Rpc(SendTo.Server)]
     public void AddModelRpc(int modelType, Vector3 position, ulong ownerId)
     {
-        if (IsServer)
-        {
-            GameObject modelPrefab = mainMenu.GetToAddModel(modelType);
-            GameObject localWorkspace = workspaceConfig.GetCurrentWorkspace();
+        Debug.Log(gameObject.GetInstanceID().ToString());
+         GameObject modelPrefab = mainMenu.GetToAddModel(modelType);
+         GameObject localWorkspace = workspaceConfig.GetCurrentWorkspace();
 
             if (modelPrefab != null)
             {
-                //Vector3 spawnPosition = localWorkspace.transform.InverseTransformPoint(position);
                 Vector3 spawnPosition = localWorkspace.transform.position;
                 GameObject model = Instantiate(modelPrefab, spawnPosition, Quaternion.identity);
                 ModelData data = model.GetComponent<ModelData>();
@@ -221,7 +236,6 @@ public class SessionManager : NetworkBehaviour
                 networkModel.transform.position = position;
                 //networkModel.transform.parent = localWorkspace.transform;
             }
-        }
     }
 
     [Rpc(SendTo.Server)]

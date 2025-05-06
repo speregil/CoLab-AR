@@ -48,8 +48,6 @@ public class WorkspaceConfig : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (!IsOwner) return;
-
         GameObject arConfig = GameObject.Find("XR Origin");
         GameObject ui = GameObject.Find("UI");
         raycastManager = arConfig.GetComponent<ARRaycastManager>();
@@ -59,7 +57,9 @@ public class WorkspaceConfig : NetworkBehaviour
         touchPress = playerInput.actions["TouchPress"];
         touchPosition = playerInput.actions["TouchPosition"];
         ConfigureWorspaceMenu();
-        DetectingPlanes(IsServer);
+        FindLocalWorkspace();
+
+        if (IsOwner && IsServer) DetectingPlanes(true);
     }
 
     void Update()
@@ -99,8 +99,6 @@ public class WorkspaceConfig : NetworkBehaviour
 
         configBtn = uiManager.GetWorkspaceConfigButton("ScaleBtn", true);
         configBtn.onClick.AddListener(() => SetConfigState(SCALE_STATE));
-
-        uiManager.SetOnWorkspaceConfig(true);
     }
 
     /**
@@ -152,7 +150,7 @@ public class WorkspaceConfig : NetworkBehaviour
     public void DetectingPlanes(bool isDetecting)
     {
         isDetectingPlanes = isDetecting;
-        trackingManager.EnableTracking(isDetecting);
+        trackingManager.EnableTracking(isDetecting);  
     }
 
     /**
@@ -205,6 +203,16 @@ public class WorkspaceConfig : NetworkBehaviour
     public GameObject GetCurrentWorkspace()
     {
         return currentWorkspace.gameObject;
+    }
+
+    public void FindLocalWorkspace()
+    {
+        GameObject[] results = GameObject.FindGameObjectsWithTag("workspace");
+        if (results.Length > 0)
+        {
+            currentEditableWorkspace = results[0];
+            currentWorkspace = currentEditableWorkspace.GetComponent<NetworkObject>();
+        }
     }
 
     /**
