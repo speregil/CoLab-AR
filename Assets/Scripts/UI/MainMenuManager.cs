@@ -145,7 +145,7 @@ public class MainMenuManager : MonoBehaviour
             {
                 GameObject selectedModel = hit.transform.gameObject;
                 ModelData modelData = selectedModel.GetComponent<ModelData>();
-                Debug.Log(modelData.ModelId);
+                sessionManager.ClientSpawnModelPingRpc(modelData.GetModelID());
             }
         }
     }
@@ -527,7 +527,7 @@ public class MainMenuManager : MonoBehaviour
         if(modelToDelete != null) 
         { 
             Debug.Log("You are going to delete: " + modelToDelete.name);
-            sessionManager.DeleteModelRpc(modelToDelete.GetComponent<ModelData>().ModelId);
+            sessionManager.DeleteModelRpc(modelToDelete.GetComponent<ModelData>().GetModelID());
         }
     }
 

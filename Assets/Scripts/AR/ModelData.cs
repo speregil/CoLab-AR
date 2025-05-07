@@ -1,28 +1,21 @@
 using UnityEngine;
 using Unity.Netcode;
 
+
 public class ModelData : NetworkBehaviour
 {
-    private string modelId;
-    private ulong ownerId;
-
-    private GameObject localWorkspace;
-
-    public override void OnNetworkSpawn()
+   private NetworkVariable<int> modelId = new NetworkVariable<int>();
+    
+    public void UpdateModelID(int id)
     {
-        localWorkspace = GameObject.FindWithTag("workspace");
-        transform.position = localWorkspace.transform.position;
+        if (IsServer)
+        {
+            modelId.Value = id;
+        }
     }
 
-    public string ModelId
+    public int GetModelID()
     {
-        get { return modelId; }
-        set { modelId = value; }
-    }
-
-    public ulong OwnerId
-    {
-        get { return ownerId; }
-        set { ownerId = value; }
+        return modelId.Value;
     }
 }
