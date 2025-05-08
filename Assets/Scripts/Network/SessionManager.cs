@@ -255,7 +255,8 @@ public class SessionManager : NetworkBehaviour
             GameObject model = Instantiate(modelPrefab);
             int modelId = model.GetInstanceID();
             NetworkObject networkModel = model.GetComponent<NetworkObject>();
-            networkModel.SpawnWithOwnership(ownerId);
+            //networkModel.SpawnWithOwnership(ownerId);
+            networkModel.Spawn();
             model.name = "UserModel" + modelId;
             model.GetComponent<ModelData>().UpdateModelID(modelId);
         }

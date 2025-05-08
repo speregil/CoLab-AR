@@ -42,6 +42,7 @@ public class TrackingManager : MonoBehaviour
     private ARRaycastManager raycastManager;    // Reference to the ARRaycastManager component
 
     private Vector3 hitPosition;                // Pose of the hit point of the raycast
+    private Vector3 previousHitPosition;
     private bool onAddModel = false;            // Flag to know if the user is currently adding a model to the scene
     private bool onDeleteModel = false;         // Flag to know if the user is currently deleting a model from the scene
     private bool onMoveModel = false;
@@ -66,6 +67,7 @@ public class TrackingManager : MonoBehaviour
         planeManager = GetComponent<ARPlaneManager>();
         raycastManager = GetComponent<ARRaycastManager>();
         previousYPosition = rayOrigin.y;
+        previousHitPosition = Vector3.zero;
     }
 
     void Update()
@@ -200,6 +202,7 @@ public class TrackingManager : MonoBehaviour
             if (hit.transform.gameObject.tag.Equals("workspace") || hit.transform.gameObject.tag.Equals("model"))
             {
                 hitPosition = hit.point;
+                Vector3 posDiff = hitPosition - previousHitPosition;
                 if (onAddModel) { 
                     if (currentPreview == null)
                     {
@@ -214,7 +217,8 @@ public class TrackingManager : MonoBehaviour
                 {
                     if(onXZ)
                     {
-                        Vector3 newPosition = new Vector3(hitPosition.x, currentSelection.transform.position.y, hitPosition.z);
+                        Vector3 currentPos = currentSelection.transform.position;
+                        Vector3 newPosition = new Vector3(currentPos.x + posDiff.x, currentPos.y, currentPos.z + posDiff.z);
                         currentSelection.transform.position = newPosition;
                     }
                     else
@@ -237,6 +241,7 @@ public class TrackingManager : MonoBehaviour
                         currentSelection = null;
                     }
                 }
+                previousHitPosition = hitPosition;
             }
         }
         else
