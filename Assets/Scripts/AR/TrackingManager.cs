@@ -176,11 +176,15 @@ public class TrackingManager : MonoBehaviour
         if (currentSelection != null)
         {
             onSelectedModel = isSelected;
+            ModelData modelData = currentSelection.GetComponent<ModelData>();
             if (!isSelected)
             {
                 currentSelection.GetComponent<MeshRenderer>().material = normalModelMaterial;
+                modelData.ChangePingStatusRpc(false);
                 currentSelection = null;
             }
+            else modelData.ChangePingStatusRpc(true);
+            
             return true;
         }
         return false;

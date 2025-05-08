@@ -47,13 +47,13 @@ public class SessionManager : NetworkBehaviour
     //------------------------------------------------------------------------------------------------------
     // Functions
     //------------------------------------------------------------------------------------------------------
-    
+
     public MainMenuManager GetMainMenuReference()
     {
         return mainMenu;
     }
 
-    public Dictionary<string,Color> GetParticipantsList()
+    public Dictionary<string, Color> GetParticipantsList()
     {
         return participants;
     }
@@ -87,7 +87,7 @@ public class SessionManager : NetworkBehaviour
 
     public void SetGazeActive(bool active)
     {
-        if(!IsOwner) return;
+        if (!IsOwner) return;
 
         if (selectedParticipant != null)
         {
@@ -179,8 +179,8 @@ public class SessionManager : NetworkBehaviour
     {
         string participantName = userProfile.username.ToString() + ":" + clientID;
         string removalKey = "";
-        foreach(string name in participants.Keys)
-        { 
+        foreach (string name in participants.Keys)
+        {
             if (name == participantName)
             {
                 removalKey = name;
@@ -189,15 +189,13 @@ public class SessionManager : NetworkBehaviour
         }
         participants.Remove(removalKey);
 
-        if(IsOwner)
+        if (IsOwner)
             Debug.Log("Participant Shutdown");
     }
 
     [Rpc(SendTo.Everyone)]
     private void ClientSpawnParticipantPingRpc(string username)
     {
-        Debug.Log("Pinged participant: " + username);
-        
         GameObject[] participants = GameObject.FindGameObjectsWithTag("anchor");
         foreach (GameObject participant in participants)
         {
@@ -205,7 +203,6 @@ public class SessionManager : NetworkBehaviour
             string participantUsername = GetUsernameById(participantManager.OwnerClientId);
             if (participantUsername == username)
             {
-                Debug.Log("Found Participant");
                 GameObject pointerInstance = Instantiate(PointerPrefab, participant.transform.position, Quaternion.identity);
                 pointerInstance.transform.SetParent(participant.transform);
                 pointerInstance.transform.position = new Vector3(participant.transform.position.x, participant.transform.position.y + 0.5f, participant.transform.position.z);
@@ -213,11 +210,9 @@ public class SessionManager : NetworkBehaviour
         }
     }
 
-    [Rpc(SendTo.Everyone)]
-    public void ClientSpawnModelPingRpc(int modelID)
+    [Rpc(SendTo.Server)]
+    public void AskModelPingRpc(int modelID)
     {
-        Debug.Log("Pinged model: " + modelID);
-
         GameObject[] models = GameObject.FindGameObjectsWithTag("model");
         foreach (GameObject model in models)
         {
@@ -225,8 +220,24 @@ public class SessionManager : NetworkBehaviour
             int dataID = data.GetModelID();
             if (dataID == modelID)
             {
-                Debug.Log("Found Model");
+                data.SetPingOn(true);
+                ClientSpawnModelPingRpc(modelID);
+            }
+        }
+    }
+
+    [Rpc(SendTo.Everyone)]
+    public void ClientSpawnModelPingRpc(int modelID)
+    {
+        GameObject[] models = GameObject.FindGameObjectsWithTag("model");
+        foreach (GameObject model in models)
+        {
+            ModelData data = model.GetComponent<ModelData>();
+            int dataID = data.GetModelID();
+            if (dataID == modelID)
+            {
                 GameObject pointerInstance = Instantiate(PointerPrefab, model.transform.position, Quaternion.identity);
+                pointerInstance.GetComponent<PointerBehaviour>().SetPointedModel(data);
                 pointerInstance.transform.SetParent(model.transform);
                 pointerInstance.transform.position = new Vector3(model.transform.position.x, model.transform.position.y + 0.5f, model.transform.position.z);
             }
@@ -241,15 +252,12 @@ public class SessionManager : NetworkBehaviour
 
         if (modelPrefab != null)
         {
-            Vector3 spawnPosition = localWorkspace.transform.position;
-            GameObject model = Instantiate(modelPrefab, spawnPosition, Quaternion.identity);
+            GameObject model = Instantiate(modelPrefab);
             int modelId = model.GetInstanceID();
             NetworkObject networkModel = model.GetComponent<NetworkObject>();
             networkModel.SpawnWithOwnership(ownerId);
-            networkModel.transform.position = position;
             model.name = "UserModel" + modelId;
             model.GetComponent<ModelData>().UpdateModelID(modelId);
-            //networkModel.transform.parent = localWorkspace.transform;
         }
     }
 

@@ -83,6 +83,7 @@ public class MainMenuManager : MonoBehaviour
     private InputAction touchPosition;
     private bool onMainMenu = false;                                            // Flag to know if the main menu is open
     private bool onWorkspaceConfig = false;                                     // Flag to know if the workspace configuration menu is open
+    private bool canPing = true;
     private int currentInteractionState = INTERACTION_STATE_POINT;              // Current interaction state with digital objects
 
 
@@ -145,7 +146,9 @@ public class MainMenuManager : MonoBehaviour
             {
                 GameObject selectedModel = hit.transform.gameObject;
                 ModelData modelData = selectedModel.GetComponent<ModelData>();
-                sessionManager.ClientSpawnModelPingRpc(modelData.GetModelID());
+                if(canPing && !modelData.IsPingOn())
+                    sessionManager.AskModelPingRpc(modelData.GetModelID());
+                else Debug.Log("Cannot Ping");
             }
         }
     }
@@ -271,6 +274,16 @@ public class MainMenuManager : MonoBehaviour
         onWorkspaceConfig = onConfig;
     }
 
+    public void SetCanPing(bool canPing)
+    {
+        this.canPing = canPing;
+    }
+
+    public bool CanUIPing()
+    {
+        return canPing;
+    }
+
     //------------------------------------------------------------------------------------------------------
     // UI Open Callbacks
     //------------------------------------------------------------------------------------------------------
@@ -287,6 +300,7 @@ public class MainMenuManager : MonoBehaviour
             mainButtonBtn.onClick.RemoveAllListeners();
             mainButtonBtn.onClick.AddListener(CloseMainMenu);
             onMainMenu = true;
+            canPing = false;
         }
     }
 
@@ -406,6 +420,7 @@ public class MainMenuManager : MonoBehaviour
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(OpenMainMenu);
         onMainMenu = false;
+        canPing = true;
     }
 
     /**
