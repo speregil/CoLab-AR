@@ -408,7 +408,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1137683391
+  GlobalObjectIdHash: 2815689013
   InScenePlacedSourceGlobalObjectIdHash: 1137683391
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -443,6 +443,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PointerPrefab: {fileID: 6382456511583307689, guid: a939d1411ca85c74dbf6c2a8e46f9c9d, type: 3}
+  annotationPrefab: {fileID: 218422588205698152, guid: 0fb9eca0dfa977c4a83945d6953d2e40, type: 3}
   roomAnchorPrefab: {fileID: 2591087716411460047, guid: ecadfdc9ee3d71a4b81ff809660b53d2, type: 3}
 --- !u!114 &-5087816497760622788
 MonoBehaviour:

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using Niantic.Lightship.SharedAR.Colocalization;
+using TMPro;
 
 /**
  * Behaviour that controls the network functions of a participant who joined a room
@@ -13,7 +14,8 @@ public class SessionManager : NetworkBehaviour
     //------------------------------------------------------------------------------------------------------
 
     [SerializeField] private GameObject PointerPrefab;
-    [SerializeField] GameObject roomAnchorPrefab;
+    [SerializeField] private GameObject annotationPrefab;
+    [SerializeField] private GameObject roomAnchorPrefab;
     // Prefab for the room anchor object
 
     private Dictionary<string, Color> participants = new Dictionary<string, Color>();
@@ -239,7 +241,7 @@ public class SessionManager : NetworkBehaviour
                 GameObject pointerInstance = Instantiate(PointerPrefab, model.transform.position, Quaternion.identity);
                 pointerInstance.GetComponent<PointerBehaviour>().SetPointedModel(data);
                 pointerInstance.transform.SetParent(model.transform);
-                pointerInstance.transform.position = new Vector3(model.transform.position.x, model.transform.position.y + 0.5f, model.transform.position.z);
+                pointerInstance.transform.position = new Vector3(model.transform.position.x, model.transform.position.y + 0.25f, model.transform.position.z);
             }
         }
     }
@@ -277,5 +279,16 @@ public class SessionManager : NetworkBehaviour
         {
             Debug.Log("Model not found: " + modelID);
         }
+    }
+
+    [Rpc(SendTo.Server)]
+    public void AddAnnotationRpc(string annotation)
+    {
+        GameObject instance = Instantiate(annotationPrefab);
+        instance.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 1.0f);
+        NetworkObject no = instance.GetComponent<NetworkObject>();
+        no.Spawn();
+        AnnotationData data = instance.GetComponent<AnnotationData>();
+        data.UpdateAnnotation(annotation);
     }
 }

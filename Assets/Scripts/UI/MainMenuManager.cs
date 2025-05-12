@@ -70,6 +70,7 @@ public class MainMenuManager : MonoBehaviour
 
     [Header("Annotation Options")]
     [SerializeField] private GameObject addAnnotationPanel;
+    [SerializeField] private TMP_InputField annotationInput;
 
     [Header("Participant Options")]
 
@@ -620,6 +621,17 @@ public class MainMenuManager : MonoBehaviour
     public void OnChangeModelMovement(bool active)
     {
         trackingManager.SetXZModelMovement(active);
+    }
+
+    public void OnPlaceAnnotation()
+    {
+        string text = annotationInput.text.Trim();
+        
+        if (text != "")
+        {
+            sessionManager.AddAnnotationRpc(annotationInput.text);
+            annotationInput.text = "";
+        }
     }
 
     public void OnLeaveRoom()
