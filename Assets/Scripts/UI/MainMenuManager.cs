@@ -68,6 +68,9 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject deleteModelsBtn;
     private Button selectButtonBtn;
 
+    [Header("Annotation Options")]
+    [SerializeField] private GameObject addAnnotationPanel;
+
     [Header("Participant Options")]
 
     [SerializeField] private GameObject participantOptions;                     // Reference to the participant options panel
@@ -387,6 +390,15 @@ public class MainMenuManager : MonoBehaviour
         mainButtonBtn.onClick.AddListener(CloseDeleteModelsPanel);
     }
 
+    public void OpenAddAnnotationPanel()
+    {
+        addAnnotationPanel.SetActive(true);
+        objectsPanel.SetActive(false);
+        mainButtonBtn.image.sprite = backButtonTexture;
+        mainButtonBtn.onClick.RemoveAllListeners();
+        mainButtonBtn.onClick.AddListener(CloseAddAnnotationPanel);
+    }
+
     public void OpenSessionPanel()
     {
         mainMenu.SetActive(false);
@@ -491,6 +503,12 @@ public class MainMenuManager : MonoBehaviour
         crosshairBehaviour.ResetCrosshair();
         ActivateCrosshair(false, false,0);
         OpenModelsOptions();
+    }
+
+    public void CloseAddAnnotationPanel()
+    {
+        addAnnotationPanel.SetActive(false);
+        OpenObjectsPanel();
     }
 
     public void CloseSessionPanel()
