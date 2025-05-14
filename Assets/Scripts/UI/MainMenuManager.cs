@@ -154,6 +154,12 @@ public class MainMenuManager : MonoBehaviour
                     sessionManager.AskModelPingRpc(modelData.GetModelID());
                 else Debug.Log("Cannot Ping");
             }
+            else if(hit.transform.tag == "annotation")
+            {
+                GameObject selectedAnnotation = hit.transform.gameObject;
+                AnnotationData annotationData = selectedAnnotation.GetComponent<AnnotationData>();
+                annotationData.LockAnnotation(!annotationData.IsLocked());
+            }
         }
     }
 
