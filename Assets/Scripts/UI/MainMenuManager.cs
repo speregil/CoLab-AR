@@ -395,6 +395,8 @@ public class MainMenuManager : MonoBehaviour
     {
         addAnnotationPanel.SetActive(true);
         objectsPanel.SetActive(false);
+        ActivateCrosshair(true, false, 0);
+        trackingManager.ActivateAnnotation(true);
         mainButtonBtn.image.sprite = backButtonTexture;
         mainButtonBtn.onClick.RemoveAllListeners();
         mainButtonBtn.onClick.AddListener(CloseAddAnnotationPanel);
@@ -509,6 +511,8 @@ public class MainMenuManager : MonoBehaviour
     public void CloseAddAnnotationPanel()
     {
         addAnnotationPanel.SetActive(false);
+        ActivateCrosshair(false, false, 0);
+        trackingManager.ActivateAnnotation(false);
         OpenObjectsPanel();
     }
 
@@ -629,7 +633,7 @@ public class MainMenuManager : MonoBehaviour
         
         if (text != "")
         {
-            sessionManager.AddAnnotationRpc(annotationInput.text);
+            sessionManager.AddAnnotationRpc(annotationInput.text, trackingManager.GetAnnotationPosition());
             annotationInput.text = "";
         }
     }

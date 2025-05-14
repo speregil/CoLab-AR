@@ -5,7 +5,7 @@ using TMPro;
 
 public class AnnotationData : NetworkBehaviour
 {
-    private NetworkVariable<FixedString128Bytes> annotation = new NetworkVariable<FixedString128Bytes>();
+    private NetworkVariable<FixedString128Bytes> annotation = new NetworkVariable<FixedString128Bytes>("");
 
     private GameObject roomCamera;
     private TMP_Text annotationText;
@@ -15,6 +15,11 @@ public class AnnotationData : NetworkBehaviour
         roomCamera = Camera.main.gameObject;
         annotationText = transform.GetChild(0).GetComponentInChildren<TMP_Text>();
         annotation.OnValueChanged += OnAnnotationChanged;
+
+        if(annotation.Value.ToString() != "")
+        {
+            annotationText.text = annotation.Value.ToString();
+        }
     }
 
     void Update()

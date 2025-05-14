@@ -43,11 +43,13 @@ public class TrackingManager : MonoBehaviour
 
     private Vector3 hitPosition;                // Pose of the hit point of the raycast
     private Vector3 previousHitPosition;
+    private Vector3 annotationPosition;
     private bool onAddModel = false;            // Flag to know if the user is currently adding a model to the scene
     private bool onDeleteModel = false;         // Flag to know if the user is currently deleting a model from the scene
     private bool onMoveModel = false;
     private bool onSelectedModel = false;
     private bool onXZ = true;
+    private bool onAddAnnotation = false;
     private GameObject toAddModelPrev;          // Reference to the model being added to the scene
     private int toAddModel;
     private GameObject currentPreview = null;
@@ -76,6 +78,10 @@ public class TrackingManager : MonoBehaviour
             previousYPosition = rayOrigin.y;
             rayOrigin = uiManager.GetCrosshairPosition();
             TrackingModelsRaycast();
+        }
+        else if (onAddAnnotation)
+        {
+            TrackingAnnotationRaycast();
         }
     }
 
@@ -173,6 +179,11 @@ public class TrackingManager : MonoBehaviour
         if (!isActive) resetModelsRaycast();
     }
 
+    public void ActivateAnnotation(bool isActive)
+    {
+        onAddAnnotation = isActive;
+    }
+
     public bool SelectCurrentModel(bool isSelected)
     {
         if (currentSelection != null)
@@ -251,6 +262,12 @@ public class TrackingManager : MonoBehaviour
         }
     }
 
+    private void TrackingAnnotationRaycast()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(uiManager.GetCrosshairPosition());
+        annotationPosition = ray.GetPoint(0.5f);
+    }
+
     public int GetToAddModelType()
     {
         return currentPreview != null ? toAddModel : -1;
@@ -259,6 +276,11 @@ public class TrackingManager : MonoBehaviour
     public Vector3 GetHitPosition()
     {
         return hitPosition;
+    }
+
+    public Vector3 GetAnnotationPosition()
+    {
+        return annotationPosition;
     }
 
     public GameObject GetCurrentSelection()

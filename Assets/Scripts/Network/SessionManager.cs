@@ -282,10 +282,10 @@ public class SessionManager : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server)]
-    public void AddAnnotationRpc(string annotation)
+    public void AddAnnotationRpc(string annotation, Vector3 position)
     {
         GameObject instance = Instantiate(annotationPrefab);
-        instance.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 1.0f);
+        instance.transform.position = position;
         NetworkObject no = instance.GetComponent<NetworkObject>();
         no.Spawn();
         AnnotationData data = instance.GetComponent<AnnotationData>();
