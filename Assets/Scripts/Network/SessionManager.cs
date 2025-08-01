@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-using Niantic.Lightship.SharedAR.Colocalization;
-using TMPro;
 
 /**
  * Behaviour that controls the network functions of a participant who joined a room
@@ -13,18 +11,17 @@ public class SessionManager : NetworkBehaviour
     // Fields
     //------------------------------------------------------------------------------------------------------
 
-    [SerializeField] private GameObject PointerPrefab;
-    [SerializeField] private GameObject annotationPrefab;
-    [SerializeField] private GameObject roomAnchorPrefab;
-    // Prefab for the room anchor object
+    [SerializeField] private GameObject PointerPrefab;                                  // Prefab for the pointer object
+    [SerializeField] private GameObject annotationPrefab;                               // Prefab for the annotation object  
+    [SerializeField] private GameObject roomAnchorPrefab;                               // Prefab for the room anchor object
 
-    private Dictionary<string, Color> participants = new Dictionary<string, Color>();
-    private GameObject selectedParticipant;
-    private UserConfiguration userConfig;
-    private MainMenuManager mainMenu;
-    private WorkspaceConfig workspaceConfig;
+    private Dictionary<string, Color> participants = new Dictionary<string, Color>();   // Dictionary with the information of the current connected participants
+    private GameObject selectedParticipant;                                             // Reference to the current selected participant for interactions
+    private UserConfiguration userConfig;                                               // Reference of the current user's configuration data
+    private MainMenuManager mainMenu;                                                   // Reference to the main menu manager
+    private WorkspaceConfig workspaceConfig;                                            // Reference to the workspace configuration manager
 
-    private int defaultParticipantCounter = 1;
+    private int defaultParticipantCounter = 1;                                          // Counter for the default participant names in case no username is provided
 
     //------------------------------------------------------------------------------------------------------
     // Monobehaviour Functions
@@ -50,16 +47,27 @@ public class SessionManager : NetworkBehaviour
     // Functions
     //------------------------------------------------------------------------------------------------------
 
+    /**
+     * Returns the reference to the main menu manager
+     * @return MainMenuManager The main menu manager component of the app
+    */
     public MainMenuManager GetMainMenuReference()
     {
         return mainMenu;
     }
 
+    /**
+     * Returns the list of participants currently connected to the room
+     * @return Dictionary<string, Color> A dictionary with the usernames as keys and the participant colors as values
+     */
     public Dictionary<string, Color> GetParticipantsList()
     {
         return participants;
     }
 
+    /**
+     * Updates the username, ID and anchor color of all the local instances of the user anchors
+    */
     private void LocalUpdateAnchors()
     {
         GameObject[] localParticipants = GameObject.FindGameObjectsWithTag("participant");
@@ -87,6 +95,10 @@ public class SessionManager : NetworkBehaviour
         }
     }
 
+    /**
+     * Activates the local anchor's gaze
+     * @param active True if the gaze should be activated, false otherwise
+     */
     public void SetGazeActive(bool active)
     {
         if (!IsOwner) return;
@@ -98,6 +110,10 @@ public class SessionManager : NetworkBehaviour
         }
     }
 
+    /**
+     * Activates the local anchor's nameplate
+     * @param active True if the nameplate should be activated, false otherwise
+     */
     public void SetNameplateActive(bool active)
     {
         if (!IsOwner) return;
@@ -109,6 +125,9 @@ public class SessionManager : NetworkBehaviour
         }
     }
 
+    /**
+     * Locally shows the ping visualization of the selected participant
+     */
     public void PingParticipant()
     {
         SessionManager selectedParticipantManager = selectedParticipant.GetComponentInParent<SessionManager>();
@@ -117,6 +136,10 @@ public class SessionManager : NetworkBehaviour
         ClientSpawnParticipantPingRpc(participantUsername);
     }
 
+    /**
+     * Updates the local anchor that is currently selected
+     * @param participant The GameObject of the participant to be selected
+     */
     public void SelectParticipant(GameObject participant)
     {
         if (!IsOwner) return;
@@ -124,6 +147,9 @@ public class SessionManager : NetworkBehaviour
         selectedParticipant = participant;
     }
 
+    /**
+     * Cleans the participant selection
+     */
     public void UnselectParticipant()
     {
         if (!IsOwner) return;
@@ -131,11 +157,20 @@ public class SessionManager : NetworkBehaviour
         selectedParticipant = null;
     }
 
+    /**
+     * Returns the user configuration of the local user
+     * @return UserConfiguration The user configuration behaviour of the local user
+     */
     public UserConfiguration GetParticipantConfiguration()
     {
         return userConfig;
     }
 
+    /**
+     * Returns the username of a participant given its ID
+     * @param id The session ID of the participant assigned at the moment of joining the room
+     * @return string The username of the participant
+     */
     public string GetUsernameById(ulong id)
     {
         string username = "";
@@ -150,12 +185,25 @@ public class SessionManager : NetworkBehaviour
         return username;
     }
 
+    /**
+     * Signals to the network that the local user is leaving the room
+     */
     public void LeaveRoom()
     {
         Debug.Log("Leaving room");
         ParticipantLeavesRoomRpc(userConfig.GetProfileStruct(), NetworkManager.Singleton.LocalClientId);
     }
 
+    //------------------------------------------------------------------------------------------------------
+    // Network Functions
+    //------------------------------------------------------------------------------------------------------
+
+    /**
+     * Remote procedure that signals the registration of a new participant in the room and the update og the
+     * local participant list
+     * @param newUserProfile The profile data of the new participant
+     * @param clientID The session ID of the new participant assigned at the moment of joining the room
+     */
     [Rpc(SendTo.ClientsAndHost)]
     private void RegisterNewParticipantRpc(UserConfiguration.ProfileStruct newUserProfile, ulong clientID)
     {
@@ -176,6 +224,11 @@ public class SessionManager : NetworkBehaviour
             LocalUpdateAnchors();
     }
 
+    /**
+     * Remote procedure that signals the removal of a participant from the room and the update of the local participant list
+     * @param userProfile The profile data of the participant that is leaving
+     * @param clientID The session ID of the participant that is leaving
+     */
     [Rpc(SendTo.Everyone)]
     private void ParticipantLeavesRoomRpc(UserConfiguration.ProfileStruct userProfile, ulong clientID)
     {
@@ -195,6 +248,10 @@ public class SessionManager : NetworkBehaviour
             Debug.Log("Participant Shutdown");
     }
 
+    /**
+     * Remote procedure that spawns a ping pointer object for a local user anchor
+     * @param username The username of the participant to spawn the ping pointer for
+     */
     [Rpc(SendTo.Everyone)]
     private void ClientSpawnParticipantPingRpc(string username)
     {
@@ -212,6 +269,10 @@ public class SessionManager : NetworkBehaviour
         }
     }
 
+    /**
+     * Remote procedure to test if it is possible to ping a model in the room
+     * @param modelID The unique ID of the model to ping
+     */
     [Rpc(SendTo.Server)]
     public void AskModelPingRpc(int modelID)
     {
@@ -228,6 +289,10 @@ public class SessionManager : NetworkBehaviour
         }
     }
 
+    /**
+     * Remote procedure that spawns a ping pointer object for a local model
+     * @param modelID The unique ID of the model to ping
+     */
     [Rpc(SendTo.Everyone)]
     public void ClientSpawnModelPingRpc(int modelID)
     {
@@ -246,6 +311,12 @@ public class SessionManager : NetworkBehaviour
         }
     }
 
+    /**
+     * Remote procedure to add a local instance of a new model in the room
+     * @param modelType The type of the model to be added, defined in the MainMenuManager
+     * @param position The position where the model should be instantiated, in relation to the shared origin point
+     * @param ownerId The session ID of the participant that is adding the model, used to assign ownership
+     */
     [Rpc(SendTo.Server)]
     public void AddModelRpc(int modelType, Vector3 position, ulong ownerId)
     {
@@ -264,6 +335,10 @@ public class SessionManager : NetworkBehaviour
         }
     }
 
+    /**
+     * Remote procedure to delete all local instances of a model in the room
+     * @param modelID The unique ID of the model to be deleted
+     */
     [Rpc(SendTo.Server)]
     public void DeleteModelRpc(int modelID)
     {
@@ -281,6 +356,11 @@ public class SessionManager : NetworkBehaviour
         }
     }
 
+    /**
+     * Remote procedure to add a local instance of an annotation in the room
+     * @param annotation The text of the annotation to be added
+     * @param position The position where the annotation should be instantiated, in relation to the shared origin point
+     */
     [Rpc(SendTo.Server)]
     public void AddAnnotationRpc(string annotation, Vector3 position)
     {
