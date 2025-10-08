@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8875690192934537320}
   - component: {fileID: 8915809105913671737}
   m_Layer: 0
-  m_Name: Pointer
+  m_Name: ArrowPointer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
